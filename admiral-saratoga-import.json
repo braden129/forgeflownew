@@ -1,0 +1,222 @@
+{
+  "appName": "Admiral Outdoor Production App",
+  "backupVersion": 1,
+  "exportedAt": "2026-05-13T02:12:26.128Z",
+  "models": [
+    {
+      "id": "collection-1778638346138-fa3114d2b458f8",
+      "name": "Saratoga",
+      "types": [
+        {
+          "id": "furniture-1778638342959-576ee0f59c7ae8",
+          "name": "Saratoga 18\" Round Side Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-18aln-bo-saratoga-18-inch-round-solid-table-textured-black.jpg?v=1775677804",
+          "parts": [],
+          "notes": "SKU: 8301-18AL\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e18\\\" W x 17\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-18-round-solid-table",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-18-round-solid-table",
+          "sku": "8301-18AL",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e18\\\" W x 17\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "",
+          "seatWidth": "",
+          "seatDepth": "",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "8301-18AL",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e18\\\" W x 17\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "",
+            "seatWidth": "",
+            "seatDepth": "",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638343221-857f2dadc4ecc8",
+          "name": "Saratoga 42\" Round Aluminum Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SaratogaRoundDiningTablewithMetalTop_TexturedWhite_standard-frame-221-black.jpg?v=1775677985",
+          "parts": [],
+          "notes": "SKU: 8301-42AL\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-round-aluminum-table",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-round-aluminum-table",
+          "sku": "8301-42AL",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "",
+          "seatWidth": "",
+          "seatDepth": "",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "8301-42AL",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "",
+            "seatWidth": "",
+            "seatDepth": "",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638343627-833e16a25f65a",
+          "name": "Saratoga 42\" Square Acrylic Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-4242an-saratoga-42-inch-acrylic-table-textured-white_dcb57bf0-a290-44c4-bb1e-f70b5a1e23b5.jpg?v=1775677924",
+          "parts": [],
+          "notes": "SKU: 8301-4242A\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-square-acrylic-table",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-square-acrylic-table",
+          "sku": "8301-4242A",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "",
+          "seatWidth": "",
+          "seatDepth": "",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "8301-4242A",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "",
+            "seatWidth": "",
+            "seatDepth": "",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638344224-c8db7d9d348b2",
+          "name": "Saratoga 42\" Square Aluminum Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-4242aln-saratoga-42-inch-square-aluminum-table-textured-black-alt.jpg?v=1775677903",
+          "parts": [],
+          "notes": "SKU: 8301-4242AL\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-square-aluminum-table",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-square-aluminum-table",
+          "sku": "8301-4242AL",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "",
+          "seatWidth": "",
+          "seatDepth": "",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "8301-4242AL",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e42\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "",
+            "seatWidth": "",
+            "seatDepth": "",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638344681-b239a9f3b9ce18",
+          "name": "Saratoga Bar Stool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-4-saratoga-bar-stool-without-cushion-textured-white.jpg?v=1775677716",
+          "parts": [],
+          "notes": "SKU: { \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e14\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Height: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e30\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Width: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Depth: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-bar-stool",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-bar-stool",
+          "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e14\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e30\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e14\\\" W x 30\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e30\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638345217-5dcbf24e5236f8",
+          "name": "Saratoga Dining Chair with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-1-cuw-a-saratoga-dining-chair-with-cushion-textured-black-bliss-linen.jpg?v=1775677646",
+          "parts": [],
+          "notes": "SKU: { \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e25\\\" L x 23\\\" W x 33\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Height: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e20\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Width: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e21\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Depth: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e18\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-dining-chair-with-cushion",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-dining-chair-with-cushion",
+          "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e25\\\" L x 23\\\" W x 33\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e20\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e21\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e18\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e25\\\" L x 23\\\" W x 33\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e20\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e21\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e18\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638345910-ab863a88e82db",
+          "name": "Saratoga Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-3-sl-saratoga-sling-chaise-lounge-textured-white-white000.jpg?v=1775677784",
+          "parts": [],
+          "notes": "SKU: { \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e76\\\" L x 27\\\" W x 14\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Height: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Width: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e23\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Depth: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e44\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-sling-chaise-lounge",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-sling-chaise-lounge",
+          "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e76\\\" L x 27\\\" W x 14\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e23\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e44\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e76\\\" L x 27\\\" W x 14\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e14\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e23\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e44\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        },
+        {
+          "id": "furniture-1778638346128-38ed4b9d41f0a8",
+          "name": "Saratoga Sling Chaise Lounge with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-1-cuw-saratoga-sling-chaise-lounge-with-cushion-textured-white-dupione-celeste.jpg?v=1775677618",
+          "parts": [],
+          "notes": "SKU: { \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }\nDimensions: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e76\\\" L x 27\\\" W x 14\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Height: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e19\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Width: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e23\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSeat Depth: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e44\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nStackable: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nMaterial: \\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",\nSource: https://admiral-outdoor.com/collections/saratoga/products/saratoga-sling-chaise-lounge-with-cushion",
+          "importedFromWebsite": true,
+          "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-sling-chaise-lounge-with-cushion",
+          "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+          "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e76\\\" L x 27\\\" W x 14\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e19\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e23\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e44\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+          "specs": {
+            "sku": "{ \"imports\": { \"element.base-media\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.base-media.js?v=61305152781971747521776093079\", \"element.image.parallax\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.image.parallax.js?v=59188309605188605141776093079\", \"element.model\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.model.js?v=104979259955732717291776093080\", \"element.quantity-selector\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.quantity-selector.js?v=68208048201360514121776093080\", \"element.text.rte\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.text.rte.js?v=28194737298593644281776093081\", \"element.video\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/element.video.js?v=110560105447302630031776093077\", \"is-land\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/is-land.min.js?v=92343381495565747271776093078\", \"util.misc\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.misc.js?v=117964846174238173191776093080\", \"util.product-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.product-loader.js?v=71947287259713254281776093080\", \"util.resource-loader\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/util.resource-loader.js?v=81301169148003274841776093080\", \"vendor.in-view\": \"//admiral-outdoor.com/cdn/shop/t/138/assets/vendor.in-view.js?v=126891093837844970591776093077\" } }",
+            "dimensions": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield custom\\\"\\u003e76\\\" L x 27\\\" W x 14\\\" H\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatHeight": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e19\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatWidth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e23\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "seatDepth": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003e44\\\"\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "stackable": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-metafield auto\\\"\\u003eNo\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\",",
+            "material": "\\u003c\\/td\\u003e\\n \\u003ctd class=\\\"specs-table-value source-tag\\\"\\u003eAluminum\\u003c\\/td\\u003e\\n \\u003c\\/tr\\u003e\","
+          }
+        }
+      ]
+    }
+  ],
+  "schedule": [],
+  "liveJobs": [],
+  "scheduleWeeks": [
+    "Week of",
+    "Week of",
+    "Week of",
+    "Week of",
+    "Week of"
+  ]
+}

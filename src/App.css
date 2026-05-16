@@ -1,0 +1,2344 @@
+body {
+  margin: 0;
+  background: #101010;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  background: #3d3d3d;
+  border: none;
+  color: white;
+  padding: 9px 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.15s;
+}
+
+button:hover {
+  background: #5a5a5a;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input,
+select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px;
+  background: #202020;
+  border: 1px solid #444;
+  color: white;
+  border-radius: 8px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+.top-nav {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: #171717;
+  border-bottom: 1px solid #333;
+  overflow-x: auto;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.search {
+  min-width: 240px;
+  margin-top: 0;
+}
+
+.active-nav {
+  background: #777 !important;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  padding: 12px;
+  background: #141414;
+  border-bottom: 1px solid #2b2b2b;
+}
+
+.stat-card {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.stat-card span {
+  display: block;
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.stat-card b {
+  font-size: 24px;
+}
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 132px);
+}
+
+.sidebar {
+  width: 300px;
+  background: #171717;
+  border-right: 1px solid #333;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+.card,
+.side-card,
+.job-card,
+.schedule-card,
+.part-card {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 15px;
+  margin-bottom: 14px;
+}
+
+.card {
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.side-card {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.side-card.selected {
+  border-color: #777;
+  background: #252525;
+}
+
+.plain {
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  flex: 1;
+}
+
+.plain:hover {
+  background: transparent;
+}
+
+.plain span {
+  display: block;
+  color: #aaa;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.add-box {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #333;
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 18px;
+}
+
+.hero {
+  min-height: 280px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  color: #ddd;
+}
+
+.muted {
+  color: #aaa;
+}
+
+.note {
+  color: #cfcfcf;
+  background: #181818;
+  border-left: 3px solid #666;
+  padding: 9px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.preview {
+  width: 100%;
+  height: 230px;
+  object-fit: contain;
+  background: #111;
+  border-radius: 10px;
+  margin: 12px 0;
+  border: 1px solid #333;
+}
+
+.thumb {
+  width: 130px;
+  height: 95px;
+  object-fit: contain;
+  background: #111;
+  border-radius: 10px;
+  border: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.furniture-card {
+  overflow: hidden;
+}
+
+.furniture-head {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.furniture-img {
+  width: 160px;
+  height: 110px;
+  object-fit: contain;
+  background: #111;
+  border-radius: 10px;
+  border: 1px solid #333;
+}
+
+.quick-schedule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 0;
+  width: fit-content;
+  flex-wrap: wrap;
+}
+
+.quick-schedule span {
+  color: #bbb;
+  font-size: 14px;
+}
+
+.quick-schedule input {
+  width: 70px;
+  margin-top: 0;
+  text-align: center;
+}
+
+.quick-schedule select {
+  width: 130px;
+  margin-top: 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.wide {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.danger {
+  background: #7a1d1d;
+}
+
+.danger:hover {
+  background: #a52a2a;
+}
+
+.parts-panel {
+  margin-top: 16px;
+  padding: 15px;
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 12px;
+}
+
+.parts-header-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 0.7fr 0.7fr 1.5fr;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #202020;
+  border: 1px solid #333;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #bbb;
+}
+
+.part-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 1fr 0.7fr 0.7fr 1.5fr;
+  gap: 10px;
+  align-items: center;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.part-row span {
+  overflow-wrap: anywhere;
+}
+
+.part-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.part-note {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+  color: #aaa;
+  font-size: 13px;
+}
+
+.add-parts-area {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid #333;
+}
+
+.part-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #222;
+}
+
+.weekly-board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(260px, 1fr));
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+.week-column {
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 12px;
+  min-width: 260px;
+}
+
+.week-head {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.week-head label {
+  color: #aaa;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.week-head span {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.week-title-input {
+  margin-top: 0;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.week-job {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.week-job.complete {
+  border-color: #4caf50;
+  background: rgba(76, 175, 80, 0.12);
+  opacity: 0.85;
+}
+
+.week-thumb {
+  width: 100%;
+  height: 110px;
+  object-fit: contain;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.week-job-main p {
+  margin: 5px 0;
+}
+
+.schedule-qty-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.schedule-qty-row button {
+  padding: 5px 10px;
+}
+
+.schedule-qty-row span {
+  min-width: 28px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.schedule-status {
+  margin-top: 8px;
+  padding: 8px;
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.schedule-card {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.schedule-card.done {
+  border-color: #4caf50;
+  opacity: 0.85;
+}
+
+.schedule-main {
+  flex: 1;
+}
+
+.schedule-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 170px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(140px, 1fr));
+  gap: 6px 14px;
+  margin: 10px 0;
+}
+
+.info-grid p {
+  margin: 0;
+}
+
+.kanban {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 20px;
+}
+
+.kanban-column {
+  min-width: 310px;
+  max-width: 340px;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.kanban-column h2 {
+  background: #171717;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.job-card {
+  background: #222;
+  overflow: visible;
+}
+
+.job-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.job-img {
+  width: 84px;
+  height: 70px;
+  object-fit: contain;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.job-title-block {
+  min-width: 0;
+}
+
+.job-title-block h3,
+.week-job-main h3 {
+  line-height: 1.25;
+  margin-bottom: 4px;
+  overflow-wrap: anywhere;
+}
+
+.sku-line {
+  color: #ccc;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 4px 0 8px;
+}
+
+.job-spec-grid {
+  background: #1b1b1b;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 9px;
+}
+
+.schedule-specs {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0;
+  padding: 8px;
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #ccc;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.schedule-specs span {
+  overflow-wrap: anywhere;
+}
+
+.stage-badge {
+  display: inline-block;
+  background: #303030;
+  border: 1px solid #555;
+  color: #ddd;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.status {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.status.good {
+  background: rgba(76, 175, 80, 0.15);
+  border: 1px solid rgba(76, 175, 80, 0.45);
+  color: #77ff9a;
+}
+
+.status.warning {
+  background: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+  color: #ffd86b;
+}
+
+.progress-box {
+  margin-top: 10px;
+}
+
+.progress-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #ccc;
+  margin-bottom: 6px;
+}
+
+.bar {
+  width: 100%;
+  height: 10px;
+  background: #111;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #777;
+}
+
+.parts-details {
+  margin-top: 10px;
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.parts-details summary {
+  cursor: pointer;
+  color: #ddd;
+}
+
+.mini-part {
+  display: grid;
+  gap: 3px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #333;
+}
+
+.mini-part span {
+  color: #aaa;
+  font-size: 13px;
+}
+
+.empty {
+  opacity: 0.7;
+  padding: 30px;
+  text-align: center;
+  border: 1px dashed #444;
+  border-radius: 12px;
+  background: #181818;
+}
+
+.empty.small {
+  padding: 14px;
+  font-size: 13px;
+}
+
+.stage-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 950px) {
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #333;
+  }
+
+  .schedule-card,
+  .part-card,
+  .furniture-head,
+  .page-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .schedule-actions {
+    width: 100%;
+  }
+
+  .thumb,
+  .furniture-img {
+    width: 100%;
+  }
+
+  .weekly-board {
+    grid-template-columns: repeat(5, 260px);
+  }
+}
+
+@media (max-width: 850px) {
+  .parts-header-row {
+    display: none;
+  }
+
+  .part-row {
+    grid-template-columns: 1fr;
+  }
+
+  .part-actions {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 650px) {
+  .stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid,
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .main {
+    padding: 14px;
+  }
+
+  .top-nav {
+    flex-wrap: nowrap;
+  }
+
+  .search {
+    min-width: 180px;
+  }
+}
+/* Compact cut-list upgrade */
+.compact-parts-panel {
+  padding: 12px;
+}
+
+.parts-panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.parts-panel-head h2 {
+  margin-bottom: 4px;
+}
+
+.parts-summary {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  min-width: 190px;
+}
+
+.parts-summary span {
+  background: #222;
+  border: 1px solid #3a3a3a;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 13px;
+  color: #ddd;
+}
+
+.compact-parts-table {
+  max-height: 460px;
+  overflow-y: auto;
+  border: 1px solid #333;
+  border-radius: 12px;
+  background: #161616;
+}
+
+.compact-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin: 0;
+  border-radius: 12px 12px 0 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+}
+
+.compact-part-row {
+  margin: 0;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  padding: 8px 12px;
+  min-height: 48px;
+}
+
+.compact-part-row:nth-child(odd) {
+  background: #202020;
+}
+
+.part-cell {
+  display: grid;
+  gap: 2px;
+  align-content: center;
+}
+
+.part-cell small {
+  display: none;
+  color: #888;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.part-name-cell b {
+  color: #fff;
+}
+
+.qty-cell b {
+  font-size: 16px;
+}
+
+.compact-actions {
+  justify-content: flex-end;
+}
+
+.compact-actions button {
+  padding: 6px 9px;
+  font-size: 13px;
+}
+
+.compact-part-note {
+  margin: 0;
+  padding: 7px 0 0;
+  font-size: 12px;
+}
+
+@media (max-width: 850px) {
+  .parts-panel-head {
+    flex-direction: column;
+  }
+
+  .parts-summary {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .compact-parts-table {
+    max-height: none;
+    overflow-y: visible;
+    border: none;
+    background: transparent;
+  }
+
+  .compact-header-row {
+    display: none;
+  }
+
+  .compact-part-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+    border: 1px solid #333;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    padding: 12px;
+  }
+
+  .part-cell small {
+    display: block;
+  }
+
+  .part-name-cell,
+  .compact-actions,
+  .compact-part-note {
+    grid-column: 1 / -1;
+  }
+
+  .compact-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* Major UI polish: cleaner nav, stage colors, shop-floor cut sheet viewer */
+.clean-nav {
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nav-button-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.backup-actions {
+  margin-left: auto;
+}
+
+.nav-select {
+  width: auto;
+  min-width: 150px;
+  margin-top: 0;
+  background: #222;
+  color: #f5f5f5;
+  border: 1px solid #444;
+  font-weight: 700;
+}
+
+.role-select {
+  min-width: 165px;
+  border-color: #5a4a1b;
+}
+
+input,
+select,
+textarea {
+  color: #f7f7f7;
+}
+
+input::placeholder {
+  color: #9d9d9d;
+}
+
+.furniture-title,
+.week-job-main h3,
+.job-title-block h3 {
+  color: #ff4d4d;
+  letter-spacing: 0.2px;
+}
+
+.sku-line,
+.schedule-specs .sku-line,
+.job-title-block .sku-line {
+  color: #ffd766;
+  font-weight: 800;
+}
+
+.secondary {
+  background: #2f3a46;
+}
+
+.secondary:hover {
+  background: #405164;
+}
+
+.stage-badge {
+  font-weight: 800;
+}
+
+.stage-fabrication {
+  border-color: rgba(255, 193, 7, 0.65) !important;
+  background: rgba(255, 193, 7, 0.16) !important;
+  color: #ffd86b !important;
+}
+
+.stage-welding {
+  border-color: rgba(33, 150, 243, 0.65) !important;
+  background: rgba(33, 150, 243, 0.16) !important;
+  color: #8dccff !important;
+}
+
+.stage-assembly {
+  border-color: rgba(156, 132, 255, 0.65) !important;
+  background: rgba(156, 132, 255, 0.16) !important;
+  color: #cfc5ff !important;
+}
+
+.stage-paint-line {
+  border-color: rgba(255, 152, 0, 0.7) !important;
+  background: rgba(255, 152, 0, 0.16) !important;
+  color: #ffbf73 !important;
+}
+
+.stage-shipping {
+  border-color: rgba(76, 175, 80, 0.7) !important;
+  background: rgba(76, 175, 80, 0.16) !important;
+  color: #91ee9a !important;
+}
+
+.stage-orders-sent {
+  border-color: rgba(0, 200, 120, 0.75) !important;
+  background: rgba(0, 200, 120, 0.16) !important;
+  color: #7affbd !important;
+}
+
+.stage-column {
+  border-top-width: 4px;
+}
+
+.stage-column h2 {
+  padding-top: 2px;
+}
+
+.cut-sheet-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.cut-sheet-modal {
+  width: min(980px, 100%);
+}
+
+.cut-sheet-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cut-sheet-preview {
+  background: #fff;
+  color: #111;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.cut-sheet-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  border-bottom: 2px solid #111;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.cut-sheet-logo {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+.cut-sheet-logo-sub {
+  font-size: 14px;
+  color: #555;
+  letter-spacing: 1px;
+  margin-top: -4px;
+}
+
+.cut-sheet-preview h1 {
+  margin: 18px 0 6px;
+  font-size: 28px;
+  color: #111;
+}
+
+.cut-sheet-preview h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #555;
+}
+
+.cut-sheet-meta {
+  margin-top: 14px;
+  line-height: 1.7;
+}
+
+.cut-sheet-preview-img {
+  max-width: 220px;
+  max-height: 150px;
+  object-fit: contain;
+  border: 1px solid #ccc;
+  padding: 8px;
+  background: #fff;
+}
+
+.cut-sheet-spec-box {
+  margin-top: 20px;
+  border: 1px solid #333;
+  padding: 12px;
+  line-height: 1.7;
+  font-size: 13px;
+}
+
+.cut-sheet-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.cut-sheet-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cut-sheet-table th,
+.cut-sheet-table td {
+  border: 1px solid #333;
+  padding: 8px;
+  text-align: left;
+  font-size: 13px;
+  color: #111;
+}
+
+.cut-sheet-table th {
+  background: #eee;
+}
+
+@media (max-width: 800px) {
+  .backup-actions {
+    margin-left: 0;
+  }
+
+  .nav-select,
+  .search {
+    width: 100%;
+  }
+
+  .nav-button-group {
+    width: 100%;
+  }
+
+  .nav-button-group button {
+    flex: 1;
+  }
+
+  .cut-sheet-modal-backdrop {
+    padding: 10px;
+  }
+
+  .cut-sheet-preview {
+    padding: 18px;
+  }
+
+  .cut-sheet-preview-header {
+    flex-direction: column;
+  }
+
+  .cut-sheet-preview-img {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+/* Department view cleanup: readable text, calmer colors, role mode behavior support */
+h1,
+h2,
+h3,
+.sidebar h2,
+.page-head h1,
+.kanban-column h2,
+.department-stage-panel h2 {
+  color: #f4f4f4;
+}
+
+.muted {
+  color: #c7c7c7;
+}
+
+.furniture-title,
+.week-job-main h3,
+.job-title-block h3 {
+  color: #f5f5f5;
+  letter-spacing: 0.2px;
+}
+
+.sku-line,
+.schedule-specs .sku-line,
+.job-title-block .sku-line {
+  color: #f5f5f5;
+  font-weight: 800;
+}
+
+.stage-column {
+  border-top-width: 4px;
+  background: #1d1d1d;
+}
+
+.stage-column h2,
+.department-stage-panel h2 {
+  color: #f4f4f4;
+  background: #242424;
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+
+.stage-badge {
+  background: #2c2c2c !important;
+  color: #f2f2f2 !important;
+  font-weight: 800;
+}
+
+.stage-fabrication {
+  border-color: rgba(214, 158, 46, 0.75) !important;
+}
+
+.stage-welding {
+  border-color: rgba(49, 130, 206, 0.75) !important;
+}
+
+.stage-assembly {
+  border-color: rgba(128, 90, 213, 0.75) !important;
+}
+
+.stage-paint-line {
+  border-color: rgba(221, 107, 32, 0.75) !important;
+}
+
+.stage-shipping {
+  border-color: rgba(56, 161, 105, 0.75) !important;
+}
+
+.stage-orders-sent {
+  border-color: rgba(47, 133, 90, 0.75) !important;
+}
+
+.department-stage-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.department-stage-panel {
+  border: 1px solid #333;
+  border-top-width: 4px;
+  border-radius: 14px;
+  padding: 14px;
+  background: #171717;
+}
+
+.department-job-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.info-grid p,
+.schedule-qty-row,
+.schedule-status,
+.progress-line,
+.job-card p,
+.week-job-main p {
+  color: #f0f0f0;
+}
+
+@media (max-width: 760px) {
+  .department-stage-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Workflow cleanup: readability, permissions, compact dense boards */
+button:active {
+  transform: scale(0.97);
+  filter: brightness(0.78);
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 2px solid #8dccff;
+  outline-offset: 2px;
+}
+
+.model-spec-grid {
+  align-items: start;
+}
+
+.model-spec-grid p {
+  font-size: 14px;
+  line-height: 1.35;
+  color: #e2e2e2;
+}
+
+.model-sku-line {
+  grid-column: 1 / -1;
+  font-size: 20px !important;
+  color: #ffffff !important;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  margin: 4px 0 8px !important;
+}
+
+.furniture-title,
+.week-job-main h3,
+.job-title-block h3,
+.sku-line,
+.schedule-specs .sku-line,
+.job-title-block .sku-line {
+  color: #f7f7f7 !important;
+}
+
+.weekly-board {
+  align-items: start;
+}
+
+.week-column,
+.kanban-column,
+.department-stage-panel {
+  max-height: calc(100vh - 245px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.week-job {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.week-thumb {
+  height: 82px;
+}
+
+.week-job-main h3,
+.job-title-block h3 {
+  font-size: 17px;
+}
+
+.schedule-qty-row,
+.schedule-status,
+.job-spec-grid {
+  padding: 7px;
+}
+
+.job-card {
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.job-img {
+  width: 74px;
+  height: 62px;
+}
+
+.job-card .button-row button,
+.week-job .button-row button {
+  padding: 8px 10px;
+}
+
+.department-stage-list {
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+}
+
+.department-stage-panel h2,
+.kanban-column h2 {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+@media (max-width: 760px) {
+  .week-column,
+  .kanban-column,
+  .department-stage-panel {
+    max-height: none;
+  }
+
+  .model-sku-line {
+    font-size: 18px !important;
+  }
+}
+
+/* Compact schedule + live board refinements */
+.compact-weekly-board {
+  grid-template-columns: repeat(5, minmax(360px, 1fr));
+  align-items: start;
+}
+
+.compact-week-column {
+  min-width: 360px;
+  max-height: calc(100vh - 235px);
+  overflow-y: auto;
+}
+
+.compact-week-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #171717;
+  padding-bottom: 10px;
+}
+
+.schedule-job-list {
+  display: grid;
+  gap: 8px;
+}
+
+.compact-week-job {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 9px;
+  margin-bottom: 0;
+  background: #202020;
+}
+
+.compact-week-main {
+  display: grid;
+  grid-template-columns: 1.4fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.compact-week-main h3 {
+  color: #f7f7f7 !important;
+  font-size: 15px;
+  margin: 0 0 3px;
+}
+
+.compact-schedule-qty {
+  margin: 0;
+  padding: 5px;
+  white-space: nowrap;
+}
+
+.schedule-mini-status {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #ddd;
+  font-size: 13px;
+  padding: 5px 7px;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.compact-schedule-actions {
+  margin-top: 0;
+  gap: 6px;
+}
+
+.compact-schedule-actions button {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.completed-schedule-group {
+  margin-top: 12px;
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+.completed-schedule-group summary {
+  cursor: pointer;
+  color: #8fd0a5;
+  font-weight: 800;
+}
+
+.completed-schedule-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 7px;
+  margin-top: 6px;
+  background: rgba(76, 175, 80, 0.08);
+  border: 1px solid rgba(76, 175, 80, 0.25);
+  border-radius: 8px;
+  color: #f2f2f2;
+  font-size: 13px;
+}
+
+.completed-schedule-row button {
+  padding: 5px 7px;
+  font-size: 12px;
+}
+
+.compact-job-card {
+  display: grid;
+  grid-template-columns: minmax(230px, 0.9fr) minmax(260px, 1.1fr);
+  gap: 12px;
+  align-items: stretch;
+  padding: 10px;
+  min-height: 0;
+}
+
+.compact-job-head {
+  margin-bottom: 7px;
+}
+
+.compact-job-card .job-img {
+  width: 74px;
+  height: 62px;
+}
+
+.compact-job-card h3 {
+  color: #f7f7f7 !important;
+  font-size: 18px;
+  margin: 0 0 4px;
+}
+
+.compact-job-card .sku-line {
+  color: #f7f7f7 !important;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.compact-job-meta {
+  margin: 6px 0 0;
+  padding: 7px;
+}
+
+.compact-note {
+  font-size: 12px;
+  margin-top: 7px;
+  padding: 7px;
+}
+
+.job-card-right {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.job-card-right .wide,
+.job-card-right .status {
+  margin-top: 0;
+}
+
+.compact-progress-box {
+  margin-top: 0;
+}
+
+.compact-action-row {
+  margin-top: 0;
+  gap: 6px;
+}
+
+.compact-action-row button {
+  padding: 7px 9px;
+}
+
+.department-job-grid {
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  gap: 10px;
+}
+
+.kanban-column {
+  min-width: 520px;
+  max-width: 620px;
+}
+
+.kanban-column .job-card {
+  margin-bottom: 10px;
+}
+
+.stage-fabrication {
+  border-color: rgba(120, 130, 145, 0.8) !important;
+  background: rgba(120, 130, 145, 0.10) !important;
+  color: #e8edf5 !important;
+}
+
+.status.warning {
+  background: rgba(120, 130, 145, 0.12) !important;
+  border-color: rgba(120, 130, 145, 0.45) !important;
+  color: #f2f2f2 !important;
+}
+
+.week-thumb {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .compact-weekly-board {
+    grid-template-columns: repeat(5, 330px);
+  }
+
+  .compact-job-card {
+    grid-template-columns: 1fr;
+  }
+
+  .department-job-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kanban-column {
+    min-width: 315px;
+    max-width: 340px;
+  }
+}
+
+/* Feedback pass: schedule cards, model-only sidebar, and fabrication warning polish */
+.layout-full .main {
+  width: 100%;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.layout-full {
+  display: block;
+}
+
+/* Keep the schedule cards compact without horizontal scrolling inside a week */
+.schedule-card-tight {
+  padding: 8px !important;
+}
+
+.schedule-card-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.schedule-card-topline h3 {
+  margin: 0;
+  color: #f7f7f7 !important;
+  font-size: 15px;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
+}
+
+.schedule-inline-sku {
+  color: #f7f7f7;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: right;
+  white-space: normal;
+  max-width: 44%;
+}
+
+.schedule-card-body {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.schedule-small-img {
+  width: 64px;
+  height: 58px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 8px;
+}
+
+.schedule-card-details {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.schedule-action-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.schedule-action-row button {
+  width: 100%;
+  white-space: nowrap;
+  padding: 7px 6px;
+  font-size: 12px;
+}
+
+/* Put the active fabrication status back to a warm warning cue without coloring the whole column */
+.status.warning {
+  background: rgba(255, 193, 7, 0.13) !important;
+  border-color: rgba(255, 193, 7, 0.52) !important;
+  color: #ffd966 !important;
+}
+
+.stage-fabrication {
+  border-color: rgba(120, 130, 145, 0.8) !important;
+  background: rgba(120, 130, 145, 0.10) !important;
+  color: #e8edf5 !important;
+}
+
+@media (max-width: 760px) {
+  .schedule-card-topline {
+    align-items: flex-start;
+  }
+
+  .schedule-inline-sku {
+    max-width: 48%;
+  }
+
+  .schedule-action-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Admin/screen overview: compact all departments with no sideways scrolling */
+.admin-live-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 12px;
+  overflow-x: hidden !important;
+  padding-bottom: 12px;
+}
+
+.admin-live-grid .kanban-column {
+  min-width: 0 !important;
+  max-width: none !important;
+  padding: 10px;
+}
+
+.admin-live-grid .kanban-column h2 {
+  font-size: 18px;
+  padding: 9px 10px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.admin-live-grid .compact-job-card,
+.read-only-job-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 10px;
+}
+
+.admin-live-grid .job-card-right,
+.read-only-job-card .job-card-right {
+  gap: 6px;
+}
+
+.admin-live-grid .compact-job-card .job-img,
+.read-only-job-card .job-img {
+  width: 58px;
+  height: 50px;
+}
+
+.admin-live-grid .compact-job-card h3,
+.read-only-job-card h3 {
+  font-size: 15px;
+  line-height: 1.15;
+}
+
+.admin-live-grid .compact-job-meta,
+.read-only-job-card .compact-job-meta {
+  grid-template-columns: repeat(2, minmax(90px, 1fr));
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.admin-live-grid .stage-badge,
+.read-only-job-card .stage-badge {
+  font-size: 11px;
+  padding: 3px 7px;
+}
+
+.admin-live-grid .status,
+.read-only-job-card .status {
+  padding: 7px 8px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.admin-live-grid .progress-box,
+.read-only-job-card .progress-box {
+  margin-top: 0;
+}
+
+/* Department dashboards use the same compact, two-across feel as Fabrication */
+.department-stage-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 12px;
+}
+
+.department-stage-panel {
+  min-width: 0 !important;
+  max-width: none !important;
+}
+
+.department-job-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .department-job-grid,
+  .department-stage-list,
+  .admin-live-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Schedule monitor view: one week at a time, admin-live style */
+.schedule-page-head {
+  margin-bottom: 10px;
+}
+
+.schedule-week-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.schedule-week-tab {
+  display: grid;
+  gap: 4px;
+  text-align: left;
+  background: #202020;
+  border: 1px solid #333;
+  color: #f3f3f3;
+  padding: 11px 12px;
+  border-radius: 12px;
+}
+
+.schedule-week-tab b {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-week-tab span {
+  color: #bbb;
+  font-size: 12px;
+}
+
+.schedule-week-tab.active-schedule-week {
+  background: #2c3c4d;
+  border-color: #5d7f9f;
+  box-shadow: inset 0 0 0 1px rgba(141, 183, 224, 0.28);
+}
+
+.schedule-full-panel {
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.schedule-selected-head {
+  display: grid;
+  grid-template-columns: minmax(220px, 340px) 1fr;
+  gap: 14px;
+  align-items: end;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.schedule-selected-head label {
+  display: block;
+  color: #bbb;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.schedule-selected-input {
+  margin-top: 0 !important;
+}
+
+.schedule-head-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.schedule-head-stats div {
+  background: #202020;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 9px 10px;
+}
+
+.schedule-head-stats span {
+  display: block;
+  color: #aaa;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.schedule-head-stats b {
+  color: #f3f3f3;
+  font-size: 20px;
+}
+
+.schedule-active-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(430px, 1fr));
+  gap: 10px;
+}
+
+.schedule-board-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(250px, 0.9fr);
+  gap: 10px;
+  align-items: stretch;
+  background: #202020;
+  border: 1px solid #363636;
+  border-radius: 14px;
+  padding: 10px;
+  min-width: 0;
+}
+
+.schedule-board-main {
+  display: grid;
+  grid-template-columns: 66px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.schedule-board-img {
+  width: 66px;
+  height: 58px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #333;
+  border-radius: 9px;
+}
+
+.schedule-board-title {
+  min-width: 0;
+}
+
+.schedule-board-title h3 {
+  margin: 0 0 5px;
+  color: #f7f7f7 !important;
+  font-size: 17px;
+  line-height: 1.15;
+}
+
+.schedule-board-title span {
+  display: block;
+  color: #f7f7f7;
+  font-size: 12px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.schedule-board-side {
+  display: grid;
+  gap: 7px;
+  align-content: start;
+  min-width: 0;
+}
+
+.schedule-board-qty {
+  display: grid;
+  grid-template-columns: auto 34px 34px 34px;
+  align-items: center;
+  gap: 7px;
+  color: #f2f2f2;
+  justify-content: end;
+}
+
+.schedule-board-qty b {
+  font-size: 16px;
+}
+
+.schedule-board-qty span {
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.schedule-board-qty button {
+  padding: 6px 0;
+  min-width: 34px;
+}
+
+.schedule-board-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: #e8e8e8;
+  font-size: 13px;
+  padding: 7px 9px;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 9px;
+}
+
+.schedule-board-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.schedule-board-actions button {
+  width: 100%;
+  padding: 7px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.schedule-completed-panel {
+  margin-top: 14px;
+}
+
+.completed-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 1100px) {
+  .schedule-week-tabs {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .schedule-selected-head {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-head-stats {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .schedule-week-tabs,
+  .schedule-head-stats,
+  .schedule-active-grid,
+  .completed-schedule-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-board-card {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-board-qty {
+    justify-content: start;
+  }
+
+  .schedule-board-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Role simplification + overflow/readability cleanup */
+.clean-nav {
+  flex-wrap: wrap;
+  align-items: center;
+  overflow-x: hidden;
+}
+
+.role-select,
+.department-select {
+  min-width: 180px;
+}
+
+button {
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.15;
+  overflow-wrap: normal;
+}
+
+.job-title-block,
+.schedule-board-title,
+.schedule-board-side,
+.job-card-left,
+.job-card-right {
+  min-width: 0;
+}
+
+.job-title-block h3,
+.schedule-board-title h3,
+.furniture-title {
+  overflow-wrap: anywhere;
+}
+
+.model-spec-grid {
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 7px 18px;
+  align-items: start;
+}
+
+.model-spec-grid p {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.model-sku-line {
+  grid-column: 1 / -1;
+  font-size: 22px !important;
+  line-height: 1.1 !important;
+  margin-bottom: 8px !important;
+}
+
+.model-dimensions-line {
+  grid-column: 1 / -1;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+
+/* Keep fabrication progress visually obvious without overpowering the whole card */
+.status.warning {
+  background: rgba(255, 193, 7, 0.15) !important;
+  border-color: rgba(255, 193, 7, 0.55) !important;
+  color: #ffd86b !important;
+}
+
+/* Cooler, cleaner schedule job boxes */
+.schedule-board-card {
+  background: linear-gradient(135deg, rgba(31, 45, 60, 0.92), rgba(25, 31, 40, 0.96)) !important;
+  border: 1px solid rgba(91, 141, 190, 0.6) !important;
+  box-shadow: 0 0 0 1px rgba(91, 141, 190, 0.08), 0 8px 22px rgba(0, 0, 0, 0.22);
+}
+
+.schedule-board-actions {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important;
+  align-items: stretch;
+}
+
+.schedule-board-actions button {
+  min-height: 42px;
+  padding: 7px 8px !important;
+  font-size: 12px !important;
+  white-space: normal !important;
+  overflow-wrap: normal;
+}
+
+.compact-action-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.compact-action-row button,
+.job-card-right .wide {
+  min-height: 42px;
+}
+
+@media (max-width: 900px) {
+  .model-spec-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .model-dimensions-line {
+    white-space: normal;
+  }
+}
+
+/* Employee department tab workflow + final live/schedule polish */
+.compact-job-meta.info-grid {
+  grid-template-columns: auto auto !important;
+  justify-content: start;
+  column-gap: 22px !important;
+  row-gap: 0 !important;
+  padding: 6px 10px !important;
+  max-width: 100%;
+}
+
+.compact-job-meta p {
+  margin: 0 !important;
+  font-size: 15px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+}
+
+.compact-job-meta b {
+  font-size: 15px !important;
+}
+
+.department-view-tabs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.department-view-tab {
+  min-height: 58px;
+  background: #202020;
+  border: 1px solid #3d4652;
+  color: #f4f4f4;
+  border-radius: 14px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.department-view-tab b {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.department-view-tab span {
+  display: block;
+  color: #bfc7d0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.department-view-tab.active-department-view-tab {
+  background: linear-gradient(135deg, #2d4056, #223140);
+  border-color: #6e98c2;
+  box-shadow: inset 0 0 0 1px rgba(110, 152, 194, 0.25);
+}
+
+.single-department-stage-list {
+  display: block !important;
+  overflow-x: hidden !important;
+}
+
+.single-department-panel {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+.single-department-panel .department-job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  gap: 10px;
+}
+
+.schedule-board-card-production {
+  background: linear-gradient(135deg, rgba(92, 56, 25, 0.96), rgba(45, 36, 28, 0.98)) !important;
+  border-color: rgba(255, 166, 77, 0.75) !important;
+  box-shadow: 0 0 0 1px rgba(255, 166, 77, 0.10), 0 8px 22px rgba(0, 0, 0, 0.22) !important;
+}
+
+.schedule-board-card-production .schedule-board-status {
+  border-color: rgba(255, 166, 77, 0.35);
+}
+
+@media (max-width: 760px) {
+  .single-department-panel .department-job-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .compact-job-meta.info-grid {
+    grid-template-columns: repeat(2, minmax(0, 100px)) !important;
+  }
+}
+
+
+.completed-schedule-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
+}
+
+.completed-schedule-tools button {
+  width: auto;
+}
+
+
+/* Due/date fit polish */
+.compact-job-meta.info-grid {
+  grid-template-columns: auto auto !important;
+  gap: 8px !important;
+  max-width: 100%;
+}
+
+.compact-job-meta p {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-job-meta b {
+  font-size: 12px !important;
+}
+
+
+/* Mobile collection navigation cleanup */
+.mobile-back-button {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .mobile-model-open .sidebar {
+    display: none;
+  }
+
+  .mobile-model-open .main {
+    width: 100%;
+  }
+
+  .mobile-back-button {
+    display: inline-flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 14px;
+    background: #2f3a46;
+    border: 1px solid #4d6175;
+    font-weight: 800;
+  }
+
+  .mobile-back-button:hover {
+    background: #405164;
+  }
+
+  .furniture-card {
+    margin-bottom: 12px;
+  }
+
+  .furniture-head {
+    gap: 10px;
+  }
+
+  .schedule-selected-head {
+    gap: 10px;
+  }
+
+  .schedule-head-stats {
+    margin-top: 0;
+  }
+}
+
+/* Reduce duplicate dashboard clutter on smaller screens */
+@media (max-width: 760px) {
+  .schedule-page-head {
+    margin-bottom: 8px;
+  }
+
+  .schedule-week-tabs {
+    margin-bottom: 10px;
+  }
+}

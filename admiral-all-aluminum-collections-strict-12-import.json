@@ -1,0 +1,2749 @@
+{
+  "appName": "Admiral Outdoor Production App",
+  "backupVersion": 2,
+  "exportedAt": "2026-05-13T03:03:00.770Z",
+  "source": "Admiral Outdoor strict 12 aluminum collections importer",
+  "models": [
+    {
+      "id": "model-1778640669034-22478c143fefa8",
+      "name": "Destin II",
+      "types": [
+        {
+          "id": "type-1778640606360-5cf01435fe002",
+          "name": "Destin II Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-21-cuw-destin-ii-arm-chair-pompeian-gold-bliss-linen.jpg?v=1775740202",
+          "specs": {
+            "sku": "8101-21-CUW-A",
+            "dimensions": "35\" L x 31\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640610371-36cdaf53616e88",
+          "name": "Destin II Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-3-cuw-destin-ii-chaise-lounge-with-cushions-pompeian-gold-bliss-linen-alt.jpg?v=1775740186",
+          "specs": {
+            "sku": "8101-3-CUW-A",
+            "dimensions": "79\" L x 29\" W x 30\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640614340-b29011b15b3f88",
+          "name": "Destin II Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-c-cuw-destin-ii-barstool-pompeian-gold-bliss-linen.jpg?v=1775740098",
+          "specs": {
+            "sku": "8101-1B-CUW-A",
+            "dimensions": "24\" L x 20\" W x 45\" H",
+            "seatHeight": "30\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640618394-a3e96e4f692558",
+          "name": "Destin II Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-1-cuw-destin-ii-dining-chair-pompeian-gold-bliss-linen.jpg?v=1775740027",
+          "specs": {
+            "sku": "8101-1-CUW-A",
+            "dimensions": "25\" L x 26\" W x 34\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640622207-bb140d54daf478",
+          "name": "Destin II Armless Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-1a-cuw-destin-ii-armless-dining-chair-pompeian-gold-bliss-linen.jpg?v=1775740045",
+          "specs": {
+            "sku": "8101-1A-CUW-A",
+            "dimensions": "25\" L x 20\" W x 34\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-armless-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640626203-58ae9480a7f79",
+          "name": "Destin II Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-23-CUW_PompeianGold_CanvasWhite57003-0000_72813cf9-525f-43c2-bb78-e3f30c9308d4.jpg?v=1776431898",
+          "specs": {
+            "sku": "8101-23-CUW-A",
+            "dimensions": "35\" L x 90\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640629994-ba933cb253a958",
+          "name": "Destin II Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-23-CUW_PompeianGold_CanvasWhite57003-0000_ac78563f-98eb-40ac-a14d-ec0916177781.jpg?v=1776285423",
+          "specs": {
+            "sku": "8101-22-CUW-A",
+            "dimensions": "35\" L x 65\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-loveseat"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640634108-4ccf115de590b8",
+          "name": "Destin II Sectional Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-SEC-CUW_PompeianGold_CanvasWhite57003-0000.jpg?v=1776285375",
+          "specs": {
+            "sku": "8101-SEC-CUW-A",
+            "dimensions": "35\" L x 96\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-sectional-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640637900-a6139ca09f94e",
+          "name": "Destin II Right Arm Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-RAF-CUW_PompeianGold_CanvasWhite57003-0000.jpg?v=1776285312",
+          "specs": {
+            "sku": "8101-RAF-CUW-A",
+            "dimensions": "35\" L x 40\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-right-arm-loveseat"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640641696-3b77e7a3563e3",
+          "name": "Destin II Left Arm Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-LAF-CUW_PompeianGold_CanvasWhite57003-0000.jpg?v=1776285335",
+          "specs": {
+            "sku": "8101-LAF-CUW-A",
+            "dimensions": "35\" L x 40\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-left-arm-loveseat"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640645739-6cf573e3228cb8",
+          "name": "Destin II Sectional Corner Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-CR-CUW_PompeianGold_CanvasWhite57003-0000.jpg?v=1776285276",
+          "specs": {
+            "sku": "8101-CR-CUW-A",
+            "dimensions": "35\" L x 25\" W x 31\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-sectional-corner-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640649672-4483ae26022378",
+          "name": "Destin II 60\" Round Dining Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-42AL-ST_PompeianGold.jpg?v=1775833583",
+          "specs": {
+            "sku": "8101-60AL",
+            "dimensions": "60\" W x 29.5\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-60-round-dining-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640653668-212ed012b033f8",
+          "name": "Destin II 50\" Round Dining Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-42AL-ST_PompeianGold_4ba91c62-83a9-4bf1-9db2-d844cf9eba3e.jpg?v=1775833596",
+          "specs": {
+            "sku": "8101-50AL",
+            "dimensions": "50\" W x 29.5\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-50-round-dining-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640657413-7ab3e43e3d51a8",
+          "name": "Destin II 42\" Round Dining Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-42AL-ST_PompeianGold_896ae21f-d1eb-459f-803d-488689dab69f.jpg?v=1775833608",
+          "specs": {
+            "sku": "8101-42AL",
+            "dimensions": "42\" W x 29.5\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-42-round-dining-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640661411-e75feb7985e508",
+          "name": "Destin II 40\" Pub Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-PTAL-ST_PompeianGold.jpg?v=1775833626",
+          "specs": {
+            "sku": "8101-PTAL",
+            "dimensions": "40\" W x 40\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-40-pub-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640665529-cf0784a5d78a58",
+          "name": "Destin II 20\" End Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8101-ETAL-ST_PompeianGold.jpg?v=1775833640",
+          "specs": {
+            "sku": "8101-ETAL",
+            "dimensions": "20\" W x 24\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/destin-ii/products/destin-ii-20-end-table"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778640731841-12c9c83c33dd8",
+      "name": "Aria",
+      "types": [
+        {
+          "id": "type-1778640679853-75757b306a0a5",
+          "name": "Aria Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-Chaise_MetallicaWhite_AgedBronze.jpg?v=1775739775",
+          "specs": {
+            "sku": "31202SL",
+            "dimensions": "81.00\" L x 31.00\" W x 23.00\" H",
+            "seatHeight": "14.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sling-chaise-lounge-a"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640683866-c784e9216c6b",
+          "name": "Aria Sling Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-Dining_MetallicaWhite_AgedBronze.jpg?v=1775739756",
+          "specs": {
+            "sku": "31109SL",
+            "dimensions": "27.00\" L x 26.00\" W x 38.50\" H",
+            "seatHeight": "18.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "20.25\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sling-dining-chair-a"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640687964-d8abb0d4b4f718",
+          "name": "Aria Sling Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-Barstool_MetallicaWhite_AgedBronze.jpg?v=1775739868",
+          "specs": {
+            "sku": "31402SL",
+            "dimensions": "25.50\" L x 22.00\" W x 48.00\" H",
+            "seatHeight": "30.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sling-barstool-a"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640691935-b5bdbb5525da",
+          "name": "Aria Sling Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-Beach-W_MetallicaWhite_AgedBronze.jpg?v=1775739795",
+          "specs": {
+            "sku": "31302SL",
+            "dimensions": "35.00\" L x 25.00\" W x 33.00\" H",
+            "seatHeight": "6.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sling-beach-chair-a"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640695922-f14b5538bad038",
+          "name": "Aria Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Club-Back_AgedBronze_48135-0001BlissLinen.jpg?v=1775739376",
+          "specs": {
+            "sku": "31310CUW-A",
+            "dimensions": "28.00\" L x 29.75\" W x 32.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640699927-d842a93968ca2",
+          "name": "Aria Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Sofa_AgedBronze_48135-0001BlissLinen.jpg?v=1775739432",
+          "specs": {
+            "sku": "31309CUW-A",
+            "dimensions": "28\" L x 87.25\" W x 32\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640703945-03959c5538e9c8",
+          "name": "Aria Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Corner_AgedBronze_48135-0001BlissLinen.jpg?v=1775739414",
+          "specs": {
+            "sku": "31308CUW-A",
+            "dimensions": "28\" L x 58.5\" W x 32\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-loveseat"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640707924-44ce1b3e32877",
+          "name": "Aria Sectional Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/31408CUW_AgedBronze_48135-0001BlissLinen.jpg?v=1776265929",
+          "specs": {
+            "sku": "31408CUW-SEC-A",
+            "dimensions": "113.5\" L x 85.5\" W x 32\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sectional-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640711920-cdafe515e8838",
+          "name": "Aria Sectional Loveseat - Right Arm Facing",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/31809RCUW_AgedBronze_48135-0001BlissLinen.jpg?v=1776265956",
+          "specs": {
+            "sku": "31809RCUW-A",
+            "dimensions": "57.50\" L x 28.00\" W x 32.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sectional-loveseat-right-arm-facing"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640715903-bc082e6ad3298",
+          "name": "Aria Sectional Loveseat - Left Arm Facing",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Loveseat-1arm_AgedBronze_48135-0001BlissLinen.jpg?v=1775739488",
+          "specs": {
+            "sku": "31809LCUW-A",
+            "dimensions": "57.50\" L x 28.00\" W x 32.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sectional-loveseat-left-arm-facing"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640719880-aeb883be3ee078",
+          "name": "Aria Sectional Center Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Armless_AgedBronze_48135-0001BlissLinen.jpg?v=1775739474",
+          "specs": {
+            "sku": "31509CUW-A",
+            "dimensions": "28.00\" W x 32.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-center-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640723900-e74c79ebf9ba98",
+          "name": "Aria Sectional Corner Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Club_AgedBronze_48135-0001BlissLinen.jpg?v=1775739461",
+          "specs": {
+            "sku": "31409CUW-A",
+            "dimensions": "28\" W x 32\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-sectional-corner-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640728337-eb9c5944d10fa",
+          "name": "Aria Ottoman",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Augusta-DS-Ottoman_AgedBronze_48135-0001BlissLinen.jpg?v=1775739446",
+          "specs": {
+            "sku": "31311CUW-A",
+            "dimensions": "23\" L x 28\" W x 18\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/aria-1/products/aria-ottoman"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778640773656-07db2dbe01aeb8",
+      "name": "Saratoga",
+      "types": [
+        {
+          "id": "type-1778640742510-ccae086bf7cb78",
+          "name": "Saratoga Dining Chair with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-1-cuw-a-saratoga-dining-chair-with-cushion-textured-black-bliss-linen.jpg?v=1775677646",
+          "specs": {
+            "sku": "8301-1-CUW-A",
+            "dimensions": "25\" L x 23\" W x 33\" H",
+            "seatHeight": "20\"",
+            "seatWidth": "21\"",
+            "seatDepth": "18\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-dining-chair-with-cushion"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640746672-aa1c70e8f7bf78",
+          "name": "Saratoga Sling Chaise Lounge with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-1-cuw-saratoga-sling-chaise-lounge-with-cushion-textured-white-dupione-celeste.jpg?v=1775677618",
+          "specs": {
+            "sku": "8301-3-CUW-A",
+            "dimensions": "76\" L x 27\" W x 14\" H",
+            "seatHeight": "19\"",
+            "seatWidth": "23\"",
+            "seatDepth": "44\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-sling-chaise-lounge-with-cushion"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640750702-857143c7861068",
+          "name": "Saratoga Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-3-sl-saratoga-sling-chaise-lounge-textured-white-white000.jpg?v=1775677784",
+          "specs": {
+            "sku": "8301-3-SL",
+            "dimensions": "76\" L x 27\" W x 14\" H",
+            "seatHeight": "14\"",
+            "seatWidth": "23\"",
+            "seatDepth": "44\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640754577-9ccb75674ca3b8",
+          "name": "Saratoga Bar Stool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-4-saratoga-bar-stool-without-cushion-textured-white.jpg?v=1775677716",
+          "specs": {
+            "sku": "8301-4",
+            "dimensions": "14\" W x 30\" H",
+            "seatHeight": "30\"",
+            "seatWidth": "14\"",
+            "seatDepth": "14\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-bar-stool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640758490-ca7fdba78bc3f8",
+          "name": "Saratoga 18\" Round Side Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-18aln-bo-saratoga-18-inch-round-solid-table-textured-black.jpg?v=1775677804",
+          "specs": {
+            "sku": "8301-18AL",
+            "dimensions": "18\" W x 17\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-18-round-solid-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640762278-2ac7a4f8e642a",
+          "name": "Saratoga 42\" Round Aluminum Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SaratogaRoundDiningTablewithMetalTop_TexturedWhite_standard-frame-221-black.jpg?v=1775677985",
+          "specs": {
+            "sku": "8301-42AL",
+            "dimensions": "42\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-round-aluminum-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640766281-466f794daeec88",
+          "name": "Saratoga 42\" Square Aluminum Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-4242aln-saratoga-42-inch-square-aluminum-table-textured-black-alt.jpg?v=1775677903",
+          "specs": {
+            "sku": "8301-4242AL",
+            "dimensions": "42\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-square-aluminum-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640770149-9eb4efe4380828",
+          "name": "Saratoga 42\" Square Acrylic Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8301-4242an-saratoga-42-inch-acrylic-table-textured-white_dcb57bf0-a290-44c4-bb1e-f70b5a1e23b5.jpg?v=1775677924",
+          "specs": {
+            "sku": "8301-4242A",
+            "dimensions": "42\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/saratoga/products/saratoga-42-square-acrylic-table"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778640886099-17f003c5674eb",
+      "name": "Curv",
+      "types": [
+        {
+          "id": "type-1778640784089-11240310971bf8",
+          "name": "Curv Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0404_WhiteFX401_standard-frame-221-black.jpg?v=1775569683",
+          "specs": {
+            "sku": "71203SL",
+            "dimensions": "83.5\" L x 28.5\" W x 30.25\" H",
+            "seatHeight": "14\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640787849-34570a45505f2",
+          "name": "Curv Sling Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0389_WhiteFX401_standard-frame-221-black.jpg?v=1775569703",
+          "specs": {
+            "sku": "71110SL",
+            "dimensions": "25.25\" L x 25.75\" W x 35\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-sling-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640791642-6c266092aaf6e",
+          "name": "Curv Sling Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1030_WhiteFX401_standard-frame-221-black.jpg?v=1775569668",
+          "specs": {
+            "sku": "71301SL",
+            "dimensions": "22.5\" L x 23\" W x 26\" H",
+            "seatHeight": "7\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "19\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-sling-beach-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640795563-d08ee311ff4bc8",
+          "name": "Curv Sling Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1021_WhiteFX401_standard-frame-221-black.jpg?v=1775569648",
+          "specs": {
+            "sku": "71401SL",
+            "dimensions": "23\" W x 47.5\" H",
+            "seatHeight": "29.5\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "18.25\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-sling-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640799542-5408a7d140f46",
+          "name": "Curv Vinyl Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1022_standard-frame-221-black_201White.jpg?v=1775569742",
+          "specs": {
+            "sku": "71401",
+            "dimensions": "23.00\" W x 47.50\" H",
+            "seatHeight": "29.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "18.25\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-vinyl-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640803430-8eed6814d6dd",
+          "name": "Curv Vinyl Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1027_standard-frame-221-black_201White.jpg?v=1775569790",
+          "specs": {
+            "sku": "71301",
+            "dimensions": "22.50\" L x 23.00\" W x 26.00\" H",
+            "seatHeight": "7.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "19.00\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-vinyl-beach-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640807319-d649fe1958b918",
+          "name": "Curv Vinyl Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71203_standard-frame-221-black_219Grey.jpg?v=1775830048",
+          "specs": {
+            "sku": "71203",
+            "dimensions": "83.50\" L x 28.50\" W x 30.25\" H",
+            "seatHeight": "14.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-vinyl-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640811430-c3d22d36ed2eb8",
+          "name": "Curv Vinyl Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0390_standard-frame-221-black_201White.jpg?v=1775569822",
+          "specs": {
+            "sku": "71110",
+            "dimensions": "25.25\" L x 25.75\" W x 35.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-vinyl-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640815298-9299230e05f5b8",
+          "name": "Curv Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71203AL_standard-frame-221-black.jpg?v=1776265868",
+          "specs": {
+            "sku": "71203AL",
+            "dimensions": "83.5\" L x 28.5\" W x 30.25\" H",
+            "seatHeight": "14\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640819091-c6fe412f6acf28",
+          "name": "Curv Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71401A_standard-frame-221-black_e5ec3f0f-fb8b-481b-9ef9-7e8814d326fc.jpg?v=1775830955",
+          "specs": {
+            "sku": "71401AL",
+            "dimensions": "23\" W x 47.5\" H",
+            "seatHeight": "29.5\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "18.25\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640823013-9cb35591a83b6",
+          "name": "Curv Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71110AL_standard-frame-221-black.jpg?v=1775829908",
+          "specs": {
+            "sku": "71110AL",
+            "dimensions": "22.25\" L x 22.75\" W x 35\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640827007-2084c6f593fe9",
+          "name": "Curv Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Curv-DS-Club_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1775567463",
+          "specs": {
+            "sku": "71310CUW-A",
+            "dimensions": "33\" W x 27.5\" H",
+            "seatHeight": "19\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640830992-eb07eaae604fb",
+          "name": "Curv Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71308CUW_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1776265672",
+          "specs": {
+            "sku": "71308CUW-A",
+            "dimensions": "33\" L x 96\" W x 27.5\" H",
+            "seatHeight": "19\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640834997-ea43c443811bc",
+          "name": "Curv Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71311CUW_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1776265736",
+          "specs": {
+            "sku": "71311CUW-A",
+            "dimensions": "59.5\" L x 29.5\" W x 34\" H",
+            "seatHeight": "17\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-loveseat"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640839142-ce59619e3a9fd",
+          "name": "Curv Farm Bench With Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Curv-DS-Bench_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1775568039",
+          "specs": {
+            "sku": "51510-FT-C-A",
+            "dimensions": "72\" L x 18\" W x 17\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/farm-bench-with-cushions"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640843077-a6a2610571adc8",
+          "name": "Curv Loveseat Sectional Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71316CUW_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1776266194",
+          "specs": {
+            "sku": "71316CUW-SEC-A",
+            "dimensions": "56.5\" L x 29.5\" W x 27\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-loveseat-sectional-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640847068-7684923cff4de",
+          "name": "Curv Armless Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71312CUW_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1776265773",
+          "specs": {
+            "sku": "71312CUW-A",
+            "dimensions": "59.5\" L x 29.5\" W x 34\" H",
+            "seatHeight": "17\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-loveseat-armless"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640850861-8ed334bdeb5f1",
+          "name": "Curv Loveseat - Right Arm Facing",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/71313CUW_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1776265818",
+          "specs": {
+            "sku": "71313CUW-RAF-A",
+            "dimensions": "59.5\" L x 29.5\" W x 34\" H",
+            "seatHeight": "17\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-loveseat-right-arm-facing"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640854863-621b1734999b78",
+          "name": "Curv Loveseat - Left Arm Facing",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Curv-DS-11_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1775567949",
+          "specs": {
+            "sku": "71313CUW-LAF-A",
+            "dimensions": "59.5\" L x 29.5\" W x 34\" H",
+            "seatHeight": "17\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-loveseat-left-arm-facing"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640858883-c51f6853ae7b48",
+          "name": "Curv Armless Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Curv-DS-Armless_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1775567786",
+          "specs": {
+            "sku": "71315CUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-armless-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640862827-c91584dc23501",
+          "name": "Curv Loveseat Corner Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Curv-DS-4_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1775567676",
+          "specs": {
+            "sku": "71314CUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-loveseat-corner-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640866560-dd2e61a249163",
+          "name": "Curv Ottoman",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/JJS_0768ottoman_standard-frame-221-black_CanvasWhite57003-0000.jpg?v=1775567989",
+          "specs": {
+            "sku": "71309CUW-A",
+            "dimensions": "23\" W x 10\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-ottoman"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640871016-b7e25547b3742",
+          "name": "Curv 84\" X 42\" Rectangular Aluminum Dining Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/curv-39x78-rectangular-dining-table-1200_standard-frame-221-black_f95d7379-687c-4ae7-807d-37a629931808.jpg?v=1775575404",
+          "specs": {
+            "sku": "54284AL",
+            "dimensions": "84\" L x 42\" W x 28\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-84-x-42-rectangular-aluminum-dining-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640874915-ad3a918fed204",
+          "name": "Curv 42\" Square Aluminum Dining Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Curv-Table-Square_standard-frame-221-black_44365f1e-532d-4562-ae7b-7eedbf137c49.jpg?v=1775576971",
+          "specs": {
+            "sku": "54242AL",
+            "dimensions": "42\" W x 28\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-42-square-aluminum-dining-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640878800-fec7f0026d808",
+          "name": "Curv 39\" Square Aluminum Dining Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/53939ALH_standard-frame-221-black.jpg?v=1775575176",
+          "specs": {
+            "sku": "53939AL",
+            "dimensions": "39\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/39-square-aluminum-dining-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640882598-0b842e3feb8ae",
+          "name": "Curv Farm Bench",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/51510-FT.jpg?v=1778596784",
+          "specs": {
+            "sku": "51510-FT",
+            "dimensions": "72\" L x 18\" W x 17\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/curv/products/curv-farm-bench"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778640928082-20aec3aa83a9e8",
+      "name": "Bel Air",
+      "types": [
+        {
+          "id": "type-1778640896770-7bc170cf6aa61",
+          "name": "Bel Air Arm Chair with Two Cushions",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-2-cuw-a-bel-air-arm-chair-with-two-cushions-textured-black-bliss-linen-front.jpg?v=1775672354",
+          "specs": {
+            "sku": "8201-2-CUW-A",
+            "dimensions": "24\" L x 26.5\" W x 36.5\" H",
+            "seatHeight": "19\"",
+            "seatWidth": "23.5\"",
+            "seatDepth": "21.5\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-arm-chair-with-two-cushions"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640900721-45e2dc53a732b8",
+          "name": "Bel Air Arm Chair with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-1-cuw-a-bel-air-arm-chair-with-cushion-textured-black-bliss-linen-front.jpg?v=1775672312",
+          "specs": {
+            "sku": "8201-1-CUW-A",
+            "dimensions": "24\" L x 26.5\" W x 36.5\" H",
+            "seatHeight": "15\"",
+            "seatWidth": "23.5\"",
+            "seatDepth": "21.5\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-arm-chair-with-cushion"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640904905-924bc558d0ed88",
+          "name": "Bel Air Sling Chaise Lounge with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-3-cuw-a-bel-air-sling-chaise-lounge-with-cushion-textured-black-bliss-linen.jpg?v=1775672007",
+          "specs": {
+            "sku": "8201-3-CUW-A",
+            "dimensions": "75.5\" L x 27.5\" W x 12.5\" H",
+            "seatHeight": "16.5\"",
+            "seatWidth": "27.5\"",
+            "seatDepth": "44\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-sling-chaise-lounge-with-cushion"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640908921-59a21b1c16d3c8",
+          "name": "Bel Air Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-3-sl-bel-air-sling-chaise-lounge-textured-white-blackx04_b8ef7032-2a41-4975-ab27-ee20d1a04bb9.jpg?v=1775672225",
+          "specs": {
+            "sku": "8201-3-SL",
+            "dimensions": "75.5\" L x 27.5\" W x 12.5\" H",
+            "seatHeight": "12.5\"",
+            "seatWidth": "23.5\"",
+            "seatDepth": "44\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640912905-f6874e7addebb8",
+          "name": "Bel Air 42\" Round Aluminum Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-42aln-bel-air-42-inch-round-aluminum-table-with-umbrella-hole-textured-black.jpg?v=1775673634",
+          "specs": {
+            "sku": "8201-42AL",
+            "dimensions": "42\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-42-round-aluminum-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640916694-0cfec547b78f18",
+          "name": "Bel Air 42\" Round Acrylic Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-42an-bel-air-42-inch-round-acrylic-table-textured-black.jpg?v=1775673579",
+          "specs": {
+            "sku": "8201-42A",
+            "dimensions": "42\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-42-round-acrylic-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640920692-d3f61c531fd4a",
+          "name": "Bel Air 42\" Square Acrylic Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-4242an-bel-air-42-inch-square-acrylic-table-with-umbrella-hole-textured-black-alt.jpg?v=1775673615",
+          "specs": {
+            "sku": "8201-4242A",
+            "dimensions": "42\" W x 30\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-42-square-acrylic-table"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640924573-261971f2238ea8",
+          "name": "Bel Air 18\" Acrylic Side Table",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8201-18an-bel-air-18-inch-round-acrylic-table-textured-white.jpg?v=1775673654",
+          "specs": {
+            "sku": "8201-18A",
+            "dimensions": "18\" W x 18\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/bel-air/products/bel-air-18-round-acrylic-table"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778640954404-1d1fefd9eec14",
+      "name": "Essential",
+      "types": [
+        {
+          "id": "type-1778640938816-021bf8095892",
+          "name": "Essential Customizable Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8401-3-a-essential-customizable-lounge-with-increase-arms-textured-black-canvas-canvas.jpg?v=1775829126",
+          "specs": {
+            "sku": "8401-3A-A",
+            "dimensions": "76\" L x 30\" W x 12\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "26\"",
+            "seatDepth": "41\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/essential/products/essential-customizable-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640942814-1c0f367d743908",
+          "name": "Essential Armless Customizable Lounge with Wooden Accent",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8401-3nw__textured-black__canvas-antique-beige.jpg?v=1775572422",
+          "specs": {
+            "sku": "8401-3NW-A",
+            "dimensions": "76\" L x 30\" W x 12\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "26\"",
+            "seatDepth": "41\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/essential/products/essential-armless-customizable-lounge-with-wooden-accent"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640946795-2fc4ac63a0da3",
+          "name": "Essential Armless Customizable Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8401-3N_textured-black_canvas-antique-beige.jpg?v=1776436598",
+          "specs": {
+            "sku": "8401-3N-A",
+            "dimensions": "76\" L x 30\" W x 12\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "26\"",
+            "seatDepth": "41\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/essential/products/essential-armless-customizable-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640950900-de2c5bdbcfb05",
+          "name": "Essential Customizable Lounge with Wooden Accent",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/8401-3w-a-essential-customizable-lounge-with-wooden-accent-with-rectangular-arms-with-wheels-textured-black-canvas-canvas.jpg?v=1775829293",
+          "specs": {
+            "sku": "8401-3WA-A",
+            "dimensions": "76\" L x 30\" W x 12\" H",
+            "seatHeight": "12\"",
+            "seatWidth": "26\"",
+            "seatDepth": "41\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/essential/products/essential-customizable-lounge-with-wooden-accent"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778640992104-d70d3bc36be4a",
+      "name": "Astoria",
+      "types": [
+        {
+          "id": "type-1778640964745-25d0f7cdc644a",
+          "name": "Astoria Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/1-20-2024_Admiral_Curve_and_sectional-23980_2__Seabreeze_TexturedBlack.jpg?v=1777316944",
+          "specs": {
+            "sku": "91203SL",
+            "dimensions": "77\" L x 26\" W x 16.5\" H",
+            "seatHeight": "16.5\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640968727-5b2f06c7c00578",
+          "name": "Astoria Sling Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/1-20-2024_Admiral_Curve_and_sectional-23984_2__Seabreeze_standard-frame-221-black.jpg?v=1777317830",
+          "specs": {
+            "sku": "91109SL",
+            "dimensions": "20\" L x 26.5\" W x 35.5\" H",
+            "seatHeight": "15.5\"",
+            "seatWidth": "18\"",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-sling-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640972751-306ad69d2a31f8",
+          "name": "Astoria Sling Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/barstool_Seabreeze_standard-frame-221-black.jpg?v=1777317797",
+          "specs": {
+            "sku": "91401SL",
+            "dimensions": "20\" L x 22\" W x 46.5\" H",
+            "seatHeight": "28.5\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-sling-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640976502-5956186427fb2",
+          "name": "Astoria Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/1-5-2023_Admiral-23728_standard-frame-221-black_48103-0000CastOcean.jpg?v=1777316673",
+          "specs": {
+            "sku": "91310CUW-A",
+            "dimensions": "23.5\" L x 29.5\" W x 30\" H",
+            "seatHeight": "10\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640980604-4450005ad9f45",
+          "name": "Astoria Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/1-5-2023_Admiral-23747_standard-frame-221-black_48103-0000CastOcean.jpg?v=1777316864",
+          "specs": {
+            "sku": "91309CUW-A",
+            "dimensions": "23.5\" L x 93.5\" W x 30\" H",
+            "seatHeight": "10\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640984589-0f1cba2435591",
+          "name": "Astoria Loveseat",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/1-5-2023_Admiral-23735_standard-frame-221-black_48103-0000CastOcean.jpg?v=1777316885",
+          "specs": {
+            "sku": "91308CUW-A",
+            "dimensions": "23.5\" L x 56\" W x 30\" H",
+            "seatHeight": "10\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-loveseat"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778640988589-39a468e5d1ee78",
+          "name": "Astoria Ottoman",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/1-5-2023_Admiral-23673_standard-frame-221-black_48103-0000CastOcean.jpg?v=1777316810",
+          "specs": {
+            "sku": "91311CUW-A",
+            "dimensions": "23\" W x 10\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/astoria/products/astoria-ottoman"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778641105963-73870ac5513218",
+      "name": "Luxe",
+      "types": [
+        {
+          "id": "type-1778641002919-3b1d57ab68e7d8",
+          "name": "Luxe Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Estancia-Chaise_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775572348",
+          "specs": {
+            "sku": "51205SL-NW",
+            "dimensions": "81.75\" L x 28.5\" W x 30.25\" H",
+            "seatHeight": "13\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641006918-a6eeaa95fd61f",
+          "name": "Luxe Sling Chaise Lounge with Wheels",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Aria-Estancia-Chaise_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775572348",
+          "specs": {
+            "sku": "51205SL-WW",
+            "dimensions": "81.75\" L x 28.5\" W x 30.25\" H",
+            "seatHeight": "13\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-chaise-lounge-with-wheels"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641010697-96f71e16095bf",
+          "name": "Luxe Sling Double Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0470_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570399",
+          "specs": {
+            "sku": "51204SL",
+            "dimensions": "81.75\" L x 49\" W x 30.25\" H",
+            "seatHeight": "13\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-double-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641014764-5626b8cc7e28c8",
+          "name": "Luxe Sling Double Chaise Lounge With Cabana",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/51208SL_WhiteFX401_TexturedStormGrey_ba52002e-5dd9-4ca1-8ee8-729c2994b91f.jpg?v=1775831683",
+          "specs": {
+            "sku": "51208SL",
+            "dimensions": "81.75\" L x 49\" W x 90\" H",
+            "seatHeight": "13\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-double-chaise-lounge-with-cabana"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641018688-332681e7ee8e8",
+          "name": "Luxe Sling Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_6383_MetallicaPlatinum_standard-frame-201-white_51b4a9c4-6d54-4102-9f18-c801476437c1.jpg?v=1775570557",
+          "specs": {
+            "sku": "51109SL",
+            "dimensions": "25.25\" L x 25.75\" W x 35\" H",
+            "seatHeight": "17.25\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641022677-d043616a86d598",
+          "name": "Luxe Sling Armless Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_7585_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570587",
+          "specs": {
+            "sku": "51108SL",
+            "dimensions": "18.75\" L x 22.5\" W x 35\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-armless-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641026793-c0819247c80698",
+          "name": "Luxe Sling Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/AriaBarstool2_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570162",
+          "specs": {
+            "sku": "51402SL",
+            "dimensions": "34\" L x 23.75\" W x 47\" H",
+            "seatHeight": "30\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641030780-c807ffb18a0998",
+          "name": "Luxe Sling Armless Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_7586_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570229",
+          "specs": {
+            "sku": "51401SL",
+            "dimensions": "21.25\" L x 19.25\" W x 47\" H",
+            "seatHeight": "30\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-armless-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641034766-1e33b02d6bb35",
+          "name": "Luxe Sling Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_4780-2_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570359",
+          "specs": {
+            "sku": "51302SL",
+            "dimensions": "21\" L x 25\" W x 34\" H",
+            "seatHeight": "6.5\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-beach-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641038562-087d2fbc921678",
+          "name": "Luxe Sling Three Seat Bench",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0009-3_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570465",
+          "specs": {
+            "sku": "51111SL",
+            "dimensions": "25.25\" L x 77.25\" W x 35\" H",
+            "seatHeight": "17.25\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-three-seat-bench"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641042533-69bf8effe2349",
+          "name": "Luxe Sling Two Seat Bench",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0002_MetallicaPlatinum_standard-frame-201-white.jpg?v=1775570520",
+          "specs": {
+            "sku": "51110SL",
+            "dimensions": "25.25\" L x 51.5\" W x 35\" H",
+            "seatHeight": "17.25\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sling-two-seat-bench"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641046523-e3a55f04cf9d78",
+          "name": "Luxe Cross Weave Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Luxe-51205CW-Lounge_standard-frame-201-white_250Charcoal.jpg?v=1775571079",
+          "specs": {
+            "sku": "51205CW-NW",
+            "dimensions": "81.75\" L x 28.50\" W x 30.25\" H",
+            "seatHeight": "13.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-cross-weave-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641050548-b729187a671968",
+          "name": "Luxe Cross Weave Chaise Lounge with Wheels",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Luxe-51205CW-Lounge_standard-frame-201-white_250Charcoal_9da7c9d3-ca30-42f2-822b-4a2469a37696.jpg?v=1775571449",
+          "specs": {
+            "sku": "51205CW-WW",
+            "dimensions": "81.75\" L x 28.50\" W x 30.25\" H",
+            "seatHeight": "13.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-cross-weave-chaise-lounge-with-wheels"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641054319-f73189477bc8a",
+          "name": "Luxe Cross Weave Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Luxe-51109CW-DiningChair_standard-frame-201-white_250Charcoal.jpg?v=1775571052",
+          "specs": {
+            "sku": "51109CW",
+            "dimensions": "25.25\" L x 25.75\" W x 35.00\" H",
+            "seatHeight": "17.25\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-cross-weave-dining-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641058348-b04eabe0ac35d8",
+          "name": "Luxe Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0980_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571880",
+          "specs": {
+            "sku": "51309CUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641062326-b4cbe7e769cda",
+          "name": "Luxe Chaise Lounge with Cushion",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/LuxeSlingLoungewithCushion_GlossyWhite_CanvasWhite_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571930",
+          "specs": {
+            "sku": "51205CUW-A",
+            "dimensions": "81.75\" L x 28.5\" W x 30.25\" H",
+            "seatHeight": "13\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-chaise-lounge-with-cushion"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641066320-5b59d4bfb935a8",
+          "name": "Luxe Sectional Sofa",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/51911CUW_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1776268221",
+          "specs": {
+            "sku": "51911CUW-A",
+            "dimensions": "88.5\" L x 29.5\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sectional-sofa"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641070420-010063dd244eb",
+          "name": "Luxe Sectional - Right Arm Facing Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/51609RCUW_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1776268372",
+          "specs": {
+            "sku": "51609RCUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sectional-right-arm-facing-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641074521-447fb83c4c44e",
+          "name": "Luxe Sectional - Left Arm Facing Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/JJS_3585_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775572143",
+          "specs": {
+            "sku": "51609LCUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sectional-left-arm-facing-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641078494-043898828ec398",
+          "name": "Luxe Armless Center Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0997_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571852",
+          "specs": {
+            "sku": "51509CUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-armless-center-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641082483-d078b7207f6f78",
+          "name": "Luxe Sectional Corner Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0986_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775572125",
+          "specs": {
+            "sku": "51409CUW-A",
+            "dimensions": "29.5\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-sectional-corner-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641086488-9c116890a25a48",
+          "name": "Luxe Ottoman",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1003_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571828",
+          "specs": {
+            "sku": "51709CUW-A",
+            "dimensions": "29.5\" W x 18\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-ottoman"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641090473-3d68a6e202be8",
+          "name": "Luxe Curved Sectional Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_0975_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571653",
+          "specs": {
+            "sku": "51809CUW-A",
+            "dimensions": "30.75\" L x 74\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-curved-sectional-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641094474-bad2c83756ade8",
+          "name": "Luxe Curved Sectional Corner Unit",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1004_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571534",
+          "specs": {
+            "sku": "51909CUW-A",
+            "dimensions": "28.75\" L x 40\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-curved-sectional-corner-unit"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641098469-92d0342ad43218",
+          "name": "Luxe Curved Ottoman",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_1015_TexturedStormGrey_48135-0001BlissLinen.jpg?v=1775571503",
+          "specs": {
+            "sku": "51910CUW-A",
+            "dimensions": "30.5\" L x 41.75\" W x 27\" H",
+            "seatHeight": "18\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-curved-ottoman"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641102463-83ffaf57fa8ed8",
+          "name": "Luxe Daybed",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/51210CUW__textured-storm-grey__bliss-linen.jpg?v=1775571468",
+          "specs": {
+            "sku": "51210CUW-A",
+            "dimensions": "96\" W x 30.25\" H",
+            "seatHeight": "18.75\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/luxe/products/luxe-daybed"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778641124347-db8117fa2b8058",
+      "name": "Alante",
+      "types": [
+        {
+          "id": "type-1778641116811-f1d38e0356a76",
+          "name": "Alante Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_2650RET_WhiteFX401_TexturedSilver.jpg?v=1775743846",
+          "specs": {
+            "sku": "42205SL",
+            "dimensions": "77.00\" L x 29.00\" W x 30.00\" H",
+            "seatHeight": "13.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/alante/products/alante-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641120840-d7474aaa271ef",
+          "name": "Alante Sling Dining Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_2641RET_WhiteFX401_TexturedSilver.jpg?v=1775504179",
+          "specs": {
+            "sku": "42104SL",
+            "dimensions": "32.00\" L x 23.50\" W x 32.50\" H",
+            "seatHeight": "17.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "18.00\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/alante/products/alante-sling-dining-chair"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778641216652-e98ad4b8b3a848",
+      "name": "Tuscany",
+      "types": [
+        {
+          "id": "type-1778641134926-e2c437dc04d9b",
+          "name": "Tuscany Dining Arm Chair || Wicker Weave",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-5625-BL-JV__fs-color--black-java-weave.jpg?v=1777648614",
+          "specs": {
+            "sku": "FSAL-5625-BL-JV",
+            "dimensions": "22.50\" W x 33.00\" H",
+            "seatHeight": "17.00\"",
+            "seatWidth": "16.00\"",
+            "seatDepth": "17.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-dining-arm-chair-wicker-weave"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641138796-e016f9b2a78a18",
+          "name": "Tuscany Armless Dining Chair || Wicker Weave",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-5625-0-MS-JV__fs-color--matte-silver-java-weave.jpg?v=1777648386",
+          "specs": {
+            "sku": "FSAL-5625-0-MS-JV",
+            "dimensions": "21.50\" L x 19.00\" W x 33.00\" H",
+            "seatHeight": "17.00\"",
+            "seatWidth": "16.00\"",
+            "seatDepth": "16.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-armless-dining-chair-wicker-weave"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641142686-1587762eab722",
+          "name": "Tuscany Dining Arm Chair || Teak",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-5700A-Tuscany-Dining-Arm-Chair-Teak-Gray-Gray.jpg?v=1775321509",
+          "specs": {
+            "sku": "FSAL-5700A",
+            "dimensions": "22.50\" W x 32.50\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "16.50\"",
+            "seatDepth": "17.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-dining-arm-chair-teak"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641146686-02a7f3ee6c0d78",
+          "name": "Tuscany Armless Dining Chair || Teak",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-5602-0-GY-GY-Tuscany-Armless-Dining-Arm-Chair-Teak-Gray-Gray_760f857d-a68d-44fb-94ee-45adb4a46a59.jpg?v=1775321488",
+          "specs": {
+            "sku": "FSAL-5602-0-GY-GY",
+            "dimensions": "21.50\" L x 19.00\" W x 33.00\" H",
+            "seatHeight": "17.00\"",
+            "seatWidth": "16.50\"",
+            "seatDepth": "16.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-armless-dining-arm-chair-teak"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641150674-d3af1b891f2bb",
+          "name": "Tuscany Arm Bar Stool || Wicker Weave",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSBAL-5725A-AN-JV__fs-color--anthracite-java-weave.jpg?v=1777647974",
+          "specs": {
+            "sku": "FSBAL-5725A-AN-JV",
+            "dimensions": "22.50\" L x 21.50\" W x 42.50\" H",
+            "seatHeight": "28.00\"",
+            "seatWidth": "17.00\"",
+            "seatDepth": "18.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-arm-bar-stool-wicker-weave"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641154595-4a02c536148bc",
+          "name": "Tuscany Arm Bar Stool || Teak",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSBAL-5602-MS-NA__fs-color--matte-silver-natural.jpg?v=1777648161",
+          "specs": {
+            "sku": "FSBAL-5602-MS-NA",
+            "dimensions": "22.00\" L x 21.50\" W x 46.00\" H",
+            "seatHeight": "30.00\"",
+            "seatWidth": "16.00\"",
+            "seatDepth": "16.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-arm-bar-stool-teak"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641158773-83550435f12c98",
+          "name": "Tuscany Armless Bar Stool || Teak",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSBAL-5602-0-MS-NA__fs-color--matte-silver-natural.jpg?v=1777648040",
+          "specs": {
+            "sku": "FSBAL-5602-0-MS-NA",
+            "dimensions": "21.00\" L x 17.50\" W x 46.00\" H",
+            "seatHeight": "30.00\"",
+            "seatWidth": "16.50\"",
+            "seatDepth": "16.00\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-bar-stool-teak"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641162660-85827499aba22",
+          "name": "Tuscany Dining Chair, Tall || Wicker Weave",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSBAL-5625-BL-JV__fs-color--black-java-weave.jpg?v=1777648337",
+          "specs": {
+            "sku": "FSBAL-5625-BL-JV",
+            "dimensions": "21.50\" L x 19.00\" W x 17.00\" H",
+            "seatHeight": "30.00\"",
+            "seatWidth": "16.00\"",
+            "seatDepth": "16.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-dining-chair-tall-wicker-weave"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641166557-c38d438ab460d8",
+          "name": "Tuscany Armless Dining Chair, Tall || Wicker Weave",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSBAL-5625-0-BL-JV__fs-color--black-java-weave.jpg?v=1777648294",
+          "specs": {
+            "sku": "FSBAL-5625-0-BL-JV",
+            "dimensions": "21.50\" L x 19.00\" W x 17.00\" H",
+            "seatHeight": "30.00\"",
+            "seatWidth": "16.00\"",
+            "seatDepth": "16.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-armless-dining-chair-tall-wicker-weave"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641170431-2b5b744bc21748",
+          "name": "Tuscany Armless Dining Chair || Aluminum",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-5000S-BZ__fs-color--bronze.jpg?v=1777648554",
+          "specs": {
+            "sku": "FSAL-5000S-BZ",
+            "dimensions": "21.00\" L x 19.00\" W x 32.50\" H",
+            "seatHeight": "17.50\"",
+            "seatWidth": "15.50\"",
+            "seatDepth": "16.00\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-armless-dining-chair-aluminum"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641174346-2caa61ae68bb18",
+          "name": "Tuscany 78″ Bench || Teak",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-5602-3-BL-NA__fs-color--black-natural.jpg?v=1777648492",
+          "specs": {
+            "sku": "FSAL-5602-3-BL-NA",
+            "dimensions": "78.50\" L x 24.00\" W x 33.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "78.50\"",
+            "seatDepth": "16.50\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-78-bench-teak"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641178225-c24f098b7c3f38",
+          "name": "Tuscany Table Base 18\" W X 29\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-2400-18X3-BL-Tuscany-Table-Base-18-W-X-29-H-Aluminum-Black.jpg?v=1777640184",
+          "specs": {
+            "sku": "FSAL-2400-18X3-BL",
+            "dimensions": "18.00\" W x 29.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-table-base-18-w-x-29-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641182086-2c76e58527f5c",
+          "name": "Tuscany Square Table Base 18\" W X 29\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-250018x3-MS.jpg?v=1777639310",
+          "specs": {
+            "sku": "FSAL-250018x3-MS",
+            "dimensions": "18.00\" W x 29.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-square-table-base-18-w-x-29-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641185995-b47de4b488ff58",
+          "name": "Tuscany Bar Table Base 18\" W X 42\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-2400-18X3BH-BL-Tuscany-Bar-Table-Base--18-W-X-42-H-Aluminum-Black_5be30c79-2274-49c9-91a2-ceaafdd00f56.jpg?v=1777640029",
+          "specs": {
+            "sku": "FSAL-2400-18X3BH-BL",
+            "dimensions": "18.00\" W x 42.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-bar-table-base-18-w-x-42-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641189903-da817285147f38",
+          "name": "Tuscany Table Base 19\" W x 28\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-1805-BL-Tuscany-Table-Base-19-W-x-28-H-Aluminum-Black_f7f85096-5518-4fd2-a216-d3dbcb4c44db.jpg?v=1777639752",
+          "specs": {
+            "sku": "FSAL-1805-BL",
+            "dimensions": "19.00\" W x 28.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-table-base-19-w-x-28-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641193701-cf171143d7607",
+          "name": "Tuscany Bar Table Base 19\" W X 41\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-1805BH-MS-Tuscany-Bar-Table-Base-19-W-X-41-H-Aluminum-Matte-Silver.jpg?v=1777639703",
+          "specs": {
+            "sku": "FSAL-1805BH-MS",
+            "dimensions": "19.00\" W x 41.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-bar-table-base-19-w-x-41-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641197570-8ba64b3c6044",
+          "name": "Tuscany Bar Table Base 20\" W X 42\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-1316BH-MS-Tuscany-Table-Base-24-W-X-28-H-Aluminun-Matte-Silver.jpg?v=1777639869",
+          "specs": {
+            "sku": "FSAL-1316BH-MS",
+            "dimensions": "20.00\" W x 42.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-bar-table-base-20-w-x-42-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641201467-55a422222ab448",
+          "name": "Tuscany Cross Table Base 23\" W X 29\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-260023x3-BZ.jpg?v=1777638993",
+          "specs": {
+            "sku": "FSAL-260023x3-BZ",
+            "dimensions": "23.00\" W x 29.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-cross-table-base-23-w-x-29-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641205360-afe278e3c0fdd",
+          "name": "Tuscany Table Base 23\" W X 29\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-240023X3-BL-Tuscany-Table-Base--23-W-X-29-H-Aluminum-Black_203cc643-279d-44dd-b4f6-5f881a9ba39b.jpg?v=1777640298",
+          "specs": {
+            "sku": "FSAL-240023X3-BL",
+            "dimensions": "23.00\" W x 29.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-table-base-23-w-x-29-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641209243-d7c8fe5b1db32",
+          "name": "Tuscany Bar Table Base 23\" W X 42\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-240023X3BH-MS-Tuscany-Bar-Table-Base-23-W-X-42-H-Aluminum-Matte-Silver.jpg?v=1777640240",
+          "specs": {
+            "sku": "FSAL-240023X3BH-MS",
+            "dimensions": "23.00\" W x 42.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-bar-table-base-23-w-x-42-h"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641213147-621ba434623d58",
+          "name": "Tuscany Table Base 24\" W X 28\" H",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/FSAL-1316-BL-Tuscany-Table-Base-24-W-X-28-H-Aluminum-Black_61814029-5464-4d7a-beea-50a0d988700b.jpg?v=1777639911",
+          "specs": {
+            "sku": "FSAL-1316-BL",
+            "dimensions": "24.00\" W x 28.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/tuscany/products/tuscany-table-base-24-w-x-28-h"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778641272892-fb05345b4289a8",
+      "name": "Classic",
+      "types": [
+        {
+          "id": "type-1778641227999-ff507ae9829f28",
+          "name": "Classic Sling Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_2651_MetallicaPlatinum_Textured-white.jpg?v=1775767530",
+          "specs": {
+            "sku": "11203SL",
+            "dimensions": "76\" L x 26\" W x 30\" H",
+            "seatHeight": "13\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-sling-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641232117-97dcb1020c28",
+          "name": "Classic Sling Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/DSC_2636_MetallicaPlatinum_Textured-white_0f1d4ee6-acfe-4c83-9683-bf086ac1ae42.jpg?v=1775767428",
+          "specs": {
+            "sku": "11110SL",
+            "dimensions": "31.5\" L x 23\" W x 32.5\" H",
+            "seatHeight": "17\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-sling-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641236404-776c903fc0df68",
+          "name": "Classic Sling Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SlingBeach_MetallicaPlatinum_Textured-white.jpg?v=1775767398",
+          "specs": {
+            "sku": "11302SL",
+            "dimensions": "37\" L x 23\" W x 33\" H",
+            "seatHeight": "7.5\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-sling-beach-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641240507-8380a6c661ef78",
+          "name": "Classic Vinyl Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/Classic-BayHill-VinylChaise_Textured-white_250Charcoal.jpg?v=1775765722",
+          "specs": {
+            "sku": "11203",
+            "dimensions": "74.50\" L x 26.00\" W x 30.00\" H",
+            "seatHeight": "13.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-vinyl-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641244610-271c2ba7e0ce1",
+          "name": "Classic Cross Weave Chaise Lounge",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/CrossweaveChaise_Textured-white_250Charcoal_10318719-e3ab-45cb-bb36-58161d93e745.jpg?v=1775766467",
+          "specs": {
+            "sku": "11203CW",
+            "dimensions": "74.50\" L x 26.00\" W x 30.00\" H",
+            "seatHeight": "13.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-cross-weave-chaise-lounge"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641248782-13ad836e62b89",
+          "name": "Classic Vinyl Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/VinylChair_Textured-white_250Charcoal.jpg?v=1775766699",
+          "specs": {
+            "sku": "11110",
+            "dimensions": "27.00\" L x 23.00\" W x 35.00\" H",
+            "seatHeight": "17.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17.00\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-vinyl-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641252785-5ee25cd4a7dc8",
+          "name": "Classic Cross Weave Arm Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/CrossweaveChair_Textured-white_250Charcoal.jpg?v=1775766774",
+          "specs": {
+            "sku": "11110CW",
+            "dimensions": "27.00\" L x 23.00\" W x 35.00\" H",
+            "seatHeight": "17.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17.00\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-cross-weave-arm-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641256766-51c5823914f66",
+          "name": "Classic Vinyl Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/VinylBarstool_Textured-white_250Charcoal.jpg?v=1775766089",
+          "specs": {
+            "sku": "11402",
+            "dimensions": "23.50\" L x 23.00\" W x 45.00\" H",
+            "seatHeight": "29.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "22.00\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-vinyl-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641260972-653f26d431ff78",
+          "name": "Classic Cross Weave Barstool",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/CrossweaveBarstool_Textured-white_250Charcoal.jpg?v=1775766601",
+          "specs": {
+            "sku": "11402CW",
+            "dimensions": "23.50\" L x 23.00\" W x 45.00\" H",
+            "seatHeight": "29.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "22.00\"",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-cross-weave-barstool"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641265490-7d56bc9358043",
+          "name": "Classic Vinyl Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/VinylBeach_standard-frame-201-white_250Charcoal.jpg?v=1775765862",
+          "specs": {
+            "sku": "11302",
+            "dimensions": "34.50\" L x 23.00\" W x 33.50\" H",
+            "seatHeight": "6.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17.00\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-vinyl-beach-chair"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641269379-abf2a76736621",
+          "name": "Classic Cross Weave Beach Chair",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/CrossweaveBeach_Textured-white_250Charcoal.jpg?v=1775766531",
+          "specs": {
+            "sku": "11302CW",
+            "dimensions": "34.50\" L x 23.00\" W x 33.50\" H",
+            "seatHeight": "6.50\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "17.00\"",
+            "stackable": "Yes",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/classic/products/classic-cross-weave-beach-chair"
+          },
+          "parts": []
+        }
+      ]
+    },
+    {
+      "id": "model-1778641374755-4bbf218afd2fa",
+      "name": "Kiawah",
+      "types": [
+        {
+          "id": "type-1778641284216-6ae076742f9a18",
+          "name": "Kiawah Arm Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-21-STOCK--Kiawah-Deep-Seating-Cushion-Club-Chair-material-driftwood-alt1_27b0cb21-eea3-48d3-9cc6-25fae3a3c8d4.jpg?v=1777645936",
+          "specs": {
+            "sku": "SW3501-21-STOCK",
+            "dimensions": "35.00\" L x 30.50\" W x 38.00\" H",
+            "seatHeight": "18.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-arm-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641288325-9255bc07616d8",
+          "name": "Kiawah Swivel Rocking Arm Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-21SR-STOCK--Kiawah-Deep-Seating-Cushion-Swivel-Rocking-Club-Chair-material-driftwood-alt2_c4c28626-c89a-41a5-a151-4181223aea30.jpg?v=1777645756",
+          "specs": {
+            "sku": "SW3501-21SR-STOCK",
+            "dimensions": "35.00\" L x 30.50\" W x 38.00\" H",
+            "seatHeight": "19.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-swivel-rocking-arm-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641292618-78eb7900bd9e18",
+          "name": "Kiawah Chaise Lounge || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-9-STOCK--Kiawah-Deep-Seating-Cushion-Chaise-Lounge-material-driftwood-alt1_736a49a8-229e-4de1-ae2e-f9c2d498786b.jpg?v=1777646355",
+          "specs": {
+            "sku": "SW3501-9-STOCK",
+            "dimensions": "76.00\" L x 33.00\" W x 38.00\" H",
+            "seatHeight": "16.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-chaise-lounge-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641296822-68edb704a60e8",
+          "name": "Kiawah Double Chaise Lounge || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-99-STOCK.jpg?v=1777646300",
+          "specs": {
+            "sku": "SW3501-99-STOCK",
+            "dimensions": "76.00\" L x 57.00\" W x 38.00\" H",
+            "seatHeight": "16.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-double-chaise-lounge-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641300795-e141bfe28ef3f8",
+          "name": "Kiawah Sofa || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-23-STOCK--Kiawah-Deep-Seating-Cushion-Sofa--material-driftwood-alt1_62a3a4f2-970a-45f8-954c-8e2d960dee32.jpg?v=1777646751",
+          "specs": {
+            "sku": "SW3501-23-STOCK",
+            "dimensions": "35.00\" L x 78.00\" W x 38.00\" H",
+            "seatHeight": "19.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-sofa-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641304802-2693875e7f96a8",
+          "name": "Kiawah Loveseat || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-22-STOCK--Kiawah-Deep-Seating-Cushion-Loveseat--material-driftwood-alt1_022fce1d-d242-492d-9a5f-128327fccf68.jpg?v=1777646843",
+          "specs": {
+            "sku": "SW3501-22-STOCK",
+            "dimensions": "35.00\" L x 56.00\" W x 38.00\" H",
+            "seatHeight": "19.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-loveseat-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641308780-c7face00512ab8",
+          "name": "Kiawah Daybed || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-DB-STOCK--Kiawah-Deep-Seating-Cushion-Daybed--material-driftwood-alt1_1707089c-41ff-4df7-8401-c97b1295f574.jpg?v=1776968650",
+          "specs": {
+            "sku": "SW3501-DB-STOCK",
+            "dimensions": "80.00\" L x 75.00\" W x 85.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-daybed-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641312775-805208c276623",
+          "name": "Kiawah Daybed || Dark Grey",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3801-DB-Dark-Grey-Daybed_9e2809f3-0bb8-462b-9e6d-ffda4e1b3cc6.jpg?v=1776968482",
+          "specs": {
+            "sku": "SW3801-DB-STOCK",
+            "dimensions": "80.00\" L x 75.00\" W x 85.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-daybed-dark-grey"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641316765-ba0ccdfb485198",
+          "name": "Kiawah Daybed || White",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW4801-DB-White-Daybed.jpg?v=1776968180",
+          "specs": {
+            "sku": "SW4801-DB-STOCK",
+            "dimensions": "80.00\" L x 75.00\" W x 85.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-daybed-white"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641320667-09b89667cc9cb8",
+          "name": "Kiawah 3 Piece Sectional Sofa || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-SEC-STOCK--Kiawah-Deep-Seating--Cushion-3-Piece-Sectional-Set-material-driftwood-alt1_55c425cb-0d8f-4849-9921-5e2d06eed666.jpg?v=1777646068",
+          "specs": {
+            "sku": "SW3501-SEC-STOCK",
+            "dimensions": "90.00\" L x 26.00\" W x 38.00\" H",
+            "seatHeight": "19.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-3-piece-sectional-sofa-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641324556-23ce2720f44ac8",
+          "name": "Kiawah Sectional Armless Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-AC-STOCK--Kiawah-Deep-Seating-Cushion-Sectional-Armless-Club-Chair--material-driftwood-alt1_b2a11555-a4d0-42af-85a6-512a348c62d6.jpg?v=1777645615",
+          "specs": {
+            "sku": "SW3501-AC-STOCK",
+            "dimensions": "35.75\" L x 26.00\" W x 35.75\" H",
+            "seatHeight": "19.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-sectional-armless-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641328450-6c98d68ddce5f",
+          "name": "Kiawah Ottoman || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-OTT-STOCK--Kiawah-Deep-Seating--Cushion-Ottoman-material-dfriftwood-alt1_1e060259-00b0-44d4-9f9c-c9c0a957abb5.jpg?v=1777646149",
+          "specs": {
+            "sku": "SW3501-OTT-STOCK",
+            "dimensions": "20.00\" L x 26.00\" W x 18.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-ottoman-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641332337-4b265c08e11428",
+          "name": "Kiawah Dining Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-1-STOCK--Kiawah-Deep-Seating-Cushion-Dining-Chair-material-driftwood-alt3_3c4449a5-70a2-458a-9c04-93de22cb853d.jpg?v=1777647191",
+          "specs": {
+            "sku": "SW3501-1-STOCK",
+            "dimensions": "25.00\" W x 37.00\" H",
+            "seatHeight": "20.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-dining-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641336230-2214380b55428",
+          "name": "Kiawah Armless Dining Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-1A-STOCK--Kiawah-Deep-Seating-Cushion-Armless-Dining-Chair-material-driftwood-alt1.jpg?v=1775318065",
+          "specs": {
+            "sku": "SW3501-1A-STOCK",
+            "dimensions": "25.00\" L x 20.00\" W x 37.00\" H",
+            "seatHeight": "20.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-armless-dining-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641340122-489d18435e91a",
+          "name": "Kiawah Barstool || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-7B-STOCK--Kiawah-Deep-Seating-Cushion-Barstool-material-driftwood-alt1_8687e3ab-1bad-4847-8481-320ba1014b22.jpg?v=1777646457",
+          "specs": {
+            "sku": "SW3501-7B-STOCK",
+            "dimensions": "23.00\" L x 20.00\" W x 44.00\" H",
+            "seatHeight": "29.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-barstool-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641344011-7c79982de11a6",
+          "name": "Kiawah Counter Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-7B-STOCK--Kiawah-Deep-Seating-Cushion-Barstool-material-driftwood-alt1_8687e3ab-1bad-4847-8481-320ba1014b22.jpg?v=1777646457",
+          "specs": {
+            "sku": "SW3501-7C-STOCK",
+            "dimensions": "23.00\" L x 20.00\" W x 40.00\" H",
+            "seatHeight": "25.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-counter-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641347912-3b512c1f6b6c38",
+          "name": "Kiawah Swivel Rocking Dining Chair || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-11-STOCK--Kiawah-Deep-Seating-Cushion-Swivel-Rocking-Dining-Chair--material-driftwood-alt4.jpg?v=1775318392",
+          "specs": {
+            "sku": "SW3501-11-STOCK",
+            "dimensions": "25.00\" W x 37.00\" H",
+            "seatHeight": "20.00\"",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-swivel-rocking-dining-chair-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641351792-c789a30142695",
+          "name": "Kiawah Sofa Table || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-ST--Kiawah-54-x-18-Deep-Seating--Sofa-Console-Table-material-driftwood-alt1.jpg?v=1775317769",
+          "specs": {
+            "sku": "SW3501-ST",
+            "dimensions": "54\" L x 18\" W x 33\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-sofa-table-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641355683-4184977ab8cc7",
+          "name": "Kiawah Rectangle Dining Table || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-T90--Kiawah-90-x-42-Rectangle-Deep-Seating-Dining-Table-material-driftwood-alt1.jpg?v=1775318008",
+          "specs": {
+            "sku": "SW3501-T90",
+            "dimensions": "90.00\" L x 42.00\" W x 29.50\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-rectangle-dining-table-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641359581-ab1e6c5a263668",
+          "name": "Kiawah 48\" Square Dining Table || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-T48--Kiawah-48-Square-Deep-Seating-Dining-Table-material-dfriftwood-alt1.jpg?v=1775317994",
+          "specs": {
+            "sku": "SW3501-T48",
+            "dimensions": "48.00\" W x 29.50\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-48-square-dining-table-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641363464-68792f05c7428",
+          "name": "Kiawah Coffee Table || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-CT--Kiawah-54-x-29-Deep-Seating-Coffee-Table-material-driftwood-alt1.jpg?v=1775317952",
+          "specs": {
+            "sku": "SW3501-ST",
+            "dimensions": "54.00\" L x 18.00\" W x 33.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-coffee-table-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641367344-bf2b40f898c418",
+          "name": "Kiawah 40\" Pub Table || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-PT--Kiawah-40-Deep-Seating--Pub-Table--material-dfriftwood-alt1_240491bb-2953-4771-b9c8-1e01482c6e32.jpg?v=1775317900",
+          "specs": {
+            "sku": "SW3501-PT",
+            "dimensions": "40.00\" W x 40.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-40-pub-table-driftwood"
+          },
+          "parts": []
+        },
+        {
+          "id": "type-1778641371247-31eab1cd716b68",
+          "name": "Kiawah 22\" End Table || Driftwood",
+          "image": "http://admiral-outdoor.com/cdn/shop/files/SW3501-ET--Kiawah-22-Deep-Seating-End-Table--material-driftwood-alt1.jpg?v=1775318030",
+          "specs": {
+            "sku": "SW3501-ET",
+            "dimensions": "22.00\" W x 21.00\" H",
+            "seatHeight": "\",\"Seat Depth\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatWidth": "\",\"Arm Height\",\"Back Height\",\"Base",
+            "seatDepth": "\",\"Seat Width\",\"Arm Height\",\"Back Height\",\"Base",
+            "stackable": "No",
+            "material": "Aluminum",
+            "sourceUrl": "https://admiral-outdoor.com/collections/kiawah/products/kiawah-22-end-table-driftwood"
+          },
+          "parts": []
+        }
+      ]
+    }
+  ],
+  "schedule": [],
+  "liveJobs": [],
+  "scheduleWeeks": [
+    "Week of",
+    "Week of",
+    "Week of",
+    "Week of",
+    "Week of"
+  ],
+  "importReport": {
+    "intendedCollections": [
+      "Destin II",
+      "Aria",
+      "Saratoga",
+      "Curv",
+      "Bel Air",
+      "Essential",
+      "Astoria",
+      "Luxe",
+      "Alante",
+      "Tuscany",
+      "Classic",
+      "Kiawah"
+    ],
+    "importedCollections": 12,
+    "importedFurniturePieces": 165,
+    "failedCollections": [],
+    "failedProducts": []
+  }
+}

@@ -1,0 +1,2582 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import "./App.css";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+
+const STAGES = [
+  "Fabrication",
+  "Welding",
+  "Assembly",
+  "Paint Line",
+  "Shipping",
+  "Orders Sent",
+];
+
+const DEFAULT_SCHEDULE_WEEKS = [
+  "Week of",
+  "Week of",
+  "Week of",
+  "Week of",
+  "Week of",
+];
+
+const VIEWS = ["Models", "Schedule", "Live", ...STAGES];
+const PRIMARY_VIEWS = ["Models", "Schedule", "Live"];
+
+const ROLES = ["Employee", "Supervisor", "Admin", "Developer"];
+const EMPLOYEE_DEPARTMENTS = [
+  "Fabrication",
+  "Welding",
+  "Assembly",
+  "Paint Line",
+  "Shipping",
+];
+
+const emptyPartForm = {
+  name: "",
+  tube: "",
+  length: "",
+  qty: "",
+  angle: "",
+  notes: "",
+};
+
+function makeId() {
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function getLegacyWeekSlot(week) {
+  const legacyWeeks = ["Week 1", "Week 2", "Week 3", "Week 4", "Week 5"];
+  const index = legacyWeeks.indexOf(week);
+  return index === -1 ? 0 : index;
+}
+
+function cleanScheduleDateLabel(value) {
+  const label = String(value || "").trim();
+  if (!label) return "N/A";
+  return label.replace(/^week\s+of\s*/i, "").trim() || "N/A";
+}
+
+function getScheduleDateLabel(scheduleWeeks, job) {
+  if (job?.dueDate) return cleanScheduleDateLabel(job.dueDate);
+
+  if (typeof job?.weekSlot === "number") {
+    return cleanScheduleDateLabel(scheduleWeeks[job.weekSlot]) || `Week ${job.weekSlot + 1}`;
+  }
+
+  if (job?.week) return cleanScheduleDateLabel(job.week);
+
+  return "N/A";
+}
+
+function stageSlug(stage) {
+  return String(stage || "")
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
+function App() {
+  const [view, setView] = useState("Models");
+  const [search, setSearch] = useState("");
+
+  const [models, setModels] = useState(() => {
+    return JSON.parse(localStorage.getItem("models")) || [];
+  });
+
+  const [schedule, setSchedule] = useState(() => {
+    return JSON.parse(localStorage.getItem("schedule")) || [];
+  });
+
+  const [liveJobs, setLiveJobs] = useState(() => {
+    return JSON.parse(localStorage.getItem("liveJobs")) || [];
+  });
+
+  const [scheduleWeeks, setScheduleWeeks] = useState(() => {
+    return (
+      JSON.parse(localStorage.getItem("scheduleWeeks")) ||
+      DEFAULT_SCHEDULE_WEEKS
+    );
+  });
+
+  const [selectedModelId, setSelectedModelId] = useState(null);
+  const [openTypeId, setOpenTypeId] = useState(null);
+
+  const [modelName, setModelName] = useState("");
+  const [typeName, setTypeName] = useState("");
+  const [typeImage, setTypeImage] = useState(null);
+
+  const [editingTypeId, setEditingTypeId] = useState(null);
+  const [editingTypeName, setEditingTypeName] = useState("");
+  const [editingTypeImage, setEditingTypeImage] = useState(null);
+
+  const [partForm, setPartForm] = useState(emptyPartForm);
+  const [editingPartId, setEditingPartId] = useState(null);
+
+  const [scheduleForm, setScheduleForm] = useState({
+    qty: 1,
+    weekSlot: 0,
+    dueDate: "",
+    notes: "",
+  });
+
+  const backupInputRef = useRef(null);
+  const [currentRole, setCurrentRole] = useState(() => {
+    const savedRole = localStorage.getItem("currentRole") || "Admin";
+
+    if (savedRole === "Office" || savedRole === "Supervisors") return "Supervisor";
+    if (STAGES.includes(savedRole) || savedRole === "View Only") return "Employee";
+
+    return ROLES.includes(savedRole) ? savedRole : "Admin";
+  });
+
+  const [employeeDepartment, setEmployeeDepartment] = useState(() => {
+    const savedDepartment = localStorage.getItem("employeeDepartment");
+    const savedRole = localStorage.getItem("currentRole");
+
+    if (EMPLOYEE_DEPARTMENTS.includes(savedDepartment)) return savedDepartment;
+    if (EMPLOYEE_DEPARTMENTS.includes(savedRole)) return savedRole;
+
+    return "Fabrication";
+  });
+
+  const [cutSheetView, setCutSheetView] = useState(null);
+  const [selectedScheduleWeek, setSelectedScheduleWeek] = useState(0);
+  const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
+  const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
+
+  useEffect(() => {
+    localStorage.setItem("models", JSON.stringify(models));
+  }, [models]);
+
+  useEffect(() => {
+    localStorage.setItem("schedule", JSON.stringify(schedule));
+  }, [schedule]);
+
+  useEffect(() => {
+    localStorage.setItem("liveJobs", JSON.stringify(liveJobs));
+  }, [liveJobs]);
+
+  useEffect(() => {
+    localStorage.setItem("scheduleWeeks", JSON.stringify(scheduleWeeks));
+  }, [scheduleWeeks]);
+
+  useEffect(() => {
+    localStorage.setItem("currentRole", currentRole);
+  }, [currentRole]);
+
+  useEffect(() => {
+    localStorage.setItem("employeeDepartment", employeeDepartment);
+  }, [employeeDepartment]);
+
+  useEffect(() => {
+    setEmployeePanelTab(employeeDepartment);
+  }, [employeeDepartment]);
+
+  const selectedModel = models.find((m) => m.id === selectedModelId);
+  const elevatedModes = ["Developer", "Admin", "Supervisor"];
+  const canManage = elevatedModes.includes(currentRole);
+  const canDelete = currentRole === "Developer";
+  const canRemoveLiveJob = ["Developer", "Supervisor"].includes(currentRole);
+  const canOperateJobs = currentRole !== "Admin";
+  const canPrint = ["Developer", "Admin"].includes(currentRole);
+  const canSeeFullLive = elevatedModes.includes(currentRole);
+  const isEmployeeMode = currentRole === "Employee";
+  const isAdminLiveOverview = ["Admin", "Supervisor"].includes(currentRole) && view === "Live";
+
+  const matches = (text) =>
+    String(text || "").toLowerCase().includes(search.toLowerCase());
+
+  const hasSearch = search.trim().length > 0;
+
+  const furnitureMatchesSearch = (model, type) => {
+    const specs = type.specs || {};
+
+    return (
+      matches(model.name) ||
+      matches(type.name) ||
+      matches(type.sku) ||
+      matches(specs.sku) ||
+      matches(type.dimensions) ||
+      matches(specs.dimensions) ||
+      matches(type.material) ||
+      matches(specs.material)
+    );
+  };
+
+  const getItemSpecs = (item) => {
+    const specs = item.specs || {};
+
+    return {
+      sku: item.sku || specs.sku || "",
+      dimensions: item.dimensions || specs.dimensions || "",
+      seatHeight: item.seatHeight || specs.seatHeight || "",
+      seatWidth: item.seatWidth || specs.seatWidth || "",
+      seatDepth: item.seatDepth || specs.seatDepth || "",
+      stackable: item.stackable || specs.stackable || "",
+      material: item.material || specs.material || "",
+    };
+  };
+
+  const getJobWeekSlot = (job) => {
+    if (typeof job.weekSlot === "number") return job.weekSlot;
+    return getLegacyWeekSlot(job.week);
+  };
+
+  const filteredModels = models.filter((model) => {
+    if (!hasSearch) return true;
+
+    return (
+      matches(model.name) ||
+      model.types?.some((type) => furnitureMatchesSearch(model, type))
+    );
+  });
+
+  const selectedModelTypes = selectedModel?.types?.filter((type) => {
+    if (!hasSearch) return true;
+    return furnitureMatchesSearch(selectedModel, type);
+  }) || [];
+
+  const filteredSchedule = schedule.filter((job) => {
+    const weekName = scheduleWeeks[getJobWeekSlot(job)] || "";
+
+    return (
+      matches(job.collection) ||
+      matches(job.furniture) ||
+      matches(job.sku) ||
+      matches(job.specs?.sku) ||
+      matches(job.dimensions) ||
+      matches(job.specs?.dimensions) ||
+      matches(job.material) ||
+      matches(job.specs?.material) ||
+      matches(job.status) ||
+      matches(weekName) ||
+      matches(job.week)
+    );
+  });
+
+  const filteredLiveJobs = liveJobs.filter(
+    (job) =>
+      matches(job.collection) ||
+      matches(job.furniture) ||
+      matches(job.sku) ||
+      matches(job.specs?.sku) ||
+      matches(job.dimensions) ||
+      matches(job.specs?.dimensions) ||
+      matches(job.material) ||
+      matches(job.specs?.material) ||
+      matches(STAGES[job.stage])
+  );
+
+  const dashboard = useMemo(() => {
+    const scheduledQty = schedule.reduce(
+      (sum, job) => sum + Number(job.qtyNeeded || 0),
+      0
+    );
+
+    const completedQty = schedule.reduce(
+      (sum, job) => sum + Number(job.qtyComplete || 0),
+      0
+    );
+
+    return {
+      scheduledJobs: schedule.length,
+      scheduledQty,
+      completedQty,
+      activeJobs: liveJobs.length,
+    };
+  }, [schedule, liveJobs]);
+
+  const readImage = (file, callback) => {
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      callback(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const confirmPermanentDelete = (label) => {
+    return window.confirm(`Are you sure you want to permanently delete ${label}?`);
+  };
+
+  const updateScheduleWeekName = (index, value) => {
+    setScheduleWeeks(
+      scheduleWeeks.map((week, weekIndex) =>
+        weekIndex === index ? value : week
+      )
+    );
+  };
+
+  const addModel = () => {
+    if (!modelName.trim()) return;
+
+    setModels([
+      {
+        id: makeId(),
+        name: modelName.trim(),
+        types: [],
+      },
+      ...models,
+    ]);
+
+    setModelName("");
+  };
+
+  const deleteModel = (modelId) => {
+    const model = models.find((m) => m.id === modelId);
+    if (!confirmPermanentDelete(`the collection "${model?.name || "this collection"}" and all furniture inside it`)) return;
+
+    setModels(models.filter((m) => m.id !== modelId));
+
+    if (selectedModelId === modelId) {
+      setSelectedModelId(null);
+      setOpenTypeId(null);
+    }
+  };
+
+  const addType = () => {
+    if (!selectedModel || !typeName.trim()) return;
+
+    setModels(
+      models.map((model) =>
+        model.id === selectedModelId
+          ? {
+              ...model,
+              types: [
+                ...model.types,
+                {
+                  id: makeId(),
+                  name: typeName.trim(),
+                  image: typeImage,
+                  parts: [],
+                },
+              ],
+            }
+          : model
+      )
+    );
+
+    setTypeName("");
+    setTypeImage(null);
+  };
+
+  const cloneFurniture = (type) => {
+    if (!selectedModel) return;
+
+    const clonedParts = (type.parts || []).map((part) => ({
+      ...part,
+      id: makeId(),
+    }));
+
+    const clonedType = {
+      ...type,
+      id: makeId(),
+      name: `${type.name} Copy`,
+      parts: clonedParts,
+    };
+
+    setModels(
+      models.map((model) =>
+        model.id === selectedModelId
+          ? {
+              ...model,
+              types: [...model.types, clonedType],
+            }
+          : model
+      )
+    );
+  };
+
+  const printCutSheet = async (model, type) => {
+    const parts = type.parts || [];
+    const generatedDate = new Date().toLocaleDateString();
+    const fileDate = new Date().toISOString().slice(0, 10);
+    const preparedBy =
+      prompt("Prepared by:", "Admiral Outdoor") || "Admiral Outdoor";
+
+    const specs = type.specs || {};
+
+    const specRows = [
+      ["SKU", type.sku || specs.sku],
+      ["Dimensions", type.dimensions || specs.dimensions],
+      ["Seat Height", type.seatHeight || specs.seatHeight],
+      ["Seat Width", type.seatWidth || specs.seatWidth],
+      ["Seat Depth", type.seatDepth || specs.seatDepth],
+      ["Stackable", type.stackable || specs.stackable],
+      ["Material", type.material || specs.material],
+    ].filter(([, value]) => value);
+
+    const specsHtml =
+      specRows.length > 0
+        ? `
+          <div style="
+            margin-top:20px;
+            border:1px solid #333;
+            padding:12px;
+            line-height:1.7;
+            font-size:13px;
+          ">
+            ${specRows
+              .map(
+                ([label, value]) =>
+                  `<div><b>${label}:</b> ${value}</div>`
+              )
+              .join("")}
+          </div>
+        `
+        : "";
+
+    const rows =
+      parts.length > 0
+        ? parts
+            .map(
+              (part) => `
+                <tr>
+                  <td>${part.name || ""}</td>
+                  <td>${part.tube || ""}</td>
+                  <td>${part.length || ""}</td>
+                  <td>${part.qty || ""}</td>
+                  <td>${part.angle || ""}</td>
+                  <td>${part.notes || ""}</td>
+                </tr>
+              `
+            )
+            .join("")
+        : `
+            <tr>
+              <td colspan="6">No parts saved yet.</td>
+            </tr>
+          `;
+
+    const imageHtml = type.image
+      ? `<img class="cut-image" crossorigin="anonymous" src="${type.image}" alt="" />`
+      : "";
+
+    const cutSheet = document.createElement("div");
+
+    cutSheet.style.width = "900px";
+    cutSheet.style.padding = "30px";
+    cutSheet.style.background = "white";
+    cutSheet.style.color = "#111";
+    cutSheet.style.fontFamily = "Arial, sans-serif";
+    cutSheet.style.position = "absolute";
+    cutSheet.style.left = "-9999px";
+    cutSheet.style.top = "0";
+
+    cutSheet.innerHTML = `
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        border-bottom:2px solid #111;
+        padding-bottom:16px;
+        margin-bottom:20px;
+      ">
+        <div>
+          <div style="
+            font-size:32px;
+            font-weight:bold;
+            letter-spacing:2px;
+          ">
+            ADMIRAL
+          </div>
+
+          <div style="
+            font-size:14px;
+            margin-top:-4px;
+            letter-spacing:1px;
+            color:#555;
+          ">
+            OUTDOOR
+          </div>
+
+          <h1 style="
+            margin:18px 0 6px;
+            font-size:28px;
+          ">
+            ${type.name}
+          </h1>
+
+          <h2 style="
+            margin:0;
+            font-size:18px;
+            color:#555;
+          ">
+            ${model.name}
+          </h2>
+
+          <div style="margin-top:14px; line-height:1.7;">
+            <div><b>Total Parts:</b> ${parts.length}</div>
+            <div><b>Generated:</b> ${generatedDate}</div>
+            <div><b>Prepared By:</b> ${preparedBy}</div>
+          </div>
+        </div>
+
+        ${imageHtml}
+      </div>
+
+      ${specsHtml}
+
+      <table style="
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+      ">
+        <thead>
+          <tr>
+            <th>Part</th>
+            <th>Material</th>
+            <th>Length</th>
+            <th>Qty</th>
+            <th>Angle</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+
+      <div style="
+        margin-top:24px;
+        font-size:12px;
+        color:#555;
+      ">
+        Admiral Outdoor Production Cut Sheet
+      </div>
+    `;
+
+    document.body.appendChild(cutSheet);
+
+    const style = document.createElement("style");
+
+    style.innerHTML = `
+      table th,
+      table td {
+        border:1px solid #333;
+        padding:8px;
+        text-align:left;
+        font-size:13px;
+      }
+
+      table th {
+        background:#eee;
+      }
+
+      .cut-image {
+        max-width:220px;
+        max-height:150px;
+        object-fit:contain;
+        border:1px solid #ccc;
+        padding:8px;
+      }
+    `;
+
+    document.head.appendChild(style);
+
+    const images = Array.from(cutSheet.querySelectorAll("img"));
+
+    await Promise.all(
+      images.map(
+        (image) =>
+          new Promise((resolve) => {
+            if (image.complete && image.naturalWidth > 0) {
+              resolve();
+              return;
+            }
+
+            image.onload = resolve;
+            image.onerror = resolve;
+          })
+      )
+    );
+
+    const canvas = await html2canvas(cutSheet, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      imageTimeout: 15000,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "px",
+      format: "a4",
+    });
+
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth - 40;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 20;
+
+    pdf.addImage(imgData, "PNG", 20, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight - 40;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight + 20;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 20, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight - 40;
+    }
+
+    const safeName = `AdmiralOutdoor_${model.name}_${type.name}_${fileDate}`
+      .replace(/[^a-z0-9]/gi, "_")
+      .replace(/_+/g, "_")
+      .replace(/^_|_$/g, "");
+
+    pdf.save(`${safeName}.pdf`);
+
+    document.body.removeChild(cutSheet);
+    document.head.removeChild(style);
+  };
+
+
+  const exportBackup = () => {
+    const backup = {
+      appName: "Admiral Outdoor Production App",
+      backupVersion: 1,
+      exportedAt: new Date().toISOString(),
+      models,
+      schedule,
+      liveJobs,
+      scheduleWeeks,
+    };
+
+    const json = JSON.stringify(backup, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const today = new Date().toISOString().slice(0, 10);
+
+    link.href = url;
+    link.download = `admiral-production-backup-${today}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const importBackup = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      try {
+        const backup = JSON.parse(reader.result);
+
+        const hasValidData =
+          Array.isArray(backup.models) &&
+          Array.isArray(backup.schedule) &&
+          Array.isArray(backup.liveJobs) &&
+          Array.isArray(backup.scheduleWeeks);
+
+        if (!hasValidData) {
+          alert("That backup file does not look like a valid production app backup.");
+          event.target.value = "";
+          return;
+        }
+
+        const confirmed = window.confirm(
+          "Import this backup? This will replace your current saved models, schedule, live jobs, and week labels on this computer."
+        );
+
+        if (!confirmed) {
+          event.target.value = "";
+          return;
+        }
+
+        setModels(backup.models);
+        setSchedule(backup.schedule);
+        setLiveJobs(backup.liveJobs);
+        setScheduleWeeks(backup.scheduleWeeks);
+        setSelectedModelId(null);
+        setOpenTypeId(null);
+        setView("Models");
+
+        localStorage.setItem("models", JSON.stringify(backup.models));
+        localStorage.setItem("schedule", JSON.stringify(backup.schedule));
+        localStorage.setItem("liveJobs", JSON.stringify(backup.liveJobs));
+        localStorage.setItem("scheduleWeeks", JSON.stringify(backup.scheduleWeeks));
+
+        alert("Backup imported successfully.");
+      } catch (error) {
+        alert("Could not import that backup file. Make sure it is the JSON backup exported from this app.");
+      }
+
+      event.target.value = "";
+    };
+
+    reader.readAsText(file);
+  };
+
+  const startEditType = (type) => {
+    setEditingTypeId(type.id);
+    setEditingTypeName(type.name);
+    setEditingTypeImage(type.image || null);
+  };
+
+  const cancelEditType = () => {
+    setEditingTypeId(null);
+    setEditingTypeName("");
+    setEditingTypeImage(null);
+  };
+
+  const saveEditType = () => {
+    if (!editingTypeName.trim()) return;
+
+    setModels(
+      models.map((model) =>
+        model.id === selectedModelId
+          ? {
+              ...model,
+              types: model.types.map((type) =>
+                type.id === editingTypeId
+                  ? {
+                      ...type,
+                      name: editingTypeName.trim(),
+                      image: editingTypeImage,
+                    }
+                  : type
+              ),
+            }
+          : model
+      )
+    );
+
+    cancelEditType();
+  };
+
+  const deleteType = (typeId) => {
+    const typeToDelete = selectedModel?.types?.find((type) => type.id === typeId);
+    if (!confirmPermanentDelete(`the furniture piece "${typeToDelete?.name || "this furniture"}"`)) return;
+
+    setModels(
+      models.map((model) =>
+        model.id === selectedModelId
+          ? {
+              ...model,
+              types: model.types.filter((type) => type.id !== typeId),
+            }
+          : model
+      )
+    );
+
+    if (openTypeId === typeId) {
+      setOpenTypeId(null);
+    }
+  };
+
+  const addOrUpdatePart = (typeId) => {
+    if (!partForm.name.trim()) return;
+
+    setModels(
+      models.map((model) =>
+        model.id === selectedModelId
+          ? {
+              ...model,
+              types: model.types.map((type) => {
+                if (type.id !== typeId) return type;
+
+                const updatedParts = editingPartId
+                  ? type.parts.map((part) =>
+                      part.id === editingPartId
+                        ? {
+                            ...partForm,
+                            id: editingPartId,
+                          }
+                        : part
+                    )
+                  : [
+                      ...type.parts,
+                      {
+                        ...partForm,
+                        id: makeId(),
+                      },
+                    ];
+
+                return {
+                  ...type,
+                  parts: updatedParts,
+                };
+              }),
+            }
+          : model
+      )
+    );
+
+    setPartForm(emptyPartForm);
+    setEditingPartId(null);
+  };
+
+  const editPart = (part) => {
+    setPartForm({
+      name: part.name || "",
+      tube: part.tube || "",
+      length: part.length || "",
+      qty: part.qty || "",
+      angle: part.angle || "",
+      notes: part.notes || "",
+    });
+
+    setEditingPartId(part.id);
+  };
+
+  const cancelEditPart = () => {
+    setPartForm(emptyPartForm);
+    setEditingPartId(null);
+  };
+
+  const deletePart = (typeId, partId) => {
+    const currentType = selectedModel?.types?.find((type) => type.id === typeId);
+    const partToDelete = currentType?.parts?.find((part) => part.id === partId);
+    if (!confirmPermanentDelete(`the part "${partToDelete?.name || "this part"}"`)) return;
+
+    setModels(
+      models.map((model) =>
+        model.id === selectedModelId
+          ? {
+              ...model,
+              types: model.types.map((type) =>
+                type.id === typeId
+                  ? {
+                      ...type,
+                      parts: type.parts.filter((part) => part.id !== partId),
+                    }
+                  : type
+              ),
+            }
+          : model
+      )
+    );
+  };
+
+  const addToSchedule = (type) => {
+    if (!selectedModel) return;
+
+    const qtyNeeded = Math.max(1, Number(scheduleForm.qty || 1));
+    const productSpecs = getItemSpecs(type);
+
+    const job = {
+      id: makeId(),
+      modelId: selectedModel.id,
+      typeId: type.id,
+      collection: selectedModel.name,
+      furniture: type.name,
+      image: type.image,
+      sku: productSpecs.sku,
+      dimensions: productSpecs.dimensions,
+      seatHeight: productSpecs.seatHeight,
+      seatWidth: productSpecs.seatWidth,
+      seatDepth: productSpecs.seatDepth,
+      stackable: productSpecs.stackable,
+      material: productSpecs.material,
+      specs: productSpecs,
+      partsSnapshot: type.parts || [],
+      qtyNeeded,
+      qtyComplete: 0,
+      weekSlot: Number(scheduleForm.weekSlot || 0),
+      dueDate: scheduleForm.dueDate,
+      notes: scheduleForm.notes,
+      status: "Scheduled",
+      createdAt: new Date().toISOString(),
+    };
+
+    setSchedule([job, ...schedule]);
+
+    setScheduleForm({
+      qty: 1,
+      weekSlot: scheduleForm.weekSlot,
+      dueDate: "",
+      notes: "",
+    });
+  };
+
+  const adjustScheduleQty = (jobId, amount) => {
+    setSchedule(
+      schedule.map((job) => {
+        if (job.id !== jobId) return job;
+
+        const nextQty = Math.max(1, Number(job.qtyNeeded || 1) + amount);
+        const nextComplete = Math.min(Number(job.qtyComplete || 0), nextQty);
+
+        return {
+          ...job,
+          qtyNeeded: nextQty,
+          qtyComplete: nextComplete,
+          status:
+            nextComplete >= nextQty
+              ? "Complete"
+              : job.status === "Complete"
+              ? "Scheduled"
+              : job.status,
+        };
+      })
+    );
+  };
+
+  const toggleScheduleComplete = (jobId) => {
+    setSchedule(
+      schedule.map((job) => {
+        if (job.id !== jobId) return job;
+
+        const isComplete = job.status === "Complete";
+
+        return {
+          ...job,
+          qtyComplete: isComplete ? 0 : job.qtyNeeded,
+          status: isComplete ? "Scheduled" : "Complete",
+        };
+      })
+    );
+  };
+
+  const moveScheduledJobWeek = (jobId, direction) => {
+    setSchedule(
+      schedule.map((job) => {
+        if (job.id !== jobId) return job;
+
+        const currentIndex = getJobWeekSlot(job);
+
+        const nextIndex = Math.min(
+          scheduleWeeks.length - 1,
+          Math.max(0, currentIndex + direction)
+        );
+
+        return {
+          ...job,
+          weekSlot: nextIndex,
+        };
+      })
+    );
+  };
+
+  const duplicateScheduledJob = (job) => {
+    setSchedule([
+      {
+        ...job,
+        id: makeId(),
+        qtyComplete: 0,
+        status: "Scheduled",
+        weekSlot: getJobWeekSlot(job),
+        createdAt: new Date().toISOString(),
+      },
+      ...schedule,
+    ]);
+  };
+
+  const removeScheduledJob = (jobId) => {
+    const jobToDelete = schedule.find((job) => job.id === jobId);
+    if (!confirmPermanentDelete(`the scheduled job "${jobToDelete?.furniture || "this job"}"`)) return;
+
+    setSchedule(schedule.filter((job) => job.id !== jobId));
+    setLiveJobs(liveJobs.filter((job) => job.scheduleId !== jobId));
+  };
+
+  const releaseToProduction = (scheduleJob) => {
+    const remaining =
+      Number(scheduleJob.qtyNeeded || 0) - Number(scheduleJob.qtyComplete || 0);
+
+    if (remaining <= 0) return;
+
+    const alreadyLive = liveJobs.some(
+      (job) => job.scheduleId === scheduleJob.id && job.stage < STAGES.length - 1
+    );
+
+    if (alreadyLive) return;
+
+    const productSpecs = getItemSpecs(scheduleJob);
+
+    const liveJob = {
+      id: makeId(),
+      scheduleId: scheduleJob.id,
+      collection: scheduleJob.collection,
+      furniture: scheduleJob.furniture,
+      image: scheduleJob.image,
+      sku: productSpecs.sku,
+      dimensions: productSpecs.dimensions,
+      seatHeight: productSpecs.seatHeight,
+      seatWidth: productSpecs.seatWidth,
+      seatDepth: productSpecs.seatDepth,
+      stackable: productSpecs.stackable,
+      material: productSpecs.material,
+      specs: productSpecs,
+      dueDate: getScheduleDateLabel(scheduleWeeks, scheduleJob),
+      weekSlot: getJobWeekSlot(scheduleJob),
+      notes: scheduleJob.notes,
+      partsSnapshot: scheduleJob.partsSnapshot || [],
+      qty: remaining,
+      stage: 0,
+      stageCompleteQty: 0,
+      partsReady: false,
+      startedAt: new Date().toISOString(),
+    };
+
+    setLiveJobs([liveJob, ...liveJobs]);
+
+    setSchedule(
+      schedule.map((job) =>
+        job.id === scheduleJob.id
+          ? {
+              ...job,
+              status: "In Production",
+            }
+          : job
+      )
+    );
+  };
+
+  const updateStageQty = (jobId, amount) => {
+    setLiveJobs(
+      liveJobs.map((job) =>
+        job.id === jobId
+          ? {
+              ...job,
+              stageCompleteQty: Math.min(
+                job.qty,
+                Math.max(0, Number(job.stageCompleteQty || 0) + amount)
+              ),
+            }
+          : job
+      )
+    );
+  };
+
+  const togglePartsReady = (jobId) => {
+    setLiveJobs(
+      liveJobs.map((job) =>
+        job.id === jobId
+          ? {
+              ...job,
+              partsReady: !job.partsReady,
+            }
+          : job
+      )
+    );
+  };
+
+  const moveLiveJob = (jobId) => {
+    const job = liveJobs.find((item) => item.id === jobId);
+    if (!job) return;
+
+    if (job.stage === 0 && !job.partsReady) return;
+
+    const nextStage = Math.min(job.stage + 1, STAGES.length - 1);
+
+    setLiveJobs(
+      liveJobs.map((item) =>
+        item.id === jobId
+          ? {
+              ...item,
+              stage: nextStage,
+              stageCompleteQty: 0,
+            }
+          : item
+      )
+    );
+
+    if (nextStage === STAGES.length - 1) {
+      setSchedule(
+        schedule.map((scheduleJob) => {
+          if (scheduleJob.id !== job.scheduleId) return scheduleJob;
+
+          const newComplete = Math.min(
+            scheduleJob.qtyNeeded,
+            Number(scheduleJob.qtyComplete || 0) + Number(job.qty || 0)
+          );
+
+          return {
+            ...scheduleJob,
+            qtyComplete: newComplete,
+            status:
+              newComplete >= scheduleJob.qtyNeeded
+                ? "Complete"
+                : "In Production",
+          };
+        })
+      );
+    }
+  };
+
+  const addLiveJobToStock = (jobId) => {
+    const job = liveJobs.find((item) => item.id === jobId);
+    if (!job) return;
+
+    if (!window.confirm(`Mark "${job.furniture}" complete and remove it from live production?`)) return;
+
+    setSchedule(
+      schedule.map((scheduleJob) => {
+        if (scheduleJob.id !== job.scheduleId) return scheduleJob;
+
+        const newComplete = Math.min(
+          Number(scheduleJob.qtyNeeded || 0),
+          Number(scheduleJob.qtyComplete || 0) + Number(job.qty || 0)
+        );
+
+        return {
+          ...scheduleJob,
+          qtyComplete: newComplete,
+          status: newComplete >= Number(scheduleJob.qtyNeeded || 0) ? "Complete" : "In Production",
+        };
+      })
+    );
+
+    setLiveJobs(liveJobs.filter((item) => item.id !== jobId));
+  };
+
+  const removeLiveJob = (jobId) => {
+    const jobToDelete = liveJobs.find((job) => job.id === jobId);
+    if (!confirmPermanentDelete(`the live job "${jobToDelete?.furniture || "this job"}"`)) return;
+
+    setLiveJobs(liveJobs.filter((job) => job.id !== jobId));
+  };
+
+  const clearCompletedLiveJobs = () => {
+    const completedLiveJobs = liveJobs.filter((job) => job.stage >= STAGES.length - 1);
+
+    if (completedLiveJobs.length === 0) {
+      alert("There are no completed live jobs to remove right now.");
+      return;
+    }
+
+    if (!window.confirm(`Clear ${completedLiveJobs.length} completed live job${completedLiveJobs.length === 1 ? "" : "s"} from the Live board?`)) return;
+
+    setLiveJobs(liveJobs.filter((job) => job.stage < STAGES.length - 1));
+  };
+
+  const clearCompletedScheduleForWeek = (weekIndex) => {
+    const completedCount = schedule.filter(
+      (job) => getJobWeekSlot(job) === weekIndex && job.status === "Complete"
+    ).length;
+
+    if (completedCount === 0) return;
+
+    if (!window.confirm(`Remove ${completedCount} completed job${completedCount === 1 ? "" : "s"} from this week?`)) return;
+
+    setSchedule(
+      schedule.filter(
+        (job) => !(getJobWeekSlot(job) === weekIndex && job.status === "Complete")
+      )
+    );
+  };
+
+  const liveForStage = (stageIndex) => {
+    return filteredLiveJobs.filter((job) => job.stage === stageIndex);
+  };
+
+  const departmentStageIndexes = (department) => {
+    const index = STAGES.indexOf(department);
+    if (index <= 0) return index === 0 ? [0] : [];
+    return [index - 1, index];
+  };
+
+  const isTableJob = (job) => {
+    const text = `${job.collection || ""} ${job.furniture || ""}`;
+    return /table/i.test(job.furniture || "") || /destin/i.test(text);
+  };
+
+  const departmentPanelsForView = (department) => {
+    if (department === "Welding") {
+      const weldingJobs = liveForStage(1);
+
+      return [
+        { title: "Fabrication", stageName: "Fabrication", jobs: liveForStage(0) },
+        { title: "Welding", stageName: "Welding", jobs: weldingJobs.filter((job) => !isTableJob(job)) },
+        { title: "Tables", stageName: "Welding", jobs: weldingJobs.filter(isTableJob) },
+      ];
+    }
+
+    return departmentStageIndexes(department).map((stageIndex) => ({
+      title: STAGES[stageIndex],
+      stageName: STAGES[stageIndex],
+      jobs: liveForStage(stageIndex),
+    }));
+  };
+
+  const fullLivePanelsForView = (department) => {
+    if (department === "Welding") {
+      const weldingJobs = liveForStage(1);
+
+      return [
+        { title: "Welding", stageName: "Welding", jobs: weldingJobs.filter((job) => !isTableJob(job)) },
+        { title: "Tables", stageName: "Welding", jobs: weldingJobs.filter(isTableJob) },
+      ];
+    }
+
+    const stageIndex = STAGES.indexOf(department);
+
+    return stageIndex === -1
+      ? []
+      : [
+          {
+            title: department,
+            stageName: department,
+            jobs: liveForStage(stageIndex),
+          },
+        ];
+  };
+
+  const handleRoleChange = (role) => {
+    setCurrentRole(role);
+
+    if (role === "Employee") {
+      setView(employeeDepartment);
+      return;
+    }
+
+    setView("Live");
+  };
+
+  const handleEmployeeDepartmentChange = (department) => {
+    setEmployeeDepartment(department);
+    setEmployeePanelTab(department);
+
+    if (currentRole === "Employee") {
+      setView(department);
+    }
+  };
+
+  const StageBadge = ({ stage }) => {
+    const stageName = STAGES[stage];
+    return (
+      <span className={`stage-badge stage-${stageSlug(stageName)}`}>
+        {stageName}
+      </span>
+    );
+  };
+
+  const JobCard = ({ job }) => {
+    const isFabrication = job.stage === 0;
+    const isComplete = job.stage === STAGES.length - 1;
+    const productSpecs = getItemSpecs(job);
+    const linkedScheduleJob = schedule.find((item) => item.id === job.scheduleId);
+    const dueLabel = getScheduleDateLabel(scheduleWeeks, job.dueDate ? job : linkedScheduleJob || job);
+    const canViewCutSheet = canOperateJobs && (job.stage === 0 || job.stage === 1);
+    const isReadOnlyCard = !canOperateJobs;
+
+    return (
+      <div className={isReadOnlyCard ? "job-card compact-job-card read-only-job-card" : "job-card compact-job-card"}>
+        <div className="job-card-left">
+          <div className="job-head compact-job-head">
+            {job.image && <img src={job.image} className="job-img" alt="" />}
+
+            <div className="job-title-block">
+              <h3>{job.furniture}</h3>
+              {productSpecs.sku && (
+                <p className="sku-line">SKU: {productSpecs.sku}</p>
+              )}
+              <StageBadge stage={job.stage} />
+            </div>
+          </div>
+
+          <div className="info-grid job-spec-grid compact-job-meta">
+            <p>
+              <b>Qty:</b> {job.qty}
+            </p>
+            <p>
+              <b>Due:</b> {dueLabel}
+            </p>
+          </div>
+
+          {job.notes && <p className="note compact-note">{job.notes}</p>}
+        </div>
+
+        <div className="job-card-right">
+          {canViewCutSheet && (
+            <button
+              className="wide secondary"
+              onClick={() =>
+                setCutSheetView({
+                  model: { name: job.collection },
+                  type: {
+                    ...job,
+                    name: job.furniture,
+                    image: job.image,
+                    parts: job.partsSnapshot || [],
+                  },
+                })
+              }
+            >
+              View Cut Sheet
+            </button>
+          )}
+
+          {isFabrication && !isComplete && (
+            <>
+              <div className={job.partsReady ? "status good" : "status warning"}>
+                {job.partsReady
+                  ? "Parts are ready for welding"
+                  : "Cutting / fabrication in progress"}
+              </div>
+
+              {canOperateJobs && (
+                <div className="button-row compact-action-row">
+                  <button onClick={() => togglePartsReady(job.id)}>
+                    {job.partsReady ? "Mark Not Ready" : "Mark Parts Ready"}
+                  </button>
+
+                  <button
+                    disabled={!job.partsReady}
+                    onClick={() => moveLiveJob(job.id)}
+                  >
+                    Send To Welding
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {!isFabrication && !isComplete && (
+            <>
+              <div className="progress-box compact-progress-box">
+                <div className="progress-line">
+                  <span>
+                    Stage Progress: {job.stageCompleteQty} / {job.qty}
+                  </span>
+                  <span>
+                    {Math.round((Number(job.stageCompleteQty || 0) / job.qty) * 100)}%
+                  </span>
+                </div>
+
+                <div className="bar">
+                  <div
+                    className="bar-fill"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        (Number(job.stageCompleteQty || 0) / job.qty) * 100
+                      )}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              {canOperateJobs && (
+                <>
+                  <div className="button-row compact-action-row">
+                    <button onClick={() => updateStageQty(job.id, 1)}>+1</button>
+                    <button onClick={() => updateStageQty(job.id, 5)}>+5</button>
+                    <button onClick={() => updateStageQty(job.id, 10)}>+10</button>
+                    <button onClick={() => updateStageQty(job.id, -1)}>-1</button>
+                  </div>
+
+                  {job.stage === STAGES.indexOf("Assembly") && ["Supervisor", "Developer"].includes(currentRole) ? (
+                    <div className="button-row compact-action-row">
+                      <button onClick={() => addLiveJobToStock(job.id)}>
+                        Complete
+                      </button>
+                      <button onClick={() => moveLiveJob(job.id)}>
+                        Move To Paint Line
+                      </button>
+                    </div>
+                  ) : (
+                    <button className="wide" onClick={() => moveLiveJob(job.id)}>
+                      Move To {STAGES[job.stage + 1]}
+                    </button>
+                  )}
+                </>
+              )}
+            </>
+          )}
+
+          {isComplete && <div className="status good">Order Sent / Complete</div>}
+
+          {canRemoveLiveJob && (
+            <button className="danger wide" onClick={() => removeLiveJob(job.id)}>
+              Remove Live Job
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="app">
+      <div className="top-nav clean-nav">
+        <input
+          className="search"
+          placeholder="Search everything... name, SKU, collection..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+
+        <div className="nav-button-group">
+          {PRIMARY_VIEWS.map((navItem) => (
+            <button
+              key={navItem}
+              className={view === navItem ? "active-nav" : ""}
+              onClick={() => {
+                if (navItem === "Live" && !canSeeFullLive && isEmployeeMode) {
+                  setView(employeeDepartment);
+                  return;
+                }
+
+                setView(navItem);
+              }}
+            >
+              {navItem}
+            </button>
+          ))}
+        </div>
+
+        <select
+          className="nav-select role-select"
+          value={currentRole}
+          onChange={(e) => handleRoleChange(e.target.value)}
+        >
+          {ROLES.map((role) => (
+            <option key={role} value={role}>
+              Mode: {role}
+            </option>
+          ))}
+        </select>
+
+        {isEmployeeMode && (
+          <select
+            className="nav-select department-select"
+            value={employeeDepartment}
+            onChange={(e) => handleEmployeeDepartmentChange(e.target.value)}
+          >
+            {EMPLOYEE_DEPARTMENTS.map((department) => (
+              <option key={department} value={department}>
+                Department: {department}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {currentRole === "Developer" && (
+          <div className="nav-button-group backup-actions">
+            <button onClick={exportBackup}>Export Backup</button>
+
+            <button onClick={() => backupInputRef.current?.click()}>
+              Import Backup
+            </button>
+          </div>
+        )}
+
+        <input
+          ref={backupInputRef}
+          type="file"
+          accept="application/json,.json"
+          style={{ display: "none" }}
+          onChange={importBackup}
+        />
+      </div>
+
+      {!isEmployeeMode && view !== "Schedule" && (
+        <div className="stats-row">
+          <div className="stat-card">
+            <span>Scheduled Jobs</span>
+            <b>{dashboard.scheduledJobs}</b>
+          </div>
+
+          <div className="stat-card">
+            <span>Scheduled Qty</span>
+            <b>{dashboard.scheduledQty}</b>
+          </div>
+
+          <div className="stat-card">
+            <span>Active Live Jobs</span>
+            <b>{dashboard.activeJobs}</b>
+          </div>
+
+          <div className="stat-card">
+            <span>Completed Qty</span>
+            <b>{dashboard.completedQty}</b>
+          </div>
+        </div>
+      )}
+
+      <div
+        className={
+          view === "Models"
+            ? selectedModel
+              ? "layout mobile-model-open"
+              : "layout"
+            : "layout layout-full"
+        }
+      >
+        {view === "Models" && (
+          <aside className="sidebar">
+          <h2>Collections</h2>
+
+          {filteredModels.length === 0 && (
+            <div className="empty small">No collections yet.</div>
+          )}
+
+          {filteredModels.map((model) => (
+            <div
+              key={model.id}
+              className={
+                selectedModelId === model.id
+                  ? "side-card selected"
+                  : "side-card"
+              }
+            >
+              <button
+                className="plain"
+                onClick={() => {
+                  setSelectedModelId(model.id);
+                  setOpenTypeId(null);
+                  setView("Models");
+                }}
+              >
+                <b>{model.name}</b>
+                <span>{model.types?.length || 0} furniture types</span>
+              </button>
+
+              {canDelete && (
+                <button className="danger" onClick={() => deleteModel(model.id)}>
+                  Delete
+                </button>
+              )}
+            </div>
+          ))}
+
+          {canManage && (
+            <div className="add-box">
+              <input
+                placeholder="New Collection"
+                value={modelName}
+                onChange={(e) => setModelName(e.target.value)}
+              />
+
+              <button onClick={addModel}>Add Collection</button>
+            </div>
+          )}
+        </aside>
+        )}
+
+        <main className="main">
+          {view === "Models" && (
+            <>
+              {!selectedModel ? (
+                <div className="hero">
+                  <h1>Select or create a collection</h1>
+                  <p>
+                    Collections hold furniture pieces. Each furniture piece can
+                    have a saved parts list, image, and schedule jobs.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="page-head">
+                    <div>
+                      <h1>{selectedModel.name}</h1>
+                      <p className="muted">
+                        Add furniture pieces, save parts, and schedule
+                        production.
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    className="mobile-back-button"
+                    onClick={() => {
+                      setSelectedModelId(null);
+                      setOpenTypeId(null);
+                    }}
+                  >
+                    ← Back To Collections
+                  </button>
+
+                  {canManage && (
+                    <div className="card">
+                      <h2>Add Furniture Type</h2>
+
+                      <div className="form-grid">
+                        <input
+                          placeholder="Furniture Name"
+                          value={typeName}
+                          onChange={(e) => setTypeName(e.target.value)}
+                        />
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            readImage(e.target.files[0], setTypeImage)
+                          }
+                        />
+                      </div>
+
+                      {typeImage && (
+                        <img src={typeImage} className="preview" alt="" />
+                      )}
+
+                      <button onClick={addType}>Add Furniture</button>
+                    </div>
+                  )}
+
+                  {selectedModelTypes.length === 0 && (
+                    <div className="empty">
+                      {hasSearch
+                        ? "No furniture in this collection matches your search."
+                        : "No furniture added to this collection yet."}
+                    </div>
+                  )}
+
+                  {selectedModelTypes.map((type) => (
+                    <div key={type.id} className="card furniture-card">
+                      {editingTypeId === type.id ? (
+                        <>
+                          <h2>Edit Furniture</h2>
+
+                          {editingTypeImage && (
+                            <img
+                              src={editingTypeImage}
+                              className="preview"
+                              alt=""
+                            />
+                          )}
+
+                          <div className="form-grid">
+                            <input
+                              value={editingTypeName}
+                              onChange={(e) =>
+                                setEditingTypeName(e.target.value)
+                              }
+                            />
+
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) =>
+                                readImage(
+                                  e.target.files[0],
+                                  setEditingTypeImage
+                                )
+                              }
+                            />
+                          </div>
+
+                          <div className="button-row">
+                            <button onClick={saveEditType}>Save</button>
+                            <button onClick={cancelEditType}>Cancel</button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="furniture-head">
+                            {type.image && (
+                              <img
+                                src={type.image}
+                                className="furniture-img"
+                                alt=""
+                              />
+                            )}
+
+                            <div>
+                              <h2 className="furniture-title">{type.name}</h2>
+                              <p className="muted">
+                                {type.parts?.length || 0} saved parts
+                              </p>
+
+                              {(type.sku ||
+                                type.dimensions ||
+                                type.seatHeight ||
+                                type.seatWidth ||
+                                type.seatDepth ||
+                                type.stackable ||
+                                type.material ||
+                                type.specs?.sku ||
+                                type.specs?.dimensions ||
+                                type.specs?.seatHeight ||
+                                type.specs?.seatWidth ||
+                                type.specs?.seatDepth ||
+                                type.specs?.stackable ||
+                                type.specs?.material) && (
+                                <div className="info-grid model-spec-grid">
+                                  {(type.sku || type.specs?.sku) && (
+                                    <p className="model-sku-line"><b>SKU:</b> {type.sku || type.specs?.sku}</p>
+                                  )}
+                                  {(type.dimensions || type.specs?.dimensions) && (
+                                    <p className="model-dimensions-line"><b>Dimensions:</b> {type.dimensions || type.specs?.dimensions}</p>
+                                  )}
+                                  {(type.seatHeight || type.specs?.seatHeight) && (
+                                    <p><b>Seat Height:</b> {type.seatHeight || type.specs?.seatHeight}</p>
+                                  )}
+                                  {(type.seatWidth || type.specs?.seatWidth) && (
+                                    <p><b>Seat Width:</b> {type.seatWidth || type.specs?.seatWidth}</p>
+                                  )}
+                                  {(type.seatDepth || type.specs?.seatDepth) && (
+                                    <p><b>Seat Depth:</b> {type.seatDepth || type.specs?.seatDepth}</p>
+                                  )}
+                                  {(type.stackable || type.specs?.stackable) && (
+                                    <p><b>Stackable:</b> {type.stackable || type.specs?.stackable}</p>
+                                  )}
+                                  {(type.material || type.specs?.material) && (
+                                    <p><b>Material:</b> {type.material || type.specs?.material}</p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="quick-schedule">
+                            <span>Add to schedule:</span>
+
+                            <select
+                              value={scheduleForm.weekSlot}
+                              onChange={(e) =>
+                                setScheduleForm({
+                                  ...scheduleForm,
+                                  weekSlot: Number(e.target.value),
+                                })
+                              }
+                            >
+                              {scheduleWeeks.map((week, index) => (
+                                <option key={index} value={index}>
+                                  {week || `Week ${index + 1}`}
+                                </option>
+                              ))}
+                            </select>
+
+                            <button
+                              onClick={() =>
+                                setScheduleForm({
+                                  ...scheduleForm,
+                                  qty: Math.max(
+                                    1,
+                                    Number(scheduleForm.qty || 1) - 1
+                                  ),
+                                })
+                              }
+                            >
+                              -
+                            </button>
+
+                            <input
+                              type="number"
+                              min="1"
+                              value={scheduleForm.qty}
+                              onChange={(e) =>
+                                setScheduleForm({
+                                  ...scheduleForm,
+                                  qty: e.target.value,
+                                })
+                              }
+                            />
+
+                            <button
+                              onClick={() =>
+                                setScheduleForm({
+                                  ...scheduleForm,
+                                  qty: Number(scheduleForm.qty || 1) + 1,
+                                })
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          <div className="button-row">
+                            {canManage && (
+                              <button onClick={() => addToSchedule(type)}>
+                                Add To Schedule
+                              </button>
+                            )}
+
+                            <button
+                              onClick={() => setCutSheetView({ model: selectedModel, type })}
+                            >
+                              View Cut Sheet
+                            </button>
+
+                            {canManage && (
+                              <button
+                                onClick={() =>
+                                  setOpenTypeId(
+                                    openTypeId === type.id ? null : type.id
+                                  )
+                                }
+                              >
+                                {openTypeId === type.id
+                                  ? "Close Parts Editor"
+                                  : "Edit Parts"}
+                              </button>
+                            )}
+
+                            {canPrint && (
+                              <button onClick={() => printCutSheet(selectedModel, type)}>
+                                Print Cut Sheet
+                              </button>
+                            )}
+
+                            {canManage && (
+                              <button onClick={() => cloneFurniture(type)}>
+                                Clone Furniture
+                              </button>
+                            )}
+
+                            {canDelete && (
+                              <button
+                                className="danger"
+                                onClick={() => deleteType(type.id)}
+                              >
+                                Delete Furniture
+                              </button>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {openTypeId === type.id && editingTypeId !== type.id && (
+                        <div className="parts-panel compact-parts-panel">
+                          <div className="parts-panel-head">
+                            <div>
+                              <h2>{type.name} Parts</h2>
+                              <p className="muted">
+                                Compact cut list view for quick shop-floor review.
+                              </p>
+                            </div>
+
+                            <div className="parts-summary">
+                              <span>
+                                <b>{type.parts?.length || 0}</b> Parts
+                              </span>
+                              <span>
+                                <b>
+                                  {(type.parts || []).reduce(
+                                    (sum, part) => sum + Number(part.qty || 0),
+                                    0
+                                  )}
+                                </b>{" "}
+                                Total Qty
+                              </span>
+                            </div>
+                          </div>
+
+                          {type.parts?.length === 0 && (
+                            <div className="empty small">
+                              No parts saved yet.
+                            </div>
+                          )}
+
+                          {type.parts?.length > 0 && (
+                            <div className="compact-parts-table">
+                              <div className="parts-header-row compact-header-row">
+                                <span>Part</span>
+                                <span>Material</span>
+                                <span>Length</span>
+                                <span>Qty</span>
+                                <span>Angle</span>
+                                <span>Actions</span>
+                              </div>
+
+                              {type.parts.map((part) => (
+                                <div key={part.id} className="part-row compact-part-row">
+                                  <span className="part-cell part-name-cell">
+                                    <small>Part</small>
+                                    <b>{part.name}</b>
+                                  </span>
+
+                                  <span className="part-cell">
+                                    <small>Material</small>
+                                    {part.tube || "-"}
+                                  </span>
+
+                                  <span className="part-cell">
+                                    <small>Length</small>
+                                    {part.length || "-"}
+                                  </span>
+
+                                  <span className="part-cell qty-cell">
+                                    <small>Qty</small>
+                                    <b>{part.qty || "-"}</b>
+                                  </span>
+
+                                  <span className="part-cell">
+                                    <small>Angle</small>
+                                    {part.angle || "-"}
+                                  </span>
+
+                                  {(canManage || canDelete) && (
+                                    <div className="part-actions compact-actions">
+                                      {canManage && (
+                                        <button onClick={() => editPart(part)}>
+                                          Edit
+                                        </button>
+                                      )}
+
+                                      {canDelete && (
+                                        <button
+                                          className="danger"
+                                          onClick={() => deletePart(type.id, part.id)}
+                                        >
+                                          Delete
+                                        </button>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {part.notes && (
+                                    <div className="part-note compact-part-note">
+                                      <b>Notes:</b> {part.notes}
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="add-parts-area">
+                            <h3>{editingPartId ? "Edit Part" : "Add New Part"}</h3>
+
+                            <div className="form-grid">
+                              <input
+                                placeholder="Part Name"
+                                value={partForm.name}
+                                onChange={(e) =>
+                                  setPartForm({
+                                    ...partForm,
+                                    name: e.target.value,
+                                  })
+                                }
+                              />
+
+                              <input
+                                placeholder="Material Size"
+                                value={partForm.tube}
+                                onChange={(e) =>
+                                  setPartForm({
+                                    ...partForm,
+                                    tube: e.target.value,
+                                  })
+                                }
+                              />
+
+                              <input
+                                placeholder="Length"
+                                value={partForm.length}
+                                onChange={(e) =>
+                                  setPartForm({
+                                    ...partForm,
+                                    length: e.target.value,
+                                  })
+                                }
+                              />
+
+                              <input
+                                placeholder="Qty"
+                                value={partForm.qty}
+                                onChange={(e) =>
+                                  setPartForm({
+                                    ...partForm,
+                                    qty: e.target.value,
+                                  })
+                                }
+                              />
+
+                              <input
+                                placeholder="Angle"
+                                value={partForm.angle}
+                                onChange={(e) =>
+                                  setPartForm({
+                                    ...partForm,
+                                    angle: e.target.value,
+                                  })
+                                }
+                              />
+
+                              <input
+                                placeholder="Notes"
+                                value={partForm.notes}
+                                onChange={(e) =>
+                                  setPartForm({
+                                    ...partForm,
+                                    notes: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+
+                            <div className="button-row">
+                              <button onClick={() => addOrUpdatePart(type.id)}>
+                                {editingPartId ? "Update Part" : "Add Part"}
+                              </button>
+
+                              {editingPartId && (
+                                <button onClick={cancelEditPart}>
+                                  Cancel Edit
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </>
+              )}
+            </>
+          )}
+
+          {view === "Schedule" && (
+            (() => {
+              const safeSelectedWeek = Math.min(
+                scheduleWeeks.length - 1,
+                Math.max(0, selectedScheduleWeek)
+              );
+
+              const selectedWeekName =
+                scheduleWeeks[safeSelectedWeek] || `Week ${safeSelectedWeek + 1}`;
+
+              const selectedWeekJobs = filteredSchedule.filter(
+                (job) => getJobWeekSlot(job) === safeSelectedWeek
+              );
+
+              const activeJobs = selectedWeekJobs.filter(
+                (job) => job.status !== "Complete"
+              );
+
+              const completedJobs = selectedWeekJobs.filter(
+                (job) => job.status === "Complete"
+              );
+
+              const activeQty = activeJobs.reduce(
+                (sum, job) => sum + Number(job.qtyNeeded || 0),
+                0
+              );
+
+              const remainingQty = activeJobs.reduce(
+                (sum, job) =>
+                  sum +
+                  Math.max(
+                    0,
+                    Number(job.qtyNeeded || 0) - Number(job.qtyComplete || 0)
+                  ),
+                0
+              );
+
+              return (
+                <>
+                  <div className="page-head schedule-page-head">
+                    <div>
+                      <h1>Weekly Production Schedule</h1>
+                      <p className="muted">
+                        Select one week at a time for a cleaner monitor-style view.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="schedule-week-tabs">
+                    {scheduleWeeks.map((week, index) => {
+                      const weekJobs = filteredSchedule.filter(
+                        (job) => getJobWeekSlot(job) === index
+                      );
+                      const weekActive = weekJobs.filter(
+                        (job) => job.status !== "Complete"
+                      ).length;
+                      const weekComplete = weekJobs.filter(
+                        (job) => job.status === "Complete"
+                      ).length;
+
+                      return (
+                        <button
+                          key={index}
+                          className={
+                            safeSelectedWeek === index
+                              ? "schedule-week-tab active-schedule-week"
+                              : "schedule-week-tab"
+                          }
+                          onClick={() => setSelectedScheduleWeek(index)}
+                        >
+                          <b>{week || `Week ${index + 1}`}</b>
+                          <span>{weekActive} active / {weekComplete} complete</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="schedule-full-panel">
+                    <div className="schedule-selected-head">
+                      <div>
+                        <label>Week Of</label>
+                        <input
+                          className="week-title-input schedule-selected-input"
+                          value={selectedWeekName}
+                          placeholder="Example: 5/13/26"
+                          onChange={(e) =>
+                            updateScheduleWeekName(safeSelectedWeek, e.target.value)
+                          }
+                        />
+                      </div>
+
+                      <div className="schedule-head-stats">
+                        <div>
+                          <span>Active Jobs</span>
+                          <b>{activeJobs.length}</b>
+                        </div>
+                        <div>
+                          <span>Scheduled Qty</span>
+                          <b>{activeQty}</b>
+                        </div>
+                        <div>
+                          <span>Remaining Qty</span>
+                          <b>{remainingQty}</b>
+                        </div>
+                        <div>
+                          <span>Complete</span>
+                          <b>{completedJobs.length}</b>
+                        </div>
+                      </div>
+                    </div>
+
+                    {activeJobs.length === 0 ? (
+                      <div className="empty">No active scheduled jobs for this week.</div>
+                    ) : (
+                      <div className="schedule-active-grid">
+                        {activeJobs.map((job) => {
+                          const remaining = job.qtyNeeded - job.qtyComplete;
+                          const jobSku = job.sku || job.specs?.sku;
+
+                          return (
+                            <div
+                              key={job.id}
+                              className={
+                                job.status === "In Production"
+                                  ? "schedule-board-card schedule-board-card-production"
+                                  : "schedule-board-card"
+                              }
+                            >
+                              <div className="schedule-board-main">
+                                {job.image && (
+                                  <img
+                                    src={job.image}
+                                    className="schedule-board-img"
+                                    alt=""
+                                  />
+                                )}
+
+                                <div className="schedule-board-title">
+                                  <h3>{job.furniture}</h3>
+                                  {jobSku && <span>SKU: {jobSku}</span>}
+                                </div>
+                              </div>
+
+                              <div className="schedule-board-side">
+                                <div className="schedule-board-qty">
+                                  <b>Qty:</b>
+                                  <button onClick={() => adjustScheduleQty(job.id, -1)}>
+                                    -
+                                  </button>
+                                  <span>{job.qtyNeeded}</span>
+                                  <button onClick={() => adjustScheduleQty(job.id, 1)}>
+                                    +
+                                  </button>
+                                </div>
+
+                                <div className="schedule-board-status">
+                                  <span><b>Remaining:</b> {remaining}</span>
+                                  <span>{job.status}</span>
+                                </div>
+
+                                <div className="schedule-board-actions">
+                                  {!isEmployeeMode && (
+                                    <button onClick={() => toggleScheduleComplete(job.id)}>
+                                      Check Off
+                                    </button>
+                                  )}
+
+                                  <button
+                                    onClick={() =>
+                                      setCutSheetView({
+                                        model: { name: job.collection },
+                                        type: {
+                                          ...job,
+                                          name: job.furniture,
+                                          image: job.image,
+                                          parts: job.partsSnapshot || [],
+                                        },
+                                      })
+                                    }
+                                  >
+                                    View Cut Sheet
+                                  </button>
+
+                                  {canManage && (
+                                    <button onClick={() => releaseToProduction(job)}>
+                                      Release To Live
+                                    </button>
+                                  )}
+
+                                  {canPrint && (
+                                    <button
+                                      onClick={() =>
+                                        printCutSheet(
+                                          { name: job.collection },
+                                          {
+                                            ...job,
+                                            name: job.furniture,
+                                            image: job.image,
+                                            parts: job.partsSnapshot || [],
+                                          }
+                                        )
+                                      }
+                                    >
+                                      Print Cut Sheet
+                                    </button>
+                                  )}
+
+                                  {canManage && (
+                                    <button onClick={() => duplicateScheduledJob(job)}>
+                                      Duplicate
+                                    </button>
+                                  )}
+
+                                  {canDelete && (
+                                    <button
+                                      className="danger"
+                                      onClick={() => removeScheduledJob(job.id)}
+                                    >
+                                      Remove
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {completedJobs.length > 0 && (
+                      <details className="completed-schedule-group schedule-completed-panel">
+                        <summary>Completed this week ({completedJobs.length})</summary>
+
+                        {(["Developer", "Supervisor"].includes(currentRole)) && (
+                          <div className="completed-schedule-tools">
+                            <button
+                              className="danger"
+                              onClick={() => clearCompletedScheduleForWeek(safeSelectedWeek)}
+                            >
+                              Remove Completed This Week
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="completed-schedule-grid">
+                          {completedJobs.map((job) => (
+                            <div key={job.id} className="completed-schedule-row">
+                              <span>{job.furniture}</span>
+                              {(job.sku || job.specs?.sku) && (
+                                <b>{job.sku || job.specs?.sku}</b>
+                              )}
+                              {!isEmployeeMode && (
+                                <button onClick={() => toggleScheduleComplete(job.id)}>
+                                  Undo
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
+                  </div>
+                </>
+              );
+            })()
+          )}
+
+          {view === "Live" && (
+            (() => {
+              const liveDepartments = STAGES;
+              const activeLiveTab = liveDepartments.includes(liveOverviewTab)
+                ? liveOverviewTab
+                : "Fabrication";
+
+              const overviewPanels = fullLivePanelsForView(activeLiveTab);
+
+              return (
+                <>
+                  <div className="page-head">
+                    <div>
+                      <h1>{isAdminLiveOverview ? "Live Production Overview" : "Live Shop Mode"}</h1>
+                      <p className="muted">
+                        {isAdminLiveOverview
+                          ? currentRole === "Admin"
+                            ? "Read-only monitor view. Use department buttons to reduce scrolling."
+                            : "Supervisor view. Use department buttons to focus on one area at a time."
+                          : "This is what is actively moving through the shop right now."}
+                      </p>
+                    </div>
+
+                    {elevatedModes.includes(currentRole) && (
+                      <button onClick={clearCompletedLiveJobs}>
+                        Remove Completed Jobs
+                      </button>
+                    )}
+                  </div>
+
+                  {canSeeFullLive && (
+                    <div className="department-view-tabs live-overview-tabs">
+                      {liveDepartments.map((department) => {
+                        const departmentIndex = STAGES.indexOf(department);
+                        const count = liveForStage(departmentIndex).length;
+
+                        return (
+                          <button
+                            key={department}
+                            className={
+                              activeLiveTab === department
+                                ? "department-view-tab active-department-view-tab"
+                                : "department-view-tab"
+                            }
+                            onClick={() => setLiveOverviewTab(department)}
+                          >
+                            <b>{department}</b>
+                            <span>{count} jobs</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {canSeeFullLive ? (
+                    <div className="stage-list department-stage-list live-focused-view">
+                      {overviewPanels.map((panel) => (
+                        <section
+                          key={panel.title}
+                          className={`department-stage-panel stage-column stage-${stageSlug(panel.stageName)}`}
+                        >
+                          <h2>{panel.title}</h2>
+
+                          {panel.jobs.length === 0 ? (
+                            <div className="empty small">No active jobs in {panel.title}.</div>
+                          ) : (
+                            <div className="department-job-grid">
+                              {panel.jobs.map((job) => (
+                                <JobCard key={job.id} job={job} />
+                              ))}
+                            </div>
+                          )}
+                        </section>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="kanban">
+                      {STAGES.map((stage, index) => (
+                        <div key={stage} className={`kanban-column stage-column stage-${stageSlug(stage)}`}>
+                          <h2>{stage}</h2>
+
+                          {liveForStage(index).length === 0 && (
+                            <div className="empty small">No jobs here.</div>
+                          )}
+
+                          {liveForStage(index).map((job) => (
+                            <JobCard key={job.id} job={job} />
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()
+          )}
+
+          {STAGES.includes(view) && (
+            (() => {
+              const panels = departmentPanelsForView(view);
+              const employeeActivePanel =
+                panels.find((panel) => panel.title === employeePanelTab) ||
+                panels.find((panel) => panel.title === view) ||
+                panels[0];
+
+              return (
+                <>
+                  <div className="page-head department-page-head">
+                    <div>
+                      <h1>{view} Dashboard</h1>
+                      <p className="muted">
+                        {view === "Fabrication"
+                          ? "Fabrication jobs currently ready for the fabrication team."
+                          : isEmployeeMode
+                          ? `Use the tabs to view ${view} and nearby work without side scrolling.`
+                          : `Showing ${STAGES[STAGES.indexOf(view) - 1]} and ${view}, so the team can see what is coming next.`}
+                      </p>
+                    </div>
+                  </div>
+
+                  {isEmployeeMode && panels.length > 1 && (
+                    <div className="department-view-tabs">
+                      {panels.map((panel) => (
+                        <button
+                          key={panel.title}
+                          className={
+                            employeeActivePanel?.title === panel.title
+                              ? "department-view-tab active-department-view-tab"
+                              : "department-view-tab"
+                          }
+                          onClick={() => setEmployeePanelTab(panel.title)}
+                        >
+                          <b>{panel.title}</b>
+                          <span>{panel.jobs.length} jobs</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {isEmployeeMode ? (
+                    <div className="stage-list department-stage-list single-department-stage-list">
+                      <section
+                        className={`department-stage-panel single-department-panel stage-column stage-${stageSlug(employeeActivePanel?.stageName)}`}
+                      >
+                        <h2>{employeeActivePanel?.title}</h2>
+
+                        {!employeeActivePanel || employeeActivePanel.jobs.length === 0 ? (
+                          <div className="empty small">No active jobs here.</div>
+                        ) : (
+                          <div className="department-job-grid">
+                            {employeeActivePanel.jobs.map((job) => (
+                              <JobCard key={job.id} job={job} />
+                            ))}
+                          </div>
+                        )}
+                      </section>
+                    </div>
+                  ) : (
+                    <div className="stage-list department-stage-list">
+                      {panels.map((panel) => {
+                        return (
+                          <section
+                            key={panel.title}
+                            className={`department-stage-panel stage-column stage-${stageSlug(panel.stageName)}`}
+                          >
+                            <h2>{panel.title}</h2>
+
+                            {panel.jobs.length === 0 ? (
+                              <div className="empty small">No active jobs in {panel.title}.</div>
+                            ) : (
+                              <div className="department-job-grid">
+                                {panel.jobs.map((job) => (
+                                  <JobCard key={job.id} job={job} />
+                                ))}
+                              </div>
+                            )}
+                          </section>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              );
+            })()
+          )}
+        </main>
+      </div>
+
+      {cutSheetView && (
+        <div className="cut-sheet-modal-backdrop" onClick={() => setCutSheetView(null)}>
+          <div className="cut-sheet-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="cut-sheet-modal-actions">
+              <button onClick={() => setCutSheetView(null)}>Close</button>
+              <button
+                onClick={() =>
+                  printCutSheet(cutSheetView.model, cutSheetView.type)
+                }
+              >
+                Download PDF
+              </button>
+            </div>
+
+            <div className="cut-sheet-preview">
+              <div className="cut-sheet-preview-header">
+                <div>
+                  <div className="cut-sheet-logo">ADMIRAL</div>
+                  <div className="cut-sheet-logo-sub">OUTDOOR</div>
+                  <h1>{cutSheetView.type.name}</h1>
+                  <h2>{cutSheetView.model.name}</h2>
+                  <div className="cut-sheet-meta">
+                    <div><b>Total Parts:</b> {cutSheetView.type.parts?.length || 0}</div>
+                    <div><b>Generated:</b> {new Date().toLocaleDateString()}</div>
+                  </div>
+                </div>
+
+                {cutSheetView.type.image && (
+                  <img
+                    src={cutSheetView.type.image}
+                    className="cut-sheet-preview-img"
+                    alt=""
+                  />
+                )}
+              </div>
+
+              {(() => {
+                const specs = getItemSpecs(cutSheetView.type);
+                const specRows = [
+                  ["SKU", specs.sku],
+                  ["Dimensions", specs.dimensions],
+                  ["Seat Height", specs.seatHeight],
+                  ["Seat Width", specs.seatWidth],
+                  ["Seat Depth", specs.seatDepth],
+                  ["Stackable", specs.stackable],
+                  ["Material", specs.material],
+                ].filter(([, value]) => value);
+
+                return specRows.length > 0 ? (
+                  <div className="cut-sheet-spec-box">
+                    {specRows.map(([label, value]) => (
+                      <div key={label} className={label === "SKU" ? "sku-line" : ""}>
+                        <b>{label}:</b> {value}
+                      </div>
+                    ))}
+                  </div>
+                ) : null;
+              })()}
+
+              <div className="cut-sheet-table-wrap">
+                <table className="cut-sheet-table">
+                  <thead>
+                    <tr>
+                      <th>Part</th>
+                      <th>Material</th>
+                      <th>Length</th>
+                      <th>Qty</th>
+                      <th>Angle</th>
+                      <th>Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(cutSheetView.type.parts || []).length > 0 ? (
+                      cutSheetView.type.parts.map((part) => (
+                        <tr key={part.id || part.name}>
+                          <td>{part.name || ""}</td>
+                          <td>{part.tube || ""}</td>
+                          <td>{part.length || ""}</td>
+                          <td>{part.qty || ""}</td>
+                          <td>{part.angle || ""}</td>
+                          <td>{part.notes || ""}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="6">No parts saved yet.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
