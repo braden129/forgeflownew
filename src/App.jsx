@@ -1562,6 +1562,10 @@ function App() {
           <b>{currentRole}</b>
         </div>
 
+        <button className="logout-button" onClick={handleLogout}>
+          Log Out
+        </button>
+
         {isEmployeeMode && (
           <select
             className="nav-select department-select"
@@ -2597,12 +2601,6 @@ function App() {
             })()
           )}
         </main>
-      </div>
-
-      <div className="bottom-logout-wrap">
-        <button className="logout-button" onClick={handleLogout}>
-          Log Out
-        </button>
       </div>
 
       {cutSheetView && (
