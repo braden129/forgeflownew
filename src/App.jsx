@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { supabase } from "./supabaseClient";
 
 const STAGES = [
   "Fabrication",
@@ -33,63 +32,42 @@ const EMPLOYEE_DEPARTMENTS = [
   "Shipping",
 ];
 
-const APP_DATA_ID = "admiral-production-data";
-
+// TEMPORARY LOCAL LOGIN SYSTEM
+// This is for the current local/Vercel checkpoint only.
+// Change these passwords before sharing the live link.
+// Later, Supabase Auth will replace this with real cloud logins.
 const LOGIN_USERS = [
   {
     username: "braden",
-    email: "braden@forgeflow.local",
+    password: "dev123",
     displayName: "Braden",
+    role: "Developer",
   },
   {
     username: "tech",
-    email: "tech@forgeflow.local",
+    password: "tech123",
     displayName: "Tech",
+    role: "Developer",
   },
   {
     username: "admin",
-    email: "admin@forgeflow.local",
+    password: "admin123",
     displayName: "Admin",
+    role: "Admin",
   },
   {
     username: "supervisor",
-    email: "supervisor@forgeflow.local",
+    password: "supervisor123",
     displayName: "Supervisor",
+    role: "Supervisor",
   },
   {
     username: "employee",
-    email: "employee@forgeflow.local",
+    password: "employee123",
     displayName: "Employee",
+    role: "Employee",
   },
 ];
-
-function mapSupabaseRole(role) {
-  const normalizedRole = String(role || "").trim().toLowerCase();
-
-  if (normalizedRole === "dev" || normalizedRole === "developer") return "Developer";
-  if (normalizedRole === "admin") return "Admin";
-  if (normalizedRole === "supervisor") return "Supervisor";
-  if (normalizedRole === "employee") return "Employee";
-
-  return "Employee";
-}
-
-function normalizeDepartment(department) {
-  const match = EMPLOYEE_DEPARTMENTS.find(
-    (item) => item.toLowerCase() === String(department || "").trim().toLowerCase()
-  );
-
-  return match || "Fabrication";
-}
-
-function getSavedArray(key, fallback = []) {
-  try {
-    const saved = JSON.parse(localStorage.getItem(key));
-    return Array.isArray(saved) ? saved : fallback;
-  } catch (error) {
-    return fallback;
-  }
-}
 
 function getStoredUser() {
   try {
@@ -195,11 +173,7 @@ function App() {
   });
 
   const backupInputRef = useRef(null);
-  const cloudReadyRef = useRef(false);
-  const cloudSaveTimerRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(getStoredUser);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [cloudDataLoaded, setCloudDataLoaded] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const currentRole = currentUser?.role || "Employee";
@@ -218,211 +192,6 @@ function App() {
   const [selectedScheduleWeek, setSelectedScheduleWeek] = useState(0);
   const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
   const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
-
-  const writeLocalAppData = (nextData) => {
-    localStorage.setItem("models", JSON.stringify(nextData.models || []));
-    localStorage.setItem("schedule", JSON.stringify(nextData.schedule || []));
-    localStorage.setItem("liveJobs", JSON.stringify(nextData.liveJobs || []));
-    localStorage.setItem(
-      "scheduleWeeks",
-      JSON.stringify(nextData.scheduleWeeks || DEFAULT_SCHEDULE_WEEKS)
-    );
-  };
-
-  const applyAppData = (nextData) => {
-    const nextModels = Array.isArray(nextData?.models) ? nextData.models : [];
-    const nextSchedule = Array.isArray(nextData?.schedule) ? nextData.schedule : [];
-    const nextLiveJobs = Array.isArray(nextData?.liveJobs) ? nextData.liveJobs : [];
-    const nextScheduleWeeks = Array.isArray(nextData?.scheduleWeeks)
-      ? nextData.scheduleWeeks
-      : DEFAULT_SCHEDULE_WEEKS;
-
-    setModels(nextModels);
-    setSchedule(nextSchedule);
-    setLiveJobs(nextLiveJobs);
-    setScheduleWeeks(nextScheduleWeeks);
-    writeLocalAppData({
-      models: nextModels,
-      schedule: nextSchedule,
-      liveJobs: nextLiveJobs,
-      scheduleWeeks: nextScheduleWeeks,
-    });
-  };
-
-  const saveSharedAppData = async (nextData) => {
-    if (!currentUser) return false;
-
-    const payload = {
-      models: Array.isArray(nextData.models) ? nextData.models : [],
-      schedule: Array.isArray(nextData.schedule) ? nextData.schedule : [],
-      liveJobs: Array.isArray(nextData.liveJobs) ? nextData.liveJobs : [],
-      scheduleWeeks: Array.isArray(nextData.scheduleWeeks)
-        ? nextData.scheduleWeeks
-        : DEFAULT_SCHEDULE_WEEKS,
-      savedAt: new Date().toISOString(),
-    };
-
-    const { error } = await supabase.from("app_data").upsert(
-      {
-        id: APP_DATA_ID,
-        updated_at: new Date().toISOString(),
-        data: payload,
-      },
-      { onConflict: "id" }
-    );
-
-    if (error) {
-      console.error("Cloud save failed:", error);
-      return false;
-    }
-
-    return true;
-  };
-
-  const loadSharedAppData = async () => {
-    setCloudDataLoaded(false);
-
-    const { data, error } = await supabase
-      .from("app_data")
-      .select("data")
-      .eq("id", APP_DATA_ID)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Cloud load failed:", error);
-      cloudReadyRef.current = true;
-      setCloudDataLoaded(true);
-      return;
-    }
-
-    if (data?.data) {
-      applyAppData(data.data);
-    } else {
-      const localPayload = {
-        models: getSavedArray("models"),
-        schedule: getSavedArray("schedule"),
-        liveJobs: getSavedArray("liveJobs"),
-        scheduleWeeks: getSavedArray("scheduleWeeks", DEFAULT_SCHEDULE_WEEKS),
-      };
-
-      if (
-        localPayload.models.length > 0 ||
-        localPayload.schedule.length > 0 ||
-        localPayload.liveJobs.length > 0
-      ) {
-        await saveSharedAppData(localPayload);
-      }
-    }
-
-    cloudReadyRef.current = true;
-    setCloudDataLoaded(true);
-  };
-
-  const loadSupabaseUser = async (user) => {
-    if (!user) {
-      cloudReadyRef.current = false;
-      setCloudDataLoaded(false);
-      setCurrentUser(null);
-      localStorage.removeItem("loggedInUser");
-      localStorage.removeItem("currentRole");
-      return;
-    }
-
-    const loginUser = LOGIN_USERS.find(
-      (item) => item.email.toLowerCase() === String(user.email || "").toLowerCase()
-    );
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("email, role, department")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (error) {
-      console.error("Could not load user profile:", error);
-    }
-
-    const appRole = mapSupabaseRole(profile?.role || loginUser?.username);
-    const safeUser = {
-      id: user.id,
-      email: user.email,
-      username: loginUser?.username || user.email,
-      displayName: loginUser?.displayName || profile?.email || user.email || appRole,
-      role: appRole,
-    };
-
-    setCurrentUser(safeUser);
-    localStorage.setItem("loggedInUser", JSON.stringify(safeUser));
-    localStorage.setItem("currentRole", appRole);
-
-    if (appRole === "Employee") {
-      const nextDepartment = normalizeDepartment(profile?.department || employeeDepartment);
-      setEmployeeDepartment(nextDepartment);
-      setEmployeePanelTab(nextDepartment);
-      setView(nextDepartment);
-    } else {
-      setView("Live");
-    }
-
-    await loadSharedAppData();
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadInitialSession = async () => {
-      setAuthLoading(true);
-
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Could not load Supabase session:", error);
-      }
-
-      if (isMounted) {
-        await loadSupabaseUser(data?.session?.user || null);
-        setAuthLoading(false);
-      }
-    };
-
-    loadInitialSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!isMounted) return;
-      await loadSupabaseUser(session?.user || null);
-      setAuthLoading(false);
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!currentUser || !cloudReadyRef.current || !cloudDataLoaded) return;
-
-    if (cloudSaveTimerRef.current) {
-      clearTimeout(cloudSaveTimerRef.current);
-    }
-
-    cloudSaveTimerRef.current = setTimeout(() => {
-      saveSharedAppData({
-        models,
-        schedule,
-        liveJobs,
-        scheduleWeeks,
-      });
-    }, 900);
-
-    return () => {
-      if (cloudSaveTimerRef.current) {
-        clearTimeout(cloudSaveTimerRef.current);
-      }
-    };
-  }, [models, schedule, liveJobs, scheduleWeeks, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
     localStorage.setItem("models", JSON.stringify(models));
@@ -947,7 +716,7 @@ function App() {
 
     const reader = new FileReader();
 
-    reader.onload = async () => {
+    reader.onload = () => {
       try {
         const backup = JSON.parse(reader.result);
 
@@ -964,7 +733,7 @@ function App() {
         }
 
         const confirmed = window.confirm(
-          "Import this backup? This will replace the shared cloud data for everyone who logs into this app."
+          "Import this backup? This will replace your current saved models, schedule, live jobs, and week labels on this computer."
         );
 
         if (!confirmed) {
@@ -972,27 +741,21 @@ function App() {
           return;
         }
 
-        const importedData = {
-          models: backup.models,
-          schedule: backup.schedule,
-          liveJobs: backup.liveJobs,
-          scheduleWeeks: backup.scheduleWeeks,
-        };
-
-        applyAppData(importedData);
+        setModels(backup.models);
+        setSchedule(backup.schedule);
+        setLiveJobs(backup.liveJobs);
+        setScheduleWeeks(backup.scheduleWeeks);
         setSelectedModelId(null);
         setOpenTypeId(null);
         setView("Models");
 
-        const savedToCloud = await saveSharedAppData(importedData);
+        localStorage.setItem("models", JSON.stringify(backup.models));
+        localStorage.setItem("schedule", JSON.stringify(backup.schedule));
+        localStorage.setItem("liveJobs", JSON.stringify(backup.liveJobs));
+        localStorage.setItem("scheduleWeeks", JSON.stringify(backup.scheduleWeeks));
 
-        if (savedToCloud) {
-          alert("Backup imported and saved to Supabase cloud. Other devices should see it after refresh/login.");
-        } else {
-          alert("Backup imported on this device, but the Supabase cloud save failed. Check the browser console and app_data table.");
-        }
+        alert("Backup imported successfully.");
       } catch (error) {
-        console.error("Import failed:", error);
         alert("Could not import that backup file. Make sure it is the JSON backup exported from this app.");
       }
 
@@ -1508,55 +1271,45 @@ function App() {
         ];
   };
 
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
-
-    setLoginError("");
 
     const username = loginForm.username.trim().toLowerCase();
     const password = loginForm.password;
 
-    if (!username || !password) {
-      setLoginError("Enter your username and password.");
-      return;
-    }
-
-    const loginUser = LOGIN_USERS.find(
-      (item) => item.username.toLowerCase() === username
+    const user = LOGIN_USERS.find(
+      (item) => item.username.toLowerCase() === username && item.password === password
     );
 
-    if (!loginUser) {
+    if (!user) {
       setLoginError("Invalid username or password.");
       return;
     }
 
-    setAuthLoading(true);
+    const safeUser = {
+      username: user.username,
+      displayName: user.displayName,
+      role: user.role,
+    };
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: loginUser.email,
-      password,
-    });
+    setCurrentUser(safeUser);
+    localStorage.setItem("loggedInUser", JSON.stringify(safeUser));
+    localStorage.setItem("currentRole", user.role);
+    setLoginForm({ username: "", password: "" });
+    setLoginError("");
 
-    if (error) {
-      setLoginError(error.message || "Invalid username or password.");
-      setAuthLoading(false);
+    if (user.role === "Employee") {
+      setView(employeeDepartment);
       return;
     }
 
-    await loadSupabaseUser(data?.user || null);
-    setLoginForm({ username: "", password: "" });
-    setLoginError("");
-    setAuthLoading(false);
+    setView("Live");
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     if (!window.confirm("Log out of this device?")) return;
 
-    await supabase.auth.signOut();
-    cloudReadyRef.current = false;
-    setCloudDataLoaded(false);
     localStorage.removeItem("loggedInUser");
-    localStorage.removeItem("currentRole");
     setCurrentUser(null);
     setLoginForm({ username: "", password: "" });
     setLoginError("");
@@ -1727,26 +1480,6 @@ function App() {
     );
   };
 
-  if (authLoading) {
-    return (
-      <div className="login-page">
-        <div className="login-card">
-          <div className="login-brand">
-            <div className="login-logo">ADMIRAL</div>
-            <div className="login-logo-sub">OUTDOOR</div>
-          </div>
-
-          <h1>Loading...</h1>
-          <p className="muted">Checking secure session and shared company data.</p>
-
-          <div className="login-help">
-            Powered By ForgeFlow Technologies
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (!currentUser) {
     return (
       <div className="login-page">
@@ -1788,7 +1521,7 @@ function App() {
           </button>
 
           <div className="login-help">
-            Powered By ForgeFlow Technologies
+            Temporary local accounts are stored in App.jsx until Supabase Auth is added.
           </div>
         </form>
       </div>
@@ -1828,10 +1561,6 @@ function App() {
           <span>{currentUser?.displayName}</span>
           <b>{currentRole}</b>
         </div>
-
-        <button className="logout-button" onClick={handleLogout}>
-          Log Out
-        </button>
 
         {isEmployeeMode && (
           <select
@@ -2868,6 +2597,12 @@ function App() {
             })()
           )}
         </main>
+      </div>
+
+      <div className="bottom-logout-wrap">
+        <button className="logout-button" onClick={handleLogout}>
+          Log Out
+        </button>
       </div>
 
       {cutSheetView && (

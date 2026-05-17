@@ -2523,20 +2523,58 @@ button {
 .login-screen p {
   margin-top: 0 !important;
   line-height: 1.6 !important;
-}/* Logout button: red, but only appears at bottom of page */
-.logout-button {
+}
+
+
+/* Final collection + bottom logout polish */
+.side-card {
+  background: linear-gradient(135deg, #20344a, #172636) !important;
+  border-color: #3f6f9f !important;
+}
+
+.side-card.selected {
+  background: linear-gradient(135deg, #2d5f91, #214766) !important;
+  border-color: #77b8f5 !important;
+}
+
+.side-card .plain b {
+  color: #ffffff !important;
+}
+
+.side-card .plain span {
+  color: #d6eaff !important;
+}
+
+.bottom-logout-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 44px 24px 28px;
+}
+
+.bottom-logout-wrap .logout-button {
   position: static !important;
-  margin: 40px 18px 22px auto !important;
-  display: block !important;
-  width: fit-content !important;
+  width: auto !important;
+  min-width: 140px;
   background: #8b1e1e !important;
   border: 1px solid #d44 !important;
   color: white !important;
   font-weight: 900 !important;
   padding: 14px 18px !important;
   border-radius: 14px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
-.logout-button:hover {
+.bottom-logout-wrap .logout-button:hover {
   background: #b62828 !important;
 }
+
+@media (max-width: 800px) {
+  .bottom-logout-wrap {
+    padding: 36px 14px 24px;
+  }
+
+  .bottom-logout-wrap .logout-button {
+    width: 100% !important;
+  }
+}
+
