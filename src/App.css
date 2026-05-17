@@ -2546,3 +2546,21 @@ button {
   justify-content: flex-end;
   padding: 40px 24px 24px;
 }
+/* Blue collection buttons */
+.side-card {
+  background: linear-gradient(135deg, #20344a, #172636) !important;
+  border-color: #3f6f9f !important;
+}
+
+.side-card.selected {
+  background: linear-gradient(135deg, #2d5f91, #214766) !important;
+  border-color: #77b8f5 !important;
+}
+
+.side-card .plain b {
+  color: #ffffff !important;
+}
+
+.side-card .plain span {
+  color: #d6eaff !important;
+}
