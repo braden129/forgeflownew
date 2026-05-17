@@ -32,6 +32,58 @@ const EMPLOYEE_DEPARTMENTS = [
   "Shipping",
 ];
 
+// TEMPORARY LOCAL LOGIN SYSTEM
+// This is for the current local/Vercel checkpoint only.
+// Change these passwords before sharing the live link.
+// Later, Supabase Auth will replace this with real cloud logins.
+const LOGIN_USERS = [
+  {
+    username: "braden",
+    password: "dev123",
+    displayName: "Braden",
+    role: "Developer",
+  },
+  {
+    username: "tech",
+    password: "tech123",
+    displayName: "Tech",
+    role: "Developer",
+  },
+  {
+    username: "admin",
+    password: "admin123",
+    displayName: "Admin",
+    role: "Admin",
+  },
+  {
+    username: "supervisor",
+    password: "supervisor123",
+    displayName: "Supervisor",
+    role: "Supervisor",
+  },
+  {
+    username: "employee",
+    password: "employee123",
+    displayName: "Employee",
+    role: "Employee",
+  },
+];
+
+function getStoredUser() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!saved || !ROLES.includes(saved.role)) return null;
+
+    return {
+      username: saved.username || "",
+      displayName: saved.displayName || saved.username || saved.role,
+      role: saved.role,
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
 const emptyPartForm = {
   name: "",
   tube: "",
@@ -121,14 +173,10 @@ function App() {
   });
 
   const backupInputRef = useRef(null);
-  const [currentRole, setCurrentRole] = useState(() => {
-    const savedRole = localStorage.getItem("currentRole") || "Admin";
-
-    if (savedRole === "Office" || savedRole === "Supervisors") return "Supervisor";
-    if (STAGES.includes(savedRole) || savedRole === "View Only") return "Employee";
-
-    return ROLES.includes(savedRole) ? savedRole : "Admin";
-  });
+  const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+  const [loginError, setLoginError] = useState("");
+  const currentRole = currentUser?.role || "Employee";
 
   const [employeeDepartment, setEmployeeDepartment] = useState(() => {
     const savedDepartment = localStorage.getItem("employeeDepartment");
@@ -160,10 +208,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem("scheduleWeeks", JSON.stringify(scheduleWeeks));
   }, [scheduleWeeks]);
-
-  useEffect(() => {
-    localStorage.setItem("currentRole", currentRole);
-  }, [currentRole]);
 
   useEffect(() => {
     localStorage.setItem("employeeDepartment", employeeDepartment);
@@ -1227,15 +1271,49 @@ function App() {
         ];
   };
 
-  const handleRoleChange = (role) => {
-    setCurrentRole(role);
+  const handleLogin = (event) => {
+    event.preventDefault();
 
-    if (role === "Employee") {
+    const username = loginForm.username.trim().toLowerCase();
+    const password = loginForm.password;
+
+    const user = LOGIN_USERS.find(
+      (item) => item.username.toLowerCase() === username && item.password === password
+    );
+
+    if (!user) {
+      setLoginError("Invalid username or password.");
+      return;
+    }
+
+    const safeUser = {
+      username: user.username,
+      displayName: user.displayName,
+      role: user.role,
+    };
+
+    setCurrentUser(safeUser);
+    localStorage.setItem("loggedInUser", JSON.stringify(safeUser));
+    localStorage.setItem("currentRole", user.role);
+    setLoginForm({ username: "", password: "" });
+    setLoginError("");
+
+    if (user.role === "Employee") {
       setView(employeeDepartment);
       return;
     }
 
     setView("Live");
+  };
+
+  const handleLogout = () => {
+    if (!window.confirm("Log out of this device?")) return;
+
+    localStorage.removeItem("loggedInUser");
+    setCurrentUser(null);
+    setLoginForm({ username: "", password: "" });
+    setLoginError("");
+    setView("Models");
   };
 
   const handleEmployeeDepartmentChange = (department) => {
@@ -1402,6 +1480,54 @@ function App() {
     );
   };
 
+  if (!currentUser) {
+    return (
+      <div className="login-page">
+        <form className="login-card" onSubmit={handleLogin}>
+          <div className="login-brand">
+            <div className="login-logo">ADMIRAL</div>
+            <div className="login-logo-sub">OUTDOOR</div>
+          </div>
+
+          <h1>Production Login</h1>
+          <p className="muted">
+            Sign in once on this device. The app will remember this mode until you log out.
+          </p>
+
+          <label>Username</label>
+          <input
+            autoFocus
+            value={loginForm.username}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, username: e.target.value })
+            }
+            placeholder="Username"
+          />
+
+          <label>Password</label>
+          <input
+            type="password"
+            value={loginForm.password}
+            onChange={(e) =>
+              setLoginForm({ ...loginForm, password: e.target.value })
+            }
+            placeholder="Password"
+          />
+
+          {loginError && <div className="login-error">{loginError}</div>}
+
+          <button className="login-submit" type="submit">
+            Enter App
+          </button>
+
+          <div className="login-help">
+            Powered By ForgeFlow Technologies
+          </div>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <div className="top-nav clean-nav">
@@ -1431,17 +1557,14 @@ function App() {
           ))}
         </div>
 
-        <select
-          className="nav-select role-select"
-          value={currentRole}
-          onChange={(e) => handleRoleChange(e.target.value)}
-        >
-          {ROLES.map((role) => (
-            <option key={role} value={role}>
-              Mode: {role}
-            </option>
-          ))}
-        </select>
+        <div className="session-pill">
+          <span>{currentUser?.displayName}</span>
+          <b>{currentRole}</b>
+        </div>
+
+        <button className="logout-button" onClick={handleLogout}>
+          Log Out
+        </button>
 
         {isEmployeeMode && (
           <select
