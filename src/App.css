@@ -2513,7 +2513,7 @@ button {
 .login-panel h1,
 .login-screen h1 {
   line-height: 1.25 !important;
-  margin-bottom: 36px !important;
+  margin-bottom: 10px !important;
   padding-bottom: 10px !important;
 }
 
