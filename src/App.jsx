@@ -1521,7 +1521,7 @@ function App() {
           </button>
 
           <div className="login-help">
-            Powered By ForgeFlow Technologies
+            Temporary local accounts are stored in App.jsx until Supabase Auth is added.
           </div>
         </form>
       </div>
