@@ -2540,3 +2540,9 @@ button {
 .logout-button:hover {
   background: #b62828 !important;
 }
+/* Bottom logout placement only */
+.bottom-logout-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 40px 24px 24px;
+}
