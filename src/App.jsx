@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { supabase } from "./supabaseClient";
 
 const STAGES = [
   "Fabrication",
@@ -33,23 +32,56 @@ const EMPLOYEE_DEPARTMENTS = [
   "Shipping",
 ];
 
-function mapSupabaseRole(role) {
-  const normalizedRole = String(role || "").trim().toLowerCase();
+// TEMPORARY LOCAL LOGIN SYSTEM
+// This is for the current local/Vercel checkpoint only.
+// Change these passwords before sharing the live link.
+// Later, Supabase Auth will replace this with real cloud logins.
+const LOGIN_USERS = [
+  {
+    username: "braden",
+    password: "dev123",
+    displayName: "Braden",
+    role: "Developer",
+  },
+  {
+    username: "tech",
+    password: "tech123",
+    displayName: "Tech",
+    role: "Developer",
+  },
+  {
+    username: "admin",
+    password: "admin123",
+    displayName: "Admin",
+    role: "Admin",
+  },
+  {
+    username: "supervisor",
+    password: "supervisor123",
+    displayName: "Supervisor",
+    role: "Supervisor",
+  },
+  {
+    username: "employee",
+    password: "employee123",
+    displayName: "Employee",
+    role: "Employee",
+  },
+];
 
-  if (normalizedRole === "dev" || normalizedRole === "developer") return "Developer";
-  if (normalizedRole === "admin") return "Admin";
-  if (normalizedRole === "supervisor") return "Supervisor";
-  if (normalizedRole === "employee") return "Employee";
+function getStoredUser() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!saved || !ROLES.includes(saved.role)) return null;
 
-  return "Employee";
-}
-
-function normalizeDepartment(department) {
-  const match = EMPLOYEE_DEPARTMENTS.find(
-    (item) => item.toLowerCase() === String(department || "").trim().toLowerCase()
-  );
-
-  return match || "Fabrication";
+    return {
+      username: saved.username || "",
+      displayName: saved.displayName || saved.username || saved.role,
+      role: saved.role,
+    };
+  } catch (error) {
+    return null;
+  }
 }
 
 const emptyPartForm = {
@@ -141,9 +173,8 @@ function App() {
   });
 
   const backupInputRef = useRef(null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const currentRole = currentUser?.role || "Employee";
 
@@ -161,83 +192,6 @@ function App() {
   const [selectedScheduleWeek, setSelectedScheduleWeek] = useState(0);
   const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
   const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
-
-  const loadSupabaseUser = async (user) => {
-    if (!user) {
-      setCurrentUser(null);
-      localStorage.removeItem("loggedInUser");
-      localStorage.removeItem("currentRole");
-      return;
-    }
-
-    const { data: profile, error } = await supabase
-      .from("profiles")
-      .select("email, role, department")
-      .eq("id", user.id)
-      .single();
-
-    if (error || !profile) {
-      console.error("Could not load user profile:", error);
-      setLoginError("Login worked, but no role profile was found for this user.");
-      await supabase.auth.signOut();
-      setCurrentUser(null);
-      return;
-    }
-
-    const appRole = mapSupabaseRole(profile.role);
-    const safeUser = {
-      id: user.id,
-      email: user.email,
-      username: user.email,
-      displayName: profile.email || user.email || appRole,
-      role: appRole,
-    };
-
-    setCurrentUser(safeUser);
-    localStorage.setItem("loggedInUser", JSON.stringify(safeUser));
-    localStorage.setItem("currentRole", appRole);
-
-    if (appRole === "Employee") {
-      const nextDepartment = normalizeDepartment(profile.department);
-      setEmployeeDepartment(nextDepartment);
-      setEmployeePanelTab(nextDepartment);
-      setView(nextDepartment);
-    } else {
-      setView("Live");
-    }
-  };
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadInitialSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Could not load Supabase session:", error);
-      }
-
-      if (isMounted) {
-        await loadSupabaseUser(data?.session?.user || null);
-        setAuthLoading(false);
-      }
-    };
-
-    loadInitialSession();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!isMounted) return;
-      await loadSupabaseUser(session?.user || null);
-      setAuthLoading(false);
-    });
-
-    return () => {
-      isMounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
 
   useEffect(() => {
     localStorage.setItem("models", JSON.stringify(models));
@@ -1317,46 +1271,47 @@ function App() {
         ];
   };
 
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
 
-    setLoginError("");
-
-    const email = loginForm.email.trim();
+    const username = loginForm.username.trim().toLowerCase();
     const password = loginForm.password;
 
-    if (!email || !password) {
-      setLoginError("Enter your email and password.");
+    const user = LOGIN_USERS.find(
+      (item) => item.username.toLowerCase() === username && item.password === password
+    );
+
+    if (!user) {
+      setLoginError("Invalid username or password.");
       return;
     }
 
-    setAuthLoading(true);
+    const safeUser = {
+      username: user.username,
+      displayName: user.displayName,
+      role: user.role,
+    };
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
-      setLoginError(error.message || "Invalid email or password.");
-      setAuthLoading(false);
-      return;
-    }
-
-    await loadSupabaseUser(data?.user || null);
-    setLoginForm({ email: "", password: "" });
+    setCurrentUser(safeUser);
+    localStorage.setItem("loggedInUser", JSON.stringify(safeUser));
+    localStorage.setItem("currentRole", user.role);
+    setLoginForm({ username: "", password: "" });
     setLoginError("");
-    setAuthLoading(false);
+
+    if (user.role === "Employee") {
+      setView(employeeDepartment);
+      return;
+    }
+
+    setView("Live");
   };
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     if (!window.confirm("Log out of this device?")) return;
 
-    await supabase.auth.signOut();
     localStorage.removeItem("loggedInUser");
-    localStorage.removeItem("currentRole");
     setCurrentUser(null);
-    setLoginForm({ email: "", password: "" });
+    setLoginForm({ username: "", password: "" });
     setLoginError("");
     setView("Models");
   };
@@ -1525,26 +1480,6 @@ function App() {
     );
   };
 
-  if (authLoading) {
-    return (
-      <div className="login-page">
-        <div className="login-card">
-          <div className="login-brand">
-            <div className="login-logo">ADMIRAL</div>
-            <div className="login-logo-sub">OUTDOOR</div>
-          </div>
-
-          <h1>Loading...</h1>
-          <p className="muted">Checking secure session.</p>
-
-          <div className="login-help">
-            Powered By ForgeFlow Technologies
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (!currentUser) {
     return (
       <div className="login-page">
@@ -1559,14 +1494,14 @@ function App() {
             Sign in once on this device. The app will remember this mode until you log out.
           </p>
 
-          <label>Email</label>
+          <label>Username</label>
           <input
             autoFocus
-            value={loginForm.email}
+            value={loginForm.username}
             onChange={(e) =>
-              setLoginForm({ ...loginForm, email: e.target.value })
+              setLoginForm({ ...loginForm, username: e.target.value })
             }
-            placeholder="Email"
+            placeholder="Username"
           />
 
           <label>Password</label>
@@ -1581,8 +1516,8 @@ function App() {
 
           {loginError && <div className="login-error">{loginError}</div>}
 
-          <button className="login-submit" type="submit" disabled={authLoading}>
-            {authLoading ? "Signing In..." : "Enter App"}
+          <button className="login-submit" type="submit">
+            Enter App
           </button>
 
           <div className="login-help">
