@@ -2523,4 +2523,40 @@ button {
 .login-screen p {
   margin-top: 0 !important;
   line-height: 1.6 !important;
+}/* Collection buttons: make sidebar collections easier to see */
+.side-card {
+  background: linear-gradient(135deg, #20344a, #172636) !important;
+  border-color: #3f6f9f !important;
+}
+
+.side-card.selected {
+  background: linear-gradient(135deg, #2d5f91, #214766) !important;
+  border-color: #77b8f5 !important;
+}
+
+.side-card .plain b {
+  color: #ffffff !important;
+}
+
+.side-card .plain span {
+  color: #d6eaff !important;
+}
+
+/* Move logout to fixed bottom red safety button */
+.logout-button {
+  position: fixed !important;
+  right: 18px !important;
+  bottom: 18px !important;
+  z-index: 999 !important;
+  background: #8b1e1e !important;
+  border: 1px solid #d44 !important;
+  color: white !important;
+  font-weight: 900 !important;
+  padding: 14px 18px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45) !important;
+}
+
+.logout-button:hover {
+  background: #b62828 !important;
 }
