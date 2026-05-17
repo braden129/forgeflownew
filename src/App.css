@@ -2423,7 +2423,7 @@ button {
 .login-help {
   margin-top: 14px;
   color: #9d9d9d;
-  font-size: 12px;
+  font-size: 20px;
   line-height: 1.4;
 }
 
@@ -2468,4 +2468,75 @@ button {
     width: 100%;
     justify-content: center;
   }
+}
+/* Login polish override */
+.login-card {
+  width: min(760px, 100%) !important;
+  border-radius: 34px !important;
+  padding: 42px 58px 38px !important;
+}
+
+.login-logo {
+  font-size: clamp(44px, 8vw, 76px) !important;
+  line-height: 0.95 !important;
+  margin-bottom: 14px !important;
+}
+
+.login-logo-sub {
+  color: #d4af37 !important;
+  letter-spacing: 9px !important;
+  margin-top: 10px !important;
+}
+
+.login-title {
+  font-size: clamp(46px, 8vw, 74px) !important;
+  line-height: 1.22 !important;
+  margin: 36px 0 28px !important;
+  text-align: center;
+}
+
+.login-instructions {
+  font-size: clamp(18px, 3vw, 25px) !important;
+  line-height: 1.55 !important;
+  margin-bottom: 42px !important;
+}
+
+.login-powered,
+.login-help {
+  color: #d4af37 !important;
+  font-weight: 800 !important;
+  margin-top: 28px !important;
+  text-align: center !important;
+}/* Final login spacing force override */
+.login-card h1,
+.login-card .login-title,
+.login-panel h1,
+.login-screen h1 {
+  line-height: 1.25 !important;
+  margin-bottom: 10px !important;
+  padding-bottom: 10px !important;
+}
+
+.login-card p,
+.login-card .login-instructions,
+.login-panel p,
+.login-screen p {
+  margin-top: 0 !important;
+  line-height: 1.6 !important;
+}/* Logout button: red, but only appears at bottom of page */
+.logout-button {
+  position: static !important;
+  margin: 40px 18px 22px auto !important;
+  display: block !important;
+  width: fit-content !important;
+  background: #8b1e1e !important;
+  border: 1px solid #d44 !important;
+  color: white !important;
+  font-weight: 900 !important;
+  padding: 14px 18px !important;
+  border-radius: 14px !important;
+}
+
+.logout-button:hover {
+  background: #b62828 !important;
 }
