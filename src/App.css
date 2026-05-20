@@ -2564,3 +2564,26 @@ button {
 .side-card .plain span {
   color: #d6eaff !important;
 }
+
+/* Cut sheet readability fix: white paper preview/PDF text should stay black */
+.cut-sheet-preview,
+.cut-sheet-preview * {
+  color: #111 !important;
+}
+
+.cut-sheet-preview h1,
+.cut-sheet-preview h2,
+.cut-sheet-preview .sku-line,
+.cut-sheet-preview .model-sku-line,
+.cut-sheet-spec-box .sku-line {
+  color: #111 !important;
+}
+
+.cut-sheet-logo-sub {
+  color: #555 !important;
+}
+
+.cut-sheet-table th,
+.cut-sheet-table td {
+  color: #111 !important;
+}

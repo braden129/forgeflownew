@@ -37,6 +37,101 @@ const APP_DATA_ID = "admiral-production-data";
 const SNAPSHOT_INTERVAL_MS = 10 * 60 * 1000;
 const REALTIME_CHANNEL_NAME = "app-data-live-updates";
 
+const FISHBOWL_HEADER_ALIASES = {
+  collection: ["collection", "collection name", "model", "model name", "category", "product line"],
+  furniture: ["furniture", "furniture name", "item", "item name", "product", "product name", "description", "part description"],
+  sku: ["sku", "item number", "item no", "item #", "part number", "part no", "number", "product code"],
+  qty: ["qty", "quantity", "qty needed", "quantity needed", "order qty", "scheduled qty", "to build"],
+  dueDate: ["due date", "date", "ship date", "scheduled date", "schedule date", "week", "week of"],
+  notes: ["notes", "note", "memo", "customer", "customer name", "sales order", "so", "order", "order number", "work order", "wo"],
+};
+
+function normalizeCsvHeader(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseCsvText(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    const nextChar = text[i + 1];
+
+    if (char === '"' && inQuotes && nextChar === '"') {
+      field += '"';
+      i += 1;
+      continue;
+    }
+
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      row.push(field.trim());
+      field = "";
+      continue;
+    }
+
+    if ((char === "\n" || char === "\r") && !inQuotes) {
+      if (char === "\r" && nextChar === "\n") i += 1;
+      row.push(field.trim());
+      field = "";
+
+      if (row.some((cell) => String(cell || "").trim())) {
+        rows.push(row);
+      }
+
+      row = [];
+      continue;
+    }
+
+    field += char;
+  }
+
+  row.push(field.trim());
+
+  if (row.some((cell) => String(cell || "").trim())) {
+    rows.push(row);
+  }
+
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map(normalizeCsvHeader);
+
+  return rows.slice(1).map((cells) => {
+    const item = {};
+
+    headers.forEach((header, index) => {
+      item[header] = cells[index] || "";
+    });
+
+    return item;
+  });
+}
+
+function findCsvValue(row, fieldName) {
+  const aliases = FISHBOWL_HEADER_ALIASES[fieldName] || [];
+  const normalizedAliases = aliases.map(normalizeCsvHeader);
+  const foundKey = Object.keys(row).find((key) => normalizedAliases.includes(key));
+  return foundKey ? row[foundKey] : "";
+}
+
+function parseQuantity(value) {
+  const qty = Number(String(value || "").replace(/[^0-9.-]/g, ""));
+  return Number.isFinite(qty) && qty > 0 ? Math.round(qty) : 1;
+}
+
+
 const LOGIN_USERS = [
   {
     username: "braden",
@@ -197,6 +292,7 @@ function App() {
   });
 
   const backupInputRef = useRef(null);
+  const fishbowlCsvInputRef = useRef(null);
   const cloudReadyRef = useRef(false);
   const cloudSaveTimerRef = useRef(null);
   const lastSnapshotAtRef = useRef(0);
@@ -208,6 +304,7 @@ function App() {
   const [cloudDataLoaded, setCloudDataLoaded] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
+  const [fishbowlImportSummary, setFishbowlImportSummary] = useState("");
   const currentRole = currentUser?.role || "Employee";
 
   const [employeeDepartment, setEmployeeDepartment] = useState(() => {
@@ -875,6 +972,7 @@ function App() {
           <h1 style="
             margin:18px 0 6px;
             font-size:28px;
+            color:#111;
           ">
             ${type.name}
           </h1>
@@ -882,7 +980,7 @@ function App() {
           <h2 style="
             margin:0;
             font-size:18px;
-            color:#555;
+            color:#111;
           ">
             ${model.name}
           </h2>
@@ -1018,6 +1116,117 @@ function App() {
     document.head.removeChild(style);
   };
 
+
+
+  const getFishbowlWeekSlot = (dueDateValue) => {
+    const dueDateText = String(dueDateValue || "").trim();
+    if (!dueDateText) return selectedScheduleWeek;
+
+    const legacySlot = getLegacyWeekSlot(dueDateText);
+    if (/^week\s+[1-5]$/i.test(dueDateText)) return legacySlot;
+
+    const normalizedDueDate = cleanScheduleDateLabel(dueDateText).toLowerCase();
+    const matchedIndex = scheduleWeeks.findIndex(
+      (week) => cleanScheduleDateLabel(week).toLowerCase() === normalizedDueDate
+    );
+
+    return matchedIndex === -1 ? selectedScheduleWeek : matchedIndex;
+  };
+
+  const importFishbowlScheduleCsv = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      try {
+        const rows = parseCsvText(String(reader.result || ""));
+
+        const importedJobs = rows
+          .map((row) => {
+            const collection = findCsvValue(row, "collection") || "Fishbowl Import";
+            const furniture = findCsvValue(row, "furniture");
+            const sku = findCsvValue(row, "sku");
+            const dueDate = findCsvValue(row, "dueDate");
+            const notes = findCsvValue(row, "notes");
+            const qtyNeeded = parseQuantity(findCsvValue(row, "qty"));
+
+            if (!furniture && !sku) return null;
+
+            const productSpecs = {
+              sku,
+              dimensions: "",
+              seatHeight: "",
+              seatWidth: "",
+              seatDepth: "",
+              stackable: "",
+              material: "",
+            };
+
+            return {
+              id: makeId(),
+              modelId: "fishbowl-import",
+              typeId: sku || makeId(),
+              collection,
+              furniture: furniture || sku,
+              image: null,
+              sku,
+              dimensions: "",
+              seatHeight: "",
+              seatWidth: "",
+              seatDepth: "",
+              stackable: "",
+              material: "",
+              specs: productSpecs,
+              partsSnapshot: [],
+              qtyNeeded,
+              qtyComplete: 0,
+              weekSlot: getFishbowlWeekSlot(dueDate),
+              dueDate,
+              notes: notes ? `Fishbowl import: ${notes}` : "Fishbowl import",
+              status: "Scheduled",
+              createdAt: new Date().toISOString(),
+              source: "Fishbowl CSV",
+            };
+          })
+          .filter(Boolean);
+
+        if (importedJobs.length === 0) {
+          alert("No schedule rows were found. Make sure the CSV has item/product and quantity columns.");
+          event.target.value = "";
+          return;
+        }
+
+        const preview = importedJobs
+          .slice(0, 8)
+          .map((job) => `• ${job.collection} / ${job.furniture} — Qty ${job.qtyNeeded}${job.sku ? ` — SKU ${job.sku}` : ""}`)
+          .join("\n");
+
+        const confirmed = window.confirm(
+          `Import ${importedJobs.length} Fishbowl schedule row(s) into ForgeFlow?\n\nPreview:\n${preview}${importedJobs.length > 8 ? "\n..." : ""}`
+        );
+
+        if (!confirmed) {
+          event.target.value = "";
+          return;
+        }
+
+        setSchedule([...importedJobs, ...schedule]);
+        setView("Schedule");
+        setFishbowlImportSummary(
+          `Imported ${importedJobs.length} Fishbowl row(s) from ${file.name}. Autosave/realtime will sync this to Supabase.`
+        );
+      } catch (error) {
+        console.error("Fishbowl CSV import failed:", error);
+        alert("Could not import that CSV. Export from Fishbowl as CSV and try again.");
+      }
+
+      event.target.value = "";
+    };
+
+    reader.readAsText(file);
+  };
 
   const exportBackup = () => {
     const backup = {
@@ -1946,15 +2155,31 @@ function App() {
           </select>
         )}
 
-        {currentRole === "Developer" && (
+        {canManage && (
           <div className="nav-button-group backup-actions">
-            <button onClick={exportBackup}>Export Backup</button>
-
-            <button onClick={() => backupInputRef.current?.click()}>
-              Import Backup
+            <button onClick={() => fishbowlCsvInputRef.current?.click()}>
+              Import Fishbowl Schedule
             </button>
+
+            {currentRole === "Developer" && (
+              <>
+                <button onClick={exportBackup}>Export Full Backup</button>
+
+                <button onClick={() => backupInputRef.current?.click()}>
+                  Import Full Backup
+                </button>
+              </>
+            )}
           </div>
         )}
+
+        <input
+          ref={fishbowlCsvInputRef}
+          type="file"
+          accept=".csv,text/csv"
+          style={{ display: "none" }}
+          onChange={importFishbowlScheduleCsv}
+        />
 
         <input
           ref={backupInputRef}
@@ -2559,6 +2784,9 @@ function App() {
                       <p className="muted">
                         Select one week at a time for a cleaner monitor-style view.
                       </p>
+                      {fishbowlImportSummary && (
+                        <p className="note">{fishbowlImportSummary}</p>
+                      )}
                     </div>
                   </div>
 
