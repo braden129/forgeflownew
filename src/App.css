@@ -2587,3 +2587,220 @@ button {
 .cut-sheet-table td {
   color: #111 !important;
 }
+
+
+/* Shop Notes + navigation color pass */
+.main-nav-button.nav-models,
+.main-nav-button.nav-schedule {
+  background: linear-gradient(135deg, #2d5f91, #214766) !important;
+  border: 1px solid #77b8f5 !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.main-nav-button.nav-live {
+  background: linear-gradient(135deg, #247a4a, #185838) !important;
+  border: 1px solid #60d394 !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.main-nav-button.nav-messages {
+  background: linear-gradient(135deg, #b8860b, #7a5a08) !important;
+  border: 1px solid #f1d06a !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.main-nav-button.active-nav {
+  filter: brightness(1.18);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.24), 0 0 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.dev-tool-button {
+  background: linear-gradient(135deg, #1b3f63, #132d47) !important;
+  border: 1px solid #356d9d !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.dev-tool-button:hover {
+  background: linear-gradient(135deg, #24537f, #183a5c) !important;
+}
+
+.messages-page-head {
+  margin-bottom: 14px;
+}
+
+.messages-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+.message-compose-card label {
+  display: block;
+  color: #cfcfcf;
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 12px;
+}
+
+.message-textarea {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  background: #202020;
+  border: 1px solid #444;
+  color: #f7f7f7;
+  border-radius: 10px;
+  resize: vertical;
+  min-height: 120px;
+  font: inherit;
+}
+
+.message-send-button {
+  background: linear-gradient(135deg, #b8860b, #7a5a08) !important;
+  border: 1px solid #f1d06a !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.message-feed-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.message-feed-head h2 {
+  margin-bottom: 0;
+}
+
+.message-feed-head span {
+  color: #bbb;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.message-list {
+  display: grid;
+  gap: 10px;
+}
+
+.shop-message-card {
+  background: linear-gradient(135deg, rgba(31, 45, 60, 0.92), rgba(25, 31, 40, 0.96));
+  border: 1px solid rgba(91, 141, 190, 0.55);
+  border-radius: 14px;
+  padding: 13px;
+}
+
+.shop-message-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.shop-message-topline b {
+  display: block;
+  color: #ffffff;
+  font-size: 15px;
+}
+
+.shop-message-topline span {
+  display: block;
+  color: #c8d6e5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.message-department-badge {
+  flex-shrink: 0;
+  background: rgba(184, 134, 11, 0.22) !important;
+  border: 1px solid rgba(241, 208, 106, 0.65);
+  color: #ffe49a !important;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.shop-message-card p {
+  color: #f5f5f5;
+  margin: 0;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.message-delete-button {
+  margin-top: 10px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+@media (max-width: 850px) {
+  .messages-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-message-topline {
+    flex-direction: column;
+  }
+
+  .message-department-badge {
+    width: fit-content;
+  }
+}
+
+
+/* Shop Notes to/from refinement + employee department blue selector */
+.department-select {
+  background: linear-gradient(135deg, #2d5f91, #214766) !important;
+  border: 1px solid #77b8f5 !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+.message-route-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+.message-route-pill {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #20344a, #172636);
+  border: 1px solid #3f6f9f;
+  color: #ffffff;
+  font-weight: 900;
+  min-height: 41px;
+  display: flex;
+  align-items: center;
+}
+
+.message-route-grid select {
+  background: linear-gradient(135deg, #20344a, #172636) !important;
+  border: 1px solid #3f6f9f !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.shop-message-topline b {
+  color: #ffe49a !important;
+}
+
+@media (max-width: 650px) {
+  .message-route-grid {
+    grid-template-columns: 1fr;
+  }
+}

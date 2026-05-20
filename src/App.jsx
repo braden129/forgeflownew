@@ -21,8 +21,17 @@ const DEFAULT_SCHEDULE_WEEKS = [
   "Week of",
 ];
 
-const VIEWS = ["Models", "Schedule", "Live", ...STAGES];
-const PRIMARY_VIEWS = ["Models", "Schedule", "Live"];
+const VIEWS = ["Models", "Schedule", "Live", "Messages", ...STAGES];
+const PRIMARY_VIEWS = ["Models", "Schedule", "Live", "Messages"];
+const MESSAGE_RECIPIENTS = [
+  "Everyone",
+  "Fabrication",
+  "Welding",
+  "Assembly",
+  "Paint Line",
+  "Shipping",
+  "Office / Admin",
+];
 
 const ROLES = ["Employee", "Supervisor", "Admin", "Developer"];
 const EMPLOYEE_DEPARTMENTS = [
@@ -36,6 +45,7 @@ const EMPLOYEE_DEPARTMENTS = [
 const APP_DATA_ID = "admiral-production-data";
 const SNAPSHOT_INTERVAL_MS = 10 * 60 * 1000;
 const REALTIME_CHANNEL_NAME = "app-data-live-updates";
+const SHOP_MESSAGES_CHANNEL_NAME = "shop-messages-live-updates";
 
 const FISHBOWL_HEADER_ALIASES = {
   collection: ["collection", "collection name", "model", "model name", "category", "product line"],
@@ -305,6 +315,9 @@ function App() {
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [fishbowlImportSummary, setFishbowlImportSummary] = useState("");
+  const [shopMessages, setShopMessages] = useState([]);
+  const [shopMessageText, setShopMessageText] = useState("");
+  const [shopMessageTo, setShopMessageTo] = useState("Everyone");
   const currentRole = currentUser?.role || "Employee";
 
   const [employeeDepartment, setEmployeeDepartment] = useState(() => {
@@ -588,6 +601,60 @@ function App() {
       .subscribe((status) => {
         if (status === "SUBSCRIBED") {
           console.info("Supabase live updates connected.");
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser, cloudDataLoaded]);
+
+  useEffect(() => {
+    if (!currentUser || !cloudDataLoaded) return;
+
+    loadShopMessages();
+
+    const channel = supabase
+      .channel(SHOP_MESSAGES_CHANNEL_NAME)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "shop_messages",
+        },
+        (change) => {
+          const newMessage = change?.new;
+          if (!newMessage) return;
+
+          setShopMessages((currentMessages) => {
+            if (currentMessages.some((message) => message.id === newMessage.id)) {
+              return currentMessages;
+            }
+
+            return [newMessage, ...currentMessages].slice(0, 100);
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "shop_messages",
+        },
+        (change) => {
+          const deletedId = change?.old?.id;
+          if (!deletedId) return;
+
+          setShopMessages((currentMessages) =>
+            currentMessages.filter((message) => message.id !== deletedId)
+          );
+        }
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          console.info("Shop messages live updates connected.");
         }
       });
 
@@ -1820,6 +1887,77 @@ function App() {
         ];
   };
 
+  const getShopMessageFromLabel = () => {
+    if (currentRole === "Employee") return employeeDepartment;
+    if (["Admin", "Developer", "Supervisor"].includes(currentRole)) return "Office / Admin";
+    return currentRole || "Team";
+  };
+
+  const loadShopMessages = async () => {
+    const { data, error } = await supabase
+      .from("shop_messages")
+      .select("id, created_at, sender_name, sender_role, department, message")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.error("Could not load shop messages:", error);
+      return;
+    }
+
+    setShopMessages(Array.isArray(data) ? data : []);
+  };
+
+  const sendShopMessage = async (event) => {
+    event.preventDefault();
+
+    const cleanMessage = shopMessageText.trim();
+    if (!cleanMessage || !currentUser) return;
+
+    const { error } = await supabase.from("shop_messages").insert({
+      sender_name: currentUser.displayName || currentUser.username || currentRole,
+      sender_role: getShopMessageFromLabel(),
+      department: shopMessageTo,
+      message: cleanMessage,
+    });
+
+    if (error) {
+      console.error("Could not send shop message:", error);
+      alert("Could not send that message. Check Supabase and try again.");
+      return;
+    }
+
+    setShopMessageText("");
+  };
+
+  const deleteShopMessage = async (messageId) => {
+    if (!canDelete && currentRole !== "Admin") return;
+    if (!window.confirm("Delete this shop note?")) return;
+
+    const { error } = await supabase
+      .from("shop_messages")
+      .delete()
+      .eq("id", messageId);
+
+    if (error) {
+      console.error("Could not delete shop message:", error);
+      alert("Could not delete that message.");
+    }
+  };
+
+  const formatMessageTime = (value) => {
+    try {
+      return new Date(value).toLocaleString([], {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      return "";
+    }
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -2121,7 +2259,7 @@ function App() {
           {PRIMARY_VIEWS.map((navItem) => (
             <button
               key={navItem}
-              className={view === navItem ? "active-nav" : ""}
+              className={`main-nav-button nav-${stageSlug(navItem)} ${view === navItem ? "active-nav" : ""}`}
               onClick={() => {
                 if (navItem === "Live" && !canSeeFullLive && isEmployeeMode) {
                   setView(employeeDepartment);
@@ -2157,15 +2295,15 @@ function App() {
 
         {canManage && (
           <div className="nav-button-group backup-actions">
-            <button onClick={() => fishbowlCsvInputRef.current?.click()}>
+            <button className="dev-tool-button" onClick={() => fishbowlCsvInputRef.current?.click()}>
               Import Fishbowl Schedule
             </button>
 
             {currentRole === "Developer" && (
               <>
-                <button onClick={exportBackup}>Export Full Backup</button>
+                <button className="dev-tool-button" onClick={exportBackup}>Export Full Backup</button>
 
-                <button onClick={() => backupInputRef.current?.click()}>
+                <button className="dev-tool-button" onClick={() => backupInputRef.current?.click()}>
                   Import Full Backup
                 </button>
               </>
@@ -2739,6 +2877,98 @@ function App() {
             </>
           )}
 
+          {view === "Messages" && (
+            <>
+              <div className="page-head messages-page-head">
+                <div>
+                  <h1>Shop Notes</h1>
+                  <p className="muted">
+                    Send quick shop-floor messages that update live for everyone signed in.
+                  </p>
+                </div>
+              </div>
+
+              <section className="messages-layout">
+                <form className="card message-compose-card" onSubmit={sendShopMessage}>
+                  <h2>New Message</h2>
+
+                  <div className="message-route-grid">
+                    <div>
+                      <label>From</label>
+                      <div className="message-route-pill">{getShopMessageFromLabel()}</div>
+                    </div>
+
+                    <div>
+                      <label>To</label>
+                      <select
+                        value={shopMessageTo}
+                        onChange={(e) => setShopMessageTo(e.target.value)}
+                      >
+                        {MESSAGE_RECIPIENTS.map((recipient) => (
+                          <option key={recipient} value={recipient}>
+                            {recipient}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <label>Message</label>
+                  <textarea
+                    className="message-textarea"
+                    value={shopMessageText}
+                    onChange={(e) => setShopMessageText(e.target.value)}
+                    placeholder="Example: Braden, I’m short 2 legs for Destin arm chairs."
+                    rows="4"
+                  />
+
+                  <button className="wide message-send-button" type="submit">
+                    Send Message
+                  </button>
+                </form>
+
+                <section className="card message-feed-card">
+                  <div className="message-feed-head">
+                    <h2>Recent Shop Notes</h2>
+                    <span>{shopMessages.length} shown</span>
+                  </div>
+
+                  {shopMessages.length === 0 ? (
+                    <div className="empty">No shop notes yet.</div>
+                  ) : (
+                    <div className="message-list">
+                      {shopMessages.map((message) => (
+                        <article key={message.id} className="shop-message-card">
+                          <div className="shop-message-topline">
+                            <div>
+                              <b>{message.sender_role || "Team"} → {message.department || "Everyone"}</b>
+                              <span>{message.sender_name || "Team Member"} • {formatMessageTime(message.created_at)}</span>
+                            </div>
+
+                            <span className="message-department-badge">
+                              To: {message.department || "Everyone"}
+                            </span>
+                          </div>
+
+                          <p>{message.message}</p>
+
+                          {(canDelete || currentRole === "Admin") && (
+                            <button
+                              className="danger message-delete-button"
+                              onClick={() => deleteShopMessage(message.id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </section>
+              </section>
+            </>
+          )}
+
           {view === "Schedule" && (
             (() => {
               const safeSelectedWeek = Math.min(
@@ -2833,24 +3063,26 @@ function App() {
                         />
                       </div>
 
-                      <div className="schedule-head-stats">
-                        <div>
-                          <span>Active Jobs</span>
-                          <b>{activeJobs.length}</b>
+                      {!isEmployeeMode && (
+                        <div className="schedule-head-stats">
+                          <div>
+                            <span>Active Jobs</span>
+                            <b>{activeJobs.length}</b>
+                          </div>
+                          <div>
+                            <span>Scheduled Qty</span>
+                            <b>{activeQty}</b>
+                          </div>
+                          <div>
+                            <span>Remaining Qty</span>
+                            <b>{remainingQty}</b>
+                          </div>
+                          <div>
+                            <span>Complete</span>
+                            <b>{completedJobs.length}</b>
+                          </div>
                         </div>
-                        <div>
-                          <span>Scheduled Qty</span>
-                          <b>{activeQty}</b>
-                        </div>
-                        <div>
-                          <span>Remaining Qty</span>
-                          <b>{remainingQty}</b>
-                        </div>
-                        <div>
-                          <span>Complete</span>
-                          <b>{completedJobs.length}</b>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     {activeJobs.length === 0 ? (
