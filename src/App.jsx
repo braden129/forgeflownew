@@ -34,6 +34,8 @@ const EMPLOYEE_DEPARTMENTS = [
 ];
 
 const APP_DATA_ID = "admiral-production-data";
+const SNAPSHOT_INTERVAL_MS = 10 * 60 * 1000;
+const REALTIME_CHANNEL_NAME = "app-data-live-updates";
 
 const LOGIN_USERS = [
   {
@@ -197,6 +199,10 @@ function App() {
   const backupInputRef = useRef(null);
   const cloudReadyRef = useRef(false);
   const cloudSaveTimerRef = useRef(null);
+  const lastSnapshotAtRef = useRef(0);
+  const lastSnapshotHashRef = useRef("");
+  const realtimeClientIdRef = useRef(makeId());
+  const skipNextCloudSaveRef = useRef(false);
   const [currentUser, setCurrentUser] = useState(getStoredUser);
   const [authLoading, setAuthLoading] = useState(true);
   const [cloudDataLoaded, setCloudDataLoaded] = useState(false);
@@ -249,7 +255,52 @@ function App() {
     });
   };
 
-  const saveSharedAppData = async (nextData) => {
+  const createAppDataSnapshot = async (payload, reason = "auto-save") => {
+    if (!currentUser) return;
+
+    const snapshotHash = JSON.stringify(payload);
+    const now = Date.now();
+    const shouldSkipSnapshot =
+      reason === "auto-save" &&
+      (snapshotHash === lastSnapshotHashRef.current ||
+        now - lastSnapshotAtRef.current < SNAPSHOT_INTERVAL_MS);
+
+    if (shouldSkipSnapshot) return;
+
+    const snapshotRecord = {
+      appDataId: APP_DATA_ID,
+      reason,
+      savedAt: payload.savedAt,
+      savedBy: {
+        id: currentUser.id || null,
+        email: currentUser.email || null,
+        username: currentUser.username || null,
+        displayName: currentUser.displayName || null,
+        role: currentUser.role || null,
+      },
+      counts: {
+        models: payload.models.length,
+        schedule: payload.schedule.length,
+        liveJobs: payload.liveJobs.length,
+        scheduleWeeks: payload.scheduleWeeks.length,
+      },
+      data: payload,
+    };
+
+    const { error } = await supabase
+      .from("app_data_snapshots")
+      .insert({ data: snapshotRecord });
+
+    if (error) {
+      console.warn("Snapshot save failed, but main cloud save is still safe:", error);
+      return;
+    }
+
+    lastSnapshotAtRef.current = now;
+    lastSnapshotHashRef.current = snapshotHash;
+  };
+
+  const saveSharedAppData = async (nextData, options = {}) => {
     if (!currentUser) return false;
 
     const payload = {
@@ -260,6 +311,16 @@ function App() {
         ? nextData.scheduleWeeks
         : DEFAULT_SCHEDULE_WEEKS,
       savedAt: new Date().toISOString(),
+      savedByClientId: realtimeClientIdRef.current,
+      savedByUser: currentUser
+        ? {
+            id: currentUser.id || null,
+            email: currentUser.email || null,
+            username: currentUser.username || null,
+            displayName: currentUser.displayName || null,
+            role: currentUser.role || null,
+          }
+        : null,
     };
 
     const { error } = await supabase.from("app_data").upsert(
@@ -275,6 +336,8 @@ function App() {
       console.error("Cloud save failed:", error);
       return false;
     }
+
+    await createAppDataSnapshot(payload, options.snapshotReason || "auto-save");
 
     return true;
   };
@@ -402,7 +465,47 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!currentUser || !cloudDataLoaded) return;
+
+    const channel = supabase
+      .channel(REALTIME_CHANNEL_NAME)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "app_data",
+          filter: `id=eq.${APP_DATA_ID}`,
+        },
+        (change) => {
+          const remoteData = change?.new?.data;
+
+          if (!remoteData) return;
+          if (remoteData.savedByClientId === realtimeClientIdRef.current) return;
+
+          skipNextCloudSaveRef.current = true;
+          applyAppData(remoteData);
+          console.info("Live update received from Supabase.");
+        }
+      )
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          console.info("Supabase live updates connected.");
+        }
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser, cloudDataLoaded]);
+
+  useEffect(() => {
     if (!currentUser || !cloudReadyRef.current || !cloudDataLoaded) return;
+
+    if (skipNextCloudSaveRef.current) {
+      skipNextCloudSaveRef.current = false;
+      return;
+    }
 
     if (cloudSaveTimerRef.current) {
       clearTimeout(cloudSaveTimerRef.current);
@@ -984,7 +1087,7 @@ function App() {
         setOpenTypeId(null);
         setView("Models");
 
-        const savedToCloud = await saveSharedAppData(importedData);
+        const savedToCloud = await saveSharedAppData(importedData, { snapshotReason: "manual-import" });
 
         if (savedToCloud) {
           alert("Backup imported and saved to Supabase cloud. Other devices should see it after refresh/login.");
