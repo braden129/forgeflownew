@@ -31,7 +31,7 @@ const MESSAGE_RECIPIENTS = [
   "Paint Line",
   "Shipping",
   "Supervisor",
-  "Developer",
+  "Dev-Braden",
 ];
 
 const AUTO_ARCHIVE_COMPLETED_AFTER_DAYS = 7;
