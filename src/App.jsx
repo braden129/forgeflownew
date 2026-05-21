@@ -30,8 +30,11 @@ const MESSAGE_RECIPIENTS = [
   "Assembly",
   "Paint Line",
   "Shipping",
-  "Office / Admin",
+  "Supervisor",
+  "Developer",
 ];
+
+const AUTO_ARCHIVE_COMPLETED_AFTER_DAYS = 7;
 
 const ROLES = ["Employee", "Supervisor", "Admin", "Developer"];
 const EMPLOYEE_DEPARTMENTS = [
@@ -303,6 +306,7 @@ function App() {
 
   const backupInputRef = useRef(null);
   const fishbowlCsvInputRef = useRef(null);
+  const messagePhotoInputRef = useRef(null);
   const cloudReadyRef = useRef(false);
   const cloudSaveTimerRef = useRef(null);
   const lastSnapshotAtRef = useRef(0);
@@ -318,6 +322,8 @@ function App() {
   const [shopMessages, setShopMessages] = useState([]);
   const [shopMessageText, setShopMessageText] = useState("");
   const [shopMessageTo, setShopMessageTo] = useState("Everyone");
+  const [shopMessagePhoto, setShopMessagePhoto] = useState(null);
+  const [shopMessagePhotoName, setShopMessagePhotoName] = useState("");
   const currentRole = currentUser?.role || "Employee";
 
   const [employeeDepartment, setEmployeeDepartment] = useState(() => {
@@ -639,6 +645,24 @@ function App() {
       .on(
         "postgres_changes",
         {
+          event: "UPDATE",
+          schema: "public",
+          table: "shop_messages",
+        },
+        (change) => {
+          const updatedMessage = change?.new;
+          if (!updatedMessage) return;
+
+          setShopMessages((currentMessages) =>
+            currentMessages.map((message) =>
+              message.id === updatedMessage.id ? updatedMessage : message
+            )
+          );
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
           event: "DELETE",
           schema: "public",
           table: "shop_messages",
@@ -690,6 +714,38 @@ function App() {
       }
     };
   }, [models, schedule, liveJobs, scheduleWeeks, currentUser, cloudDataLoaded]);
+
+  useEffect(() => {
+    if (!currentUser || !cloudDataLoaded || schedule.length === 0) return;
+
+    const cutoff = Date.now() - AUTO_ARCHIVE_COMPLETED_AFTER_DAYS * 24 * 60 * 60 * 1000;
+    let changed = false;
+
+    const nextSchedule = schedule
+      .map((job) => {
+        if (job.status !== "Complete") return job;
+        if (job.completedAt) return job;
+
+        changed = true;
+        return {
+          ...job,
+          completedAt: new Date().toISOString(),
+        };
+      })
+      .filter((job) => {
+        if (job.status !== "Complete" || !job.completedAt) return true;
+        const completedTime = new Date(job.completedAt).getTime();
+        if (!Number.isFinite(completedTime)) return true;
+
+        const shouldArchive = completedTime < cutoff;
+        if (shouldArchive) changed = true;
+        return !shouldArchive;
+      });
+
+    if (changed) {
+      setSchedule(nextSchedule);
+    }
+  }, [schedule, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
     localStorage.setItem("models", JSON.stringify(models));
@@ -1581,6 +1637,7 @@ function App() {
               : job.status === "Complete"
               ? "Scheduled"
               : job.status,
+          completedAt: nextComplete >= nextQty ? job.completedAt || new Date().toISOString() : null,
         };
       })
     );
@@ -1597,6 +1654,7 @@ function App() {
           ...job,
           qtyComplete: isComplete ? 0 : job.qtyNeeded,
           status: isComplete ? "Scheduled" : "Complete",
+          completedAt: isComplete ? null : job.completedAt || new Date().toISOString(),
         };
       })
     );
@@ -1763,6 +1821,7 @@ function App() {
               newComplete >= scheduleJob.qtyNeeded
                 ? "Complete"
                 : "In Production",
+            completedAt: newComplete >= scheduleJob.qtyNeeded ? scheduleJob.completedAt || new Date().toISOString() : null,
           };
         })
       );
@@ -1788,6 +1847,7 @@ function App() {
           ...scheduleJob,
           qtyComplete: newComplete,
           status: newComplete >= Number(scheduleJob.qtyNeeded || 0) ? "Complete" : "In Production",
+          completedAt: newComplete >= Number(scheduleJob.qtyNeeded || 0) ? scheduleJob.completedAt || new Date().toISOString() : null,
         };
       })
     );
@@ -1889,14 +1949,14 @@ function App() {
 
   const getShopMessageFromLabel = () => {
     if (currentRole === "Employee") return employeeDepartment;
-    if (["Admin", "Developer", "Supervisor"].includes(currentRole)) return "Office / Admin";
+    if (["Supervisor"].includes(currentRole)) return "Supervisor";
     return currentRole || "Team";
   };
 
   const loadShopMessages = async () => {
     const { data, error } = await supabase
       .from("shop_messages")
-      .select("id, created_at, sender_name, sender_role, department, message")
+      .select("id, created_at, sender_name, sender_role, department, message, attachment_url, attachment_name, acknowledgements")
       .order("created_at", { ascending: false })
       .limit(100);
 
@@ -1906,6 +1966,109 @@ function App() {
     }
 
     setShopMessages(Array.isArray(data) ? data : []);
+  };
+
+  const compressShopMessageImage = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        resolve(null);
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        const image = new Image();
+
+        image.onload = () => {
+          const maxSize = 1200;
+          const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+          const canvas = document.createElement("canvas");
+
+          canvas.width = Math.round(image.width * scale);
+          canvas.height = Math.round(image.height * scale);
+
+          const context = canvas.getContext("2d");
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+          resolve(canvas.toDataURL("image/jpeg", 0.78));
+        };
+
+        image.onerror = reject;
+        image.src = reader.result;
+      };
+
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleShopMessagePhoto = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const compressedImage = await compressShopMessageImage(file);
+      setShopMessagePhoto(compressedImage);
+      setShopMessagePhotoName(file.name || "Attached photo");
+    } catch (error) {
+      console.error("Could not attach photo:", error);
+      alert("Could not attach that photo. Try a different image.");
+    }
+
+    event.target.value = "";
+  };
+
+  const clearShopMessagePhoto = () => {
+    setShopMessagePhoto(null);
+    setShopMessagePhotoName("");
+  };
+
+  const getCurrentAckId = () => {
+    return currentUser?.id || currentUser?.email || currentUser?.username || currentRole || "unknown-user";
+  };
+
+  const hasAcknowledgedMessage = (message) => {
+    const acknowledgements = Array.isArray(message.acknowledgements) ? message.acknowledgements : [];
+    return acknowledgements.some((ack) => ack.userId === getCurrentAckId());
+  };
+
+  const toggleShopMessageAck = async (message) => {
+    if (!currentUser || !message?.id) return;
+
+    const acknowledgements = Array.isArray(message.acknowledgements) ? message.acknowledgements : [];
+    const currentAckId = getCurrentAckId();
+    const alreadyAcknowledged = acknowledgements.some((ack) => ack.userId === currentAckId);
+
+    const nextAcknowledgements = alreadyAcknowledged
+      ? acknowledgements.filter((ack) => ack.userId !== currentAckId)
+      : [
+          ...acknowledgements,
+          {
+            userId: currentAckId,
+            name: currentUser.displayName || currentUser.username || currentRole,
+            role: currentRole,
+            department: currentRole === "Employee" ? employeeDepartment : getShopMessageFromLabel(),
+            at: new Date().toISOString(),
+          },
+        ];
+
+    setShopMessages((currentMessages) =>
+      currentMessages.map((item) =>
+        item.id === message.id ? { ...item, acknowledgements: nextAcknowledgements } : item
+      )
+    );
+
+    const { error } = await supabase
+      .from("shop_messages")
+      .update({ acknowledgements: nextAcknowledgements })
+      .eq("id", message.id);
+
+    if (error) {
+      console.error("Could not update thumbs up:", error);
+      alert("Could not update thumbs up. Check Supabase policies and try again.");
+      loadShopMessages();
+    }
   };
 
   const sendShopMessage = async (event) => {
@@ -1919,6 +2082,9 @@ function App() {
       sender_role: getShopMessageFromLabel(),
       department: shopMessageTo,
       message: cleanMessage,
+      attachment_url: shopMessagePhoto,
+      attachment_name: shopMessagePhotoName,
+      acknowledgements: [],
     });
 
     if (error) {
@@ -1928,6 +2094,7 @@ function App() {
     }
 
     setShopMessageText("");
+    clearShopMessagePhoto();
   };
 
   const deleteShopMessage = async (messageId) => {
@@ -2293,7 +2460,7 @@ function App() {
           </select>
         )}
 
-        {canManage && (
+        {["Developer", "Admin"].includes(currentRole) && (
           <div className="nav-button-group backup-actions">
             <button className="dev-tool-button" onClick={() => fishbowlCsvInputRef.current?.click()}>
               Import Fishbowl Schedule
@@ -2918,9 +3085,36 @@ function App() {
                     className="message-textarea"
                     value={shopMessageText}
                     onChange={(e) => setShopMessageText(e.target.value)}
-                    placeholder="Example: Braden, I’m short 2 legs for Destin arm chairs."
+                    placeholder="Example: Braden, we are short 2 legs for Destin arm chairs."
                     rows="4"
                   />
+
+                  <div className="message-photo-actions">
+                    <button type="button" className="secondary" onClick={() => messagePhotoInputRef.current?.click()}>
+                      Attach Photo
+                    </button>
+
+                    {shopMessagePhoto && (
+                      <button type="button" className="danger" onClick={clearShopMessagePhoto}>
+                        Remove Photo
+                      </button>
+                    )}
+                  </div>
+
+                  <input
+                    ref={messagePhotoInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleShopMessagePhoto}
+                  />
+
+                  {shopMessagePhoto && (
+                    <div className="message-photo-preview">
+                      <img src={shopMessagePhoto} alt="Message attachment preview" />
+                      <span>{shopMessagePhotoName || "Attached photo"}</span>
+                    </div>
+                  )}
 
                   <button className="wide message-send-button" type="submit">
                     Send Message
@@ -2951,6 +3145,33 @@ function App() {
                           </div>
 
                           <p>{message.message}</p>
+
+                          {message.attachment_url && (
+                            <a
+                              className="message-photo-link"
+                              href={message.attachment_url}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <img src={message.attachment_url} alt={message.attachment_name || "Shop note attachment"} />
+                            </a>
+                          )}
+
+                          <div className="message-ack-row">
+                            <button
+                              type="button"
+                              className={hasAcknowledgedMessage(message) ? "message-ack-button acknowledged" : "message-ack-button"}
+                              onClick={() => toggleShopMessageAck(message)}
+                            >
+                              👍 {Array.isArray(message.acknowledgements) ? message.acknowledgements.length : 0}
+                            </button>
+
+                            {Array.isArray(message.acknowledgements) && message.acknowledgements.length > 0 && (
+                              <span className="message-ack-names">
+                                {message.acknowledgements.map((ack) => ack.name || ack.department || "Team").join(", ")}
+                              </span>
+                            )}
+                          </div>
 
                           {(canDelete || currentRole === "Admin") && (
                             <button
