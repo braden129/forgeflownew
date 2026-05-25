@@ -2167,18 +2167,35 @@ function App() {
   };
 
   const handleLogout = async () => {
-    if (!window.confirm("Log out of this device?")) return;
+  if (!window.confirm("Log out of this device?")) return;
 
-    await supabase.auth.signOut();
-    cloudReadyRef.current = false;
-    setCloudDataLoaded(false);
-    localStorage.removeItem("loggedInUser");
-    localStorage.removeItem("currentRole");
-    setCurrentUser(null);
-    setLoginForm({ username: "", password: "" });
-    setLoginError("");
-    setView("Models");
-  };
+  try {
+    await supabase.auth.signOut({ scope: "global" });
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+
+  cloudReadyRef.current = false;
+
+  setCloudDataLoaded(false);
+
+  localStorage.removeItem("loggedInUser");
+  localStorage.removeItem("currentRole");
+  localStorage.removeItem("employeeDepartment");
+
+  sessionStorage.clear();
+
+  setCurrentUser(null);
+
+  setLoginForm({
+    username: "",
+    password: "",
+  });
+
+  setLoginError("");
+
+  window.location.href = "/";
+};
 
   const handleEmployeeDepartmentChange = (department) => {
     setEmployeeDepartment(department);
