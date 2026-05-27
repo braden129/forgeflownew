@@ -4538,3 +4538,6 @@ body,
   font-size: 25px !important;
   line-height: 1.05 !important;
 }
+html {
+  zoom: 0.8;
+}
