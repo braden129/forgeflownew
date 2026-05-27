@@ -2167,35 +2167,54 @@ function App() {
   };
 
   const handleLogout = async () => {
-  if (!window.confirm("Log out of this device?")) return;
+    if (!window.confirm("Log out of this device?")) return;
 
-  try {
-    await supabase.auth.signOut({ scope: "global" });
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
+    try {
+      await supabase.auth.signOut({ scope: "global" });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
 
-  cloudReadyRef.current = false;
+    // Clear only login/session-related storage. Keep production data backups intact.
+    const storageKeysToRemove = [];
 
-  setCloudDataLoaded(false);
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
 
-  localStorage.removeItem("loggedInUser");
-  localStorage.removeItem("currentRole");
-  localStorage.removeItem("employeeDepartment");
+      if (
+        key === "loggedInUser" ||
+        key === "currentRole" ||
+        key === "employeeDepartment" ||
+        key?.startsWith("sb-") ||
+        key?.toLowerCase().includes("supabase") ||
+        key?.toLowerCase().includes("auth-token")
+      ) {
+        storageKeysToRemove.push(key);
+      }
+    }
 
-  sessionStorage.clear();
+    storageKeysToRemove.forEach((key) => localStorage.removeItem(key));
+    sessionStorage.clear();
 
-  setCurrentUser(null);
+    if (window.caches) {
+      try {
+        const cacheNames = await window.caches.keys();
+        await Promise.all(cacheNames.map((cacheName) => window.caches.delete(cacheName)));
+      } catch (error) {
+        console.warn("Could not clear browser cache storage during logout:", error);
+      }
+    }
 
-  setLoginForm({
-    username: "",
-    password: "",
-  });
+    cloudReadyRef.current = false;
+    setCloudDataLoaded(false);
+    setCurrentUser(null);
+    setLoginForm({ username: "", password: "" });
+    setLoginError("");
+    setView("Models");
 
-  setLoginError("");
-
-  window.location.href = "/";
-};
+    // Force the browser/PWA shell to re-read the logged-out state.
+    window.location.replace(`${window.location.origin}${window.location.pathname}?logout=${Date.now()}`);
+  };
 
   const handleEmployeeDepartmentChange = (department) => {
     setEmployeeDepartment(department);
@@ -2361,20 +2380,267 @@ function App() {
     );
   };
 
+
+  const DevProductionDashboard = () => {
+    const now = new Date();
+    const todayLabel = now.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    const timeLabel = now.toLocaleTimeString([], {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+
+    const stageCards = STAGES.slice(0, 5).map((stage, index) => {
+      const jobs = liveForStage(index);
+      const delayedCount = jobs.filter((job) => {
+        const text = `${job.status || ""} ${job.notes || ""}`.toLowerCase();
+        return text.includes("delay") || text.includes("late") || text.includes("hold");
+      }).length;
+
+      const qty = jobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
+
+      return {
+        stage,
+        count: jobs.length,
+        qty,
+        delayedCount,
+      };
+    });
+
+    const activeJobs = liveJobs.filter((job) => job.stage < STAGES.length - 1);
+    const completedToday = schedule.filter((job) => {
+      if (job.status !== "Complete" || !job.completedAt) return false;
+      return new Date(job.completedAt).toDateString() === now.toDateString();
+    });
+    const delayedJobs = schedule.filter((job) => {
+      const text = `${job.status || ""} ${job.notes || ""}`.toLowerCase();
+      return text.includes("delay") || text.includes("late") || text.includes("hold");
+    });
+
+    const dashboardMessages = shopMessages.slice(0, 4);
+    const topJobs = activeJobs.slice(0, 5);
+    const delayedJobRows = delayedJobs.slice(0, 4);
+    const recentActivity = [
+      ...liveJobs.slice(0, 4).map((job) => ({
+        id: `live-${job.id}`,
+        title: `${job.collection || "Job"} ${job.furniture || ""}`.trim(),
+        detail: `Active in ${STAGES[job.stage] || "Production"}`,
+        badge: (job.furniture || job.collection || "J").slice(0, 1).toUpperCase(),
+        time: job.startedAt ? formatMessageTime(job.startedAt) : "Live now",
+      })),
+      ...dashboardMessages.slice(0, 2).map((message) => ({
+        id: `msg-${message.id}`,
+        title: message.sender_name || "Team Message",
+        detail: message.message || "New message",
+        badge: (message.sender_name || "M").slice(0, 1).toUpperCase(),
+        time: formatMessageTime(message.created_at),
+      })),
+    ].slice(0, 6);
+
+    const totalStageCount = Math.max(1, stageCards.reduce((sum, item) => sum + item.count, 0));
+
+    return (
+      <div className="tv-dashboard-page">
+        <header className="tv-dashboard-header">
+          <div className="tv-dashboard-brand">
+            <span className="tv-dashboard-star" aria-hidden="true">✦</span>
+            <div>
+              <h1>ADMIRAL</h1>
+              <p>OUTDOOR</p>
+            </div>
+          </div>
+
+          <div className="tv-dashboard-title">
+            <h2>PRODUCTION DASHBOARD</h2>
+            <span>Developer Preview</span>
+          </div>
+
+          <div className="tv-dashboard-clock">
+            <b>{timeLabel}</b>
+            <span>{todayLabel}</span>
+          </div>
+        </header>
+
+        <div className="tv-dashboard-grid">
+          <section className="tv-panel tv-summary-panel">
+            <h3>Today&apos;s Summary</h3>
+
+            <div className="tv-summary-list">
+              <div>
+                <span>Active Jobs</span>
+                <b>{activeJobs.length}</b>
+              </div>
+              <div>
+                <span>Completed Today</span>
+                <b>{completedToday.length}</b>
+              </div>
+              <div>
+                <span>Scheduled Qty</span>
+                <b>{dashboard.scheduledQty}</b>
+              </div>
+              <div>
+                <span>Delayed / Hold</span>
+                <b>{delayedJobs.length}</b>
+              </div>
+              <div>
+                <span>Messages</span>
+                <b>{shopMessages.length}</b>
+              </div>
+            </div>
+          </section>
+
+          <section className="tv-panel tv-flow-panel">
+            <h3>Production Flow</h3>
+
+            <div className="tv-flow-row">
+              {stageCards.map((item, index) => (
+                <div key={item.stage} className={`tv-stage-card tv-stage-${stageSlug(item.stage)}`}>
+                  <span>{item.stage}</span>
+                  <b>{item.count}</b>
+                  <small>{item.qty} Qty</small>
+                  <em>{item.delayedCount} Delayed</em>
+                  {index < stageCards.length - 1 && <i aria-hidden="true">→</i>}
+                </div>
+              ))}
+            </div>
+
+            <div className="tv-department-load">
+              <h4>Department Load</h4>
+              <div className="tv-load-grid">
+                {stageCards.map((item) => {
+                  const percent = Math.round((item.count / totalStageCount) * 100);
+                  return (
+                    <div key={item.stage} className="tv-load-row">
+                      <div>
+                        <span>{item.stage}</span>
+                        <b>{percent}%</b>
+                      </div>
+                      <div className="tv-load-bar">
+                        <span style={{ width: `${Math.max(6, percent)}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
+          <section className="tv-panel tv-activity-panel">
+            <h3>Live Activity</h3>
+
+            {recentActivity.length === 0 ? (
+              <div className="tv-empty">No live activity yet.</div>
+            ) : (
+              <div className="tv-activity-list">
+                {recentActivity.map((activity) => (
+                  <article key={activity.id}>
+                    <span>{activity.badge}</span>
+                    <div>
+                      <b>{activity.title}</b>
+                      <p>{activity.detail}</p>
+                    </div>
+                    <em>{activity.time}</em>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="tv-panel tv-table-panel">
+            <h3>Top Jobs In Progress</h3>
+
+            {topJobs.length === 0 ? (
+              <div className="tv-empty">No active jobs in production.</div>
+            ) : (
+              <div className="tv-table-list">
+                {topJobs.map((job) => {
+                  const percent = Math.round((Number(job.stageCompleteQty || 0) / Math.max(1, Number(job.qty || 1))) * 100);
+                  return (
+                    <article key={job.id}>
+                      <span>{job.collection}</span>
+                      <b>{job.furniture}</b>
+                      <small>{STAGES[job.stage]}</small>
+                      <div className="tv-mini-progress"><i style={{ width: `${Math.min(100, percent)}%` }} /></div>
+                      <em>{percent}%</em>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <section className="tv-panel tv-table-panel">
+            <h3>Delayed Jobs</h3>
+
+            {delayedJobRows.length === 0 ? (
+              <div className="tv-empty">No delayed jobs flagged.</div>
+            ) : (
+              <div className="tv-table-list delayed-tv-list">
+                {delayedJobRows.map((job) => (
+                  <article key={job.id}>
+                    <span>{job.collection}</span>
+                    <b>{job.furniture}</b>
+                    <small>{job.status}</small>
+                    <em>{job.dueDate || getScheduleDateLabel(scheduleWeeks, job)}</em>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section className="tv-panel tv-messages-panel">
+            <h3>Messages</h3>
+
+            {dashboardMessages.length === 0 ? (
+              <div className="tv-empty">No recent messages.</div>
+            ) : (
+              <div className="tv-message-list">
+                {dashboardMessages.map((message) => (
+                  <article key={message.id}>
+                    <span>{message.department || "Everyone"}</span>
+                    <b>{message.message}</b>
+                    <em>{formatMessageTime(message.created_at)}</em>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
+    );
+  };
+
   if (authLoading) {
     return (
-      <div className="login-page">
-        <div className="login-card">
-          <div className="login-brand">
+      <div className="login-page premium-login-page">
+        <div className="login-atmosphere" />
+
+        <div className="login-shell">
+          <div className="login-hero-brand">
+            <div className="login-compass-star" aria-hidden="true" />
             <div className="login-logo">ADMIRAL</div>
             <div className="login-logo-sub">OUTDOOR</div>
           </div>
 
-          <h1>Loading...</h1>
-          <p className="muted">Checking secure session and shared company data.</p>
+          <div className="login-card premium-login-card">
+            <h1 className="login-title">Loading...</h1>
+            <p className="muted login-instructions">
+              Checking secure session and shared company data.
+            </p>
 
-          <div className="login-help">
-            Powered By ForgeFlow Technologies
+            <div className="login-help powered-by">
+              <span>
+                Powered by <b>ForgeFlow</b> <span className="powered-by-tech">Technologies</span>
+              </span>
+              <img
+                src="/forgeflow-ff-logo.png"
+                alt="ForgeFlow"
+                className="powered-by-logo"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -2383,48 +2649,72 @@ function App() {
 
   if (!currentUser) {
     return (
-      <div className="login-page">
-        <form className="login-card" onSubmit={handleLogin}>
-          <div className="login-brand">
+      <div className="login-page premium-login-page">
+        <div className="login-atmosphere" />
+
+        <div className="login-shell">
+          <div className="login-hero-brand">
+            <div className="login-compass-star" aria-hidden="true" />
             <div className="login-logo">ADMIRAL</div>
             <div className="login-logo-sub">OUTDOOR</div>
           </div>
 
-          <h1>Production Login</h1>
-          <p className="muted">
-            Sign in once on this device. The app will remember this mode until you log out.
-          </p>
+          <form className="login-card premium-login-card" onSubmit={handleLogin}>
+            <h1 className="login-title">Welcome Back</h1>
+            <p className="muted login-instructions">
+              Sign in to continue
+            </p>
 
-          <label>Username</label>
-          <input
-            autoFocus
-            value={loginForm.username}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, username: e.target.value })
-            }
-            placeholder="Username"
-          />
+            <label className="login-field-label" htmlFor="login-username">
+              Username
+            </label>
+            <div className="login-input-wrap">
+              <span className="login-input-icon" aria-hidden="true">♙</span>
+              <input
+                id="login-username"
+                autoFocus
+                value={loginForm.username}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, username: e.target.value })
+                }
+                placeholder="Username"
+              />
+            </div>
 
-          <label>Password</label>
-          <input
-            type="password"
-            value={loginForm.password}
-            onChange={(e) =>
-              setLoginForm({ ...loginForm, password: e.target.value })
-            }
-            placeholder="Password"
-          />
+            <label className="login-field-label" htmlFor="login-password">
+              Password
+            </label>
+            <div className="login-input-wrap">
+              <span className="login-input-icon" aria-hidden="true">▣</span>
+              <input
+                id="login-password"
+                type="password"
+                value={loginForm.password}
+                onChange={(e) =>
+                  setLoginForm({ ...loginForm, password: e.target.value })
+                }
+                placeholder="Password"
+              />
+            </div>
 
-          {loginError && <div className="login-error">{loginError}</div>}
+            {loginError && <div className="login-error">{loginError}</div>}
 
-          <button className="login-submit" type="submit">
-            Enter App
-          </button>
+            <button className="login-submit" type="submit">
+              SIGN IN
+            </button>
 
-          <div className="login-help">
-            Powered By ForgeFlow Technologies
-          </div>
-        </form>
+            <div className="login-help powered-by">
+              <span>
+                Powered by <b>ForgeFlow</b> <span className="powered-by-tech">Technologies</span>
+              </span>
+              <img
+                src="/forgeflow-ff-logo.png"
+                alt="ForgeFlow"
+                className="powered-by-logo"
+              />
+            </div>
+          </form>
+        </div>
       </div>
     );
   }
@@ -2456,6 +2746,15 @@ function App() {
               {navItem}
             </button>
           ))}
+
+          {currentRole === "Developer" && (
+            <button
+              className={`main-nav-button nav-dashboard ${view === "Dashboard" ? "active-nav" : ""}`}
+              onClick={() => setView("Dashboard")}
+            >
+              Dashboard
+            </button>
+          )}
         </div>
 
         <div className="session-pill">
@@ -2545,6 +2844,8 @@ function App() {
             : "layout layout-full"
         }
       >
+        {view === "Dashboard" && currentRole === "Developer" && <DevProductionDashboard />}
+
         {view === "Models" && (
           <aside className="sidebar">
           <h2>Collections</h2>
@@ -3350,8 +3651,8 @@ function App() {
                                 )}
 
                                 <div className="schedule-board-title">
-                                  <h3>{job.furniture}</h3>
-                                  {jobSku && <span>SKU: {jobSku}</span>}
+                                  <h3 className={job.furniture.length > 30 ? "schedule-title-long" : ""}>{job.furniture}</h3>
+                                  {jobSku && <span className={String(jobSku).length > 18 ? "schedule-sku-long" : ""}>SKU: {jobSku}</span>}
                                 </div>
                               </div>
 
