@@ -5,9 +5,11 @@ export const supabase = createClient(
   import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
   {
     auth: {
+      storageKey: "forgeflow-supabase-auth",
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
+      flowType: "pkce",
     },
   }
 );

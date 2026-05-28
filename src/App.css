@@ -4565,3 +4565,26 @@ body,
 .login-page {
   zoom: 1 !important;
 }
+.session-recovery-actions {
+  display: grid !important;
+  gap: 12px !important;
+  margin: 0 0 20px !important;
+}
+
+.login-card.premium-login-card .session-recovery-actions .login-submit {
+  margin: 0 !important;
+}
+
+.login-card.premium-login-card .local-reset-button {
+  background:
+    linear-gradient(180deg, #f5f5f5 0%, #b8b8b8 48%, #6d6d6d 100%) !important;
+  border-color: rgba(255,255,255,0.72) !important;
+}
+
+.local-reset-note {
+  margin: 0 !important;
+  color: rgba(255,255,255,0.76) !important;
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+  text-align: center !important;
+}

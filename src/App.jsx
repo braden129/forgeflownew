@@ -21,7 +21,6 @@ const DEFAULT_SCHEDULE_WEEKS = [
   "Week of",
 ];
 
-const VIEWS = ["Models", "Schedule", "Live", "Messages", ...STAGES];
 const PRIMARY_VIEWS = ["Models", "Schedule", "Live", "Messages"];
 const MESSAGE_RECIPIENTS = [
   "Everyone",
@@ -49,6 +48,10 @@ const APP_DATA_ID = "admiral-production-data";
 const SNAPSHOT_INTERVAL_MS = 10 * 60 * 1000;
 const REALTIME_CHANNEL_NAME = "app-data-live-updates";
 const SHOP_MESSAGES_CHANNEL_NAME = "shop-messages-live-updates";
+
+const AUTH_LOADING_FALLBACK_MS = 12000;
+const SESSION_RECOVERY_TIMEOUT_MS = 10000;
+const CLOUD_LOAD_TIMEOUT_MS = 12000;
 
 const FISHBOWL_HEADER_ALIASES = {
   collection: ["collection", "collection name", "model", "model name", "category", "product line"],
@@ -192,11 +195,31 @@ function normalizeDepartment(department) {
   return match || "Fabrication";
 }
 
+
+function withTimeout(promise, timeoutMs, message) {
+  let timeoutId;
+
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(new Error(message));
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    window.clearTimeout(timeoutId);
+  });
+}
+
+function clearLocalBrowserAppData() {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.reload();
+}
 function getSavedArray(key, fallback = []) {
   try {
     const saved = JSON.parse(localStorage.getItem(key));
     return Array.isArray(saved) ? saved : fallback;
-  } catch (error) {
+  } catch {
     return fallback;
   }
 }
@@ -211,7 +234,7 @@ function getStoredUser() {
       displayName: saved.displayName || saved.username || saved.role,
       role: saved.role,
     };
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -313,8 +336,11 @@ function App() {
   const lastSnapshotHashRef = useRef("");
   const realtimeClientIdRef = useRef(makeId());
   const skipNextCloudSaveRef = useRef(false);
+  const sessionRecoveryRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(getStoredUser);
   const [authLoading, setAuthLoading] = useState(true);
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  const [sessionRecoveryMessage, setSessionRecoveryMessage] = useState("Checking secure session and shared company data.");
   const [cloudDataLoaded, setCloudDataLoaded] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
@@ -461,40 +487,48 @@ function App() {
   const loadSharedAppData = async () => {
     setCloudDataLoaded(false);
 
-    const { data, error } = await supabase
-      .from("app_data")
-      .select("data")
-      .eq("id", APP_DATA_ID)
-      .maybeSingle();
+    try {
+      const { data, error } = await withTimeout(
+        supabase
+          .from("app_data")
+          .select("data")
+          .eq("id", APP_DATA_ID)
+          .maybeSingle(),
+        CLOUD_LOAD_TIMEOUT_MS,
+        "Shared company data took too long to load."
+      );
 
-    if (error) {
-      console.error("Cloud load failed:", error);
+      if (error) {
+        console.error("Cloud load failed:", error);
+        cloudReadyRef.current = true;
+        setCloudDataLoaded(true);
+        return;
+      }
+
+      if (data?.data) {
+        applyAppData(data.data);
+      } else {
+        const localPayload = {
+          models: getSavedArray("models"),
+          schedule: getSavedArray("schedule"),
+          liveJobs: getSavedArray("liveJobs"),
+          scheduleWeeks: getSavedArray("scheduleWeeks", DEFAULT_SCHEDULE_WEEKS),
+        };
+
+        if (
+          localPayload.models.length > 0 ||
+          localPayload.schedule.length > 0 ||
+          localPayload.liveJobs.length > 0
+        ) {
+          await saveSharedAppData(localPayload);
+        }
+      }
+    } catch (error) {
+      console.error("Cloud load timed out or failed:", error);
+    } finally {
       cloudReadyRef.current = true;
       setCloudDataLoaded(true);
-      return;
     }
-
-    if (data?.data) {
-      applyAppData(data.data);
-    } else {
-      const localPayload = {
-        models: getSavedArray("models"),
-        schedule: getSavedArray("schedule"),
-        liveJobs: getSavedArray("liveJobs"),
-        scheduleWeeks: getSavedArray("scheduleWeeks", DEFAULT_SCHEDULE_WEEKS),
-      };
-
-      if (
-        localPayload.models.length > 0 ||
-        localPayload.schedule.length > 0 ||
-        localPayload.liveJobs.length > 0
-      ) {
-        await saveSharedAppData(localPayload);
-      }
-    }
-
-    cloudReadyRef.current = true;
-    setCloudDataLoaded(true);
   };
 
   const loadSupabaseUser = async (user) => {
@@ -548,37 +582,85 @@ function App() {
 
   useEffect(() => {
     let isMounted = true;
+    let authChangeTimer;
 
-    const loadInitialSession = async () => {
-      setAuthLoading(true);
+    const finishSessionLoad = async (user) => {
+      if (!isMounted) return;
 
-      const { data, error } = await supabase.auth.getSession();
-
-      if (error) {
-        console.error("Could not load Supabase session:", error);
-      }
+      await loadSupabaseUser(user || null);
 
       if (isMounted) {
-        await loadSupabaseUser(data?.session?.user || null);
         setAuthLoading(false);
+        setLoadingTimedOut(false);
       }
     };
 
-    loadInitialSession();
+    const recoverSession = async ({ forceRefresh = false } = {}) => {
+      if (!isMounted) return;
+
+      setAuthLoading(true);
+      setLoadingTimedOut(false);
+      setSessionRecoveryMessage(
+        forceRefresh
+          ? "Retrying your secure session and shared company data."
+          : "Checking secure session and shared company data."
+      );
+
+      try {
+        const { data, error } = await withTimeout(
+          forceRefresh ? supabase.auth.refreshSession() : supabase.auth.getSession(),
+          SESSION_RECOVERY_TIMEOUT_MS,
+          "Supabase session recovery timed out."
+        );
+
+        if (error) {
+          console.error("Could not recover Supabase session:", error);
+        }
+
+        const session = data?.session || null;
+        await finishSessionLoad(session?.user || null);
+      } catch (error) {
+        console.error("Could not recover Supabase session:", error);
+
+        if (isMounted) {
+          await loadSupabaseUser(null);
+          setAuthLoading(false);
+          setSessionRecoveryMessage(
+            "We could not verify your saved session. Please log in again or reset local app data if this screen keeps returning."
+          );
+        }
+      }
+    };
+
+    sessionRecoveryRef.current = recoverSession;
+    recoverSession();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (!isMounted) return;
-      await loadSupabaseUser(session?.user || null);
-      setAuthLoading(false);
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      window.clearTimeout(authChangeTimer);
+      authChangeTimer = window.setTimeout(() => {
+        finishSessionLoad(session?.user || null);
+      }, 0);
     });
 
     return () => {
       isMounted = false;
+      sessionRecoveryRef.current = null;
+      window.clearTimeout(authChangeTimer);
       subscription.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!authLoading) return undefined;
+
+    const timeoutId = window.setTimeout(() => {
+      setLoadingTimedOut(true);
+    }, AUTH_LOADING_FALLBACK_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [authLoading]);
 
   useEffect(() => {
     if (!currentUser || !cloudDataLoaded) return;
@@ -742,9 +824,13 @@ function App() {
         return !shouldArchive;
       });
 
-    if (changed) {
+    if (!changed) return;
+
+    const archiveTimer = window.setTimeout(() => {
       setSchedule(nextSchedule);
-    }
+    }, 0);
+
+    return () => window.clearTimeout(archiveTimer);
   }, [schedule, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
@@ -768,7 +854,11 @@ function App() {
   }, [employeeDepartment]);
 
   useEffect(() => {
-    setEmployeePanelTab(employeeDepartment);
+    const panelTimer = window.setTimeout(() => {
+      setEmployeePanelTab(employeeDepartment);
+    }, 0);
+
+    return () => window.clearTimeout(panelTimer);
   }, [employeeDepartment]);
 
   const selectedModel = models.find((m) => m.id === selectedModelId);
@@ -1437,12 +1527,6 @@ function App() {
     reader.readAsText(file);
   };
 
-  const startEditType = (type) => {
-    setEditingTypeId(type.id);
-    setEditingTypeName(type.name);
-    setEditingTypeImage(type.image || null);
-  };
-
   const cancelEditType = () => {
     setEditingTypeId(null);
     setEditingTypeName("");
@@ -1655,26 +1739,6 @@ function App() {
           qtyComplete: isComplete ? 0 : job.qtyNeeded,
           status: isComplete ? "Scheduled" : "Complete",
           completedAt: isComplete ? null : job.completedAt || new Date().toISOString(),
-        };
-      })
-    );
-  };
-
-  const moveScheduledJobWeek = (jobId, direction) => {
-    setSchedule(
-      schedule.map((job) => {
-        if (job.id !== jobId) return job;
-
-        const currentIndex = getJobWeekSlot(job);
-
-        const nextIndex = Math.min(
-          scheduleWeeks.length - 1,
-          Math.max(0, currentIndex + direction)
-        );
-
-        return {
-          ...job,
-          weekSlot: nextIndex,
         };
       })
     );
@@ -1953,7 +2017,7 @@ function App() {
     return currentRole || "Team";
   };
 
-  const loadShopMessages = async () => {
+  async function loadShopMessages() {
     const { data, error } = await supabase
       .from("shop_messages")
       .select("id, created_at, sender_name, sender_role, department, message, attachment_url, attachment_name, acknowledgements")
@@ -1966,7 +2030,7 @@ function App() {
     }
 
     setShopMessages(Array.isArray(data) ? data : []);
-  };
+  }
 
   const compressShopMessageImage = (file) => {
     return new Promise((resolve, reject) => {
@@ -2120,8 +2184,22 @@ function App() {
         hour: "numeric",
         minute: "2-digit",
       });
-    } catch (error) {
+    } catch {
       return "";
+    }
+  };
+
+  const handleRetrySession = () => {
+    sessionRecoveryRef.current?.({ forceRefresh: true });
+  };
+
+  const handleResetLocalAppData = () => {
+    if (
+      window.confirm(
+        "Reset only this device's local app data and reload? This will not delete production data from Supabase."
+      )
+    ) {
+      clearLocalBrowserAppData();
     }
   };
 
@@ -2148,6 +2226,7 @@ function App() {
     }
 
     setAuthLoading(true);
+    setLoadingTimedOut(false);
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: loginUser.email,
@@ -2628,8 +2707,28 @@ function App() {
           <div className="login-card premium-login-card">
             <h1 className="login-title">Loading...</h1>
             <p className="muted login-instructions">
-              Checking secure session and shared company data.
+              {loadingTimedOut
+                ? "This is taking longer than expected. You can retry your saved session or reset only this device's local app data."
+                : sessionRecoveryMessage}
             </p>
+
+            {loadingTimedOut && (
+              <div className="session-recovery-actions">
+                <button className="login-submit" type="button" onClick={handleRetrySession}>
+                  Retry Session
+                </button>
+                <button
+                  className="login-submit local-reset-button"
+                  type="button"
+                  onClick={handleResetLocalAppData}
+                >
+                  Reset Local App Data
+                </button>
+                <p className="local-reset-note">
+                  Reset clears only this browser's local storage and session storage, then reloads. It does not delete Supabase production data.
+                </p>
+              </div>
+            )}
 
             <div className="login-help powered-by">
               <span>
@@ -2844,7 +2943,7 @@ function App() {
             : "layout layout-full"
         }
       >
-        {view === "Dashboard" && currentRole === "Developer" && <DevProductionDashboard />}
+        {view === "Dashboard" && currentRole === "Developer" && DevProductionDashboard()}
 
         {view === "Models" && (
           <aside className="sidebar">
