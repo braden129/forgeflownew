@@ -2902,16 +2902,35 @@ select option {
 /* ===== PREMIUM ADMIRAL / FORGEFLOW LOGIN ===== */
 .login-page.premium-login-page {
   min-height: 100vh !important;
+  width: 100vw !important;
+
   display: grid !important;
   place-items: center !important;
-  overflow: hidden !important;
+
   position: relative !important;
+  overflow: hidden !important;
+
   padding: 26px !important;
+
   background:
-    radial-gradient(circle at 18% 24%, rgba(218, 163, 60, 0.18), transparent 20%),
-    radial-gradient(circle at 82% 18%, rgba(255, 184, 72, 0.16), transparent 24%),
-    radial-gradient(circle at 70% 78%, rgba(42, 103, 145, 0.22), transparent 34%),
-    linear-gradient(135deg, #070707 0%, #111111 42%, #050505 100%) !important;
+    linear-gradient(
+      rgba(0, 0, 0, 0.50),
+      rgba(0, 0, 0, 0.50)
+    ),
+    url("/login-background.jpg") center bottom / cover no-repeat !important;
+
+  background-color: #000 !important;
+}
+
+html,
+body,
+#root {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+  background: #000 !important;
 }
 
 .login-page.premium-login-page::before {
@@ -4538,6 +4557,11 @@ body,
   font-size: 25px !important;
   line-height: 1.05 !important;
 }
-html {
+.app {
+  min-height: 100vh;
   zoom: 0.8;
+}
+
+.login-page {
+  zoom: 1 !important;
 }
