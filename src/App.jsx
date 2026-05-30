@@ -324,14 +324,18 @@ function App() {
   const [shopMessageTo, setShopMessageTo] = useState("Everyone");
   const [shopMessagePhoto, setShopMessagePhoto] = useState(null);
   const [shopMessagePhotoName, setShopMessagePhotoName] = useState("");
+  const [shopMessageSending, setShopMessageSending] = useState(false);
   const currentRole = currentUser?.role || "Employee";
 
   const [employeeDepartment, setEmployeeDepartment] = useState(() => {
     const savedDepartment = localStorage.getItem("employeeDepartment");
     const savedRole = localStorage.getItem("currentRole");
 
-    if (EMPLOYEE_DEPARTMENTS.includes(savedDepartment)) return savedDepartment;
-    if (EMPLOYEE_DEPARTMENTS.includes(savedRole)) return savedRole;
+    // Only restore a department when the remembered role was actually Employee.
+    // Developer/Admin/Supervisor should not carry an Employee department in storage.
+    if (savedRole === "Employee" && EMPLOYEE_DEPARTMENTS.includes(savedDepartment)) {
+      return savedDepartment;
+    }
 
     return "Fabrication";
   });
@@ -504,6 +508,7 @@ function App() {
       setCurrentUser(null);
       localStorage.removeItem("loggedInUser");
       localStorage.removeItem("currentRole");
+      localStorage.removeItem("employeeDepartment");
       return;
     }
 
@@ -538,8 +543,12 @@ function App() {
       const nextDepartment = normalizeDepartment(profile?.department || employeeDepartment);
       setEmployeeDepartment(nextDepartment);
       setEmployeePanelTab(nextDepartment);
+      localStorage.setItem("employeeDepartment", nextDepartment);
       setView(nextDepartment);
     } else {
+      // Prevent stale employee-only state from affecting Developer/Admin/Supervisor tools.
+      localStorage.removeItem("employeeDepartment");
+      setShopMessageTo("Everyone");
       setView("Live");
     }
 
@@ -578,6 +587,30 @@ function App() {
       isMounted = false;
       subscription.unsubscribe();
     };
+  }, []);
+
+  useEffect(() => {
+    const clearStaleBrowserShell = async () => {
+      if ("serviceWorker" in navigator) {
+        try {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(registrations.map((registration) => registration.unregister()));
+        } catch (error) {
+          console.warn("Could not unregister service workers:", error);
+        }
+      }
+
+      if (window.caches) {
+        try {
+          const cacheNames = await window.caches.keys();
+          await Promise.all(cacheNames.map((cacheName) => window.caches.delete(cacheName)));
+        } catch (error) {
+          console.warn("Could not clear app cache storage:", error);
+        }
+      }
+    };
+
+    clearStaleBrowserShell();
   }, []);
 
   useEffect(() => {
@@ -764,12 +797,24 @@ function App() {
   }, [scheduleWeeks]);
 
   useEffect(() => {
-    localStorage.setItem("employeeDepartment", employeeDepartment);
-  }, [employeeDepartment]);
+    if (!currentUser) {
+      localStorage.removeItem("employeeDepartment");
+      return;
+    }
+
+    if (currentRole === "Employee") {
+      localStorage.setItem("employeeDepartment", employeeDepartment);
+      return;
+    }
+
+    localStorage.removeItem("employeeDepartment");
+  }, [employeeDepartment, currentRole, currentUser]);
 
   useEffect(() => {
-    setEmployeePanelTab(employeeDepartment);
-  }, [employeeDepartment]);
+    if (currentRole === "Employee") {
+      setEmployeePanelTab(employeeDepartment);
+    }
+  }, [employeeDepartment, currentRole]);
 
   const selectedModel = models.find((m) => m.id === selectedModelId);
   const elevatedModes = ["Developer", "Admin", "Supervisor"];
@@ -2075,22 +2120,57 @@ function App() {
     event.preventDefault();
 
     const cleanMessage = shopMessageText.trim();
-    if (!cleanMessage || !currentUser) return;
+    if (!cleanMessage || !currentUser || shopMessageSending) {
+      console.info("Shop message send skipped:", {
+        hasMessage: Boolean(cleanMessage),
+        hasUser: Boolean(currentUser),
+        alreadySending: shopMessageSending,
+      });
+      return;
+    }
 
-    const { error } = await supabase.from("shop_messages").insert({
+    const messagePayload = {
       sender_name: currentUser.displayName || currentUser.username || currentRole,
       sender_role: getShopMessageFromLabel(),
-      department: shopMessageTo,
+      department: shopMessageTo || "Everyone",
       message: cleanMessage,
       attachment_url: shopMessagePhoto,
       attachment_name: shopMessagePhotoName,
       acknowledgements: [],
+    };
+
+    setShopMessageSending(true);
+    console.info("Sending shop message:", {
+      from: messagePayload.sender_role,
+      to: messagePayload.department,
+      user: messagePayload.sender_name,
     });
 
+    const { data, error } = await supabase
+      .from("shop_messages")
+      .insert(messagePayload)
+      .select("id, created_at, sender_name, sender_role, department, message, attachment_url, attachment_name, acknowledgements")
+      .single();
+
+    setShopMessageSending(false);
+
     if (error) {
-      console.error("Could not send shop message:", error);
+      console.error("Could not send shop message:", error, messagePayload);
       alert("Could not send that message. Check Supabase and try again.");
       return;
+    }
+
+    if (data) {
+      setShopMessages((currentMessages) => {
+        if (currentMessages.some((message) => message.id === data.id)) {
+          return currentMessages;
+        }
+
+        return [data, ...currentMessages].slice(0, 100);
+      });
+    } else {
+      console.warn("Shop message insert succeeded but Supabase returned no row.");
+      loadShopMessages();
     }
 
     setShopMessageText("");
@@ -2217,10 +2297,13 @@ function App() {
   };
 
   const handleEmployeeDepartmentChange = (department) => {
+    if (!EMPLOYEE_DEPARTMENTS.includes(department)) return;
+
     setEmployeeDepartment(department);
     setEmployeePanelTab(department);
 
     if (currentRole === "Employee") {
+      localStorage.setItem("employeeDepartment", department);
       setView(department);
     }
   };
@@ -3434,8 +3517,12 @@ function App() {
                     </div>
                   )}
 
-                  <button className="wide message-send-button" type="submit">
-                    Send Message
+                  <button
+                    className="wide message-send-button"
+                    type="submit"
+                    disabled={shopMessageSending || !shopMessageText.trim()}
+                  >
+                    {shopMessageSending ? "Sending..." : "Send Message"}
                   </button>
                 </form>
 
