@@ -22,7 +22,7 @@ const DEFAULT_SCHEDULE_WEEKS = [
 ];
 
 const VIEWS = ["Models", "Schedule", "Dashboard", "Live", "Messages", ...STAGES];
-const PRIMARY_VIEWS = ["Models", "Schedule", "Dashboard", "Live", "Messages"];
+const PRIMARY_VIEWS = ["Models", "Schedule", "Live", "Messages", "Dashboard"];
 const MESSAGE_RECIPIENTS = [
   "Everyone",
   "Fabrication",
@@ -47,6 +47,7 @@ const EMPLOYEE_DEPARTMENTS = [
 
 const APP_DATA_ID = "admiral-production-data";
 const SNAPSHOT_INTERVAL_MS = 10 * 60 * 1000;
+const DAILY_BACKUP_INTERVAL_MS = 60 * 1000;
 const REALTIME_CHANNEL_NAME = "app-data-live-updates";
 const SHOP_MESSAGES_CHANNEL_NAME = "shop-messages-live-updates";
 
@@ -56,7 +57,7 @@ const FISHBOWL_HEADER_ALIASES = {
   sku: ["sku", "item number", "item no", "item #", "part number", "part no", "number", "product code"],
   qty: ["qty", "quantity", "qty needed", "quantity needed", "order qty", "scheduled qty", "to build"],
   dueDate: ["due date", "date", "ship date", "scheduled date", "schedule date", "week", "week of"],
-  notes: ["notes", "note", "memo", "customer", "customer name", "sales order", "so", "order", "order number", "work order", "wo"],
+  notes: ["notes", "note", "memo", "customer", "customer name", "sales order", "so", "order", "order number", "work order", "wo", "job", "job number", "job no", "promise date", "priority", "ship method"],
 };
 
 function normalizeCsvHeader(value) {
@@ -303,6 +304,37 @@ function AnimatedNumber({ value, duration = 650 }) {
   return <>{displayValue}</>;
 }
 
+function LiveDashboardClock() {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const todayLabel = now.toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const timeLabel = now.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  return (
+    <div className="tv-dashboard-clock">
+      <b>{timeLabel}</b>
+      <span>{todayLabel}</span>
+    </div>
+  );
+}
+
 function App() {
   useEffect(() => {
     if (window.location.search.includes("logout=")) {
@@ -368,6 +400,28 @@ function App() {
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [fishbowlImportSummary, setFishbowlImportSummary] = useState("");
+  const [fishbowlSettings, setFishbowlSettings] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("fishbowlConnectionSettings")) || {
+        serverUrl: "",
+        apiPort: "",
+        databaseName: "",
+        username: "",
+        syncMode: "Manual CSV Import",
+        lastTestedAt: "",
+      };
+    } catch (error) {
+      return {
+        serverUrl: "",
+        apiPort: "",
+        databaseName: "",
+        username: "",
+        syncMode: "Manual CSV Import",
+        lastTestedAt: "",
+      };
+    }
+  });
+  const [fishbowlConnectionNote, setFishbowlConnectionNote] = useState("");
   const [shopMessages, setShopMessages] = useState([]);
   const [shopMessageText, setShopMessageText] = useState("");
   const [shopMessageTo, setShopMessageTo] = useState("Everyone");
@@ -825,6 +879,38 @@ function App() {
       }
     };
   }, [models, schedule, liveJobs, scheduleWeeks, currentUser, cloudDataLoaded]);
+
+
+  useEffect(() => {
+    if (!currentUser || !cloudDataLoaded) return;
+
+    const runDailyBackupCheck = () => {
+      const todayKey = new Date().toISOString().slice(0, 10);
+      const savedKey = localStorage.getItem("forgeflowDailyCloudBackupDate");
+
+      if (savedKey === todayKey) return;
+
+      localStorage.setItem("forgeflowDailyCloudBackupDate", todayKey);
+      saveSharedAppData(
+        {
+          models,
+          schedule,
+          liveJobs,
+          scheduleWeeks,
+        },
+        { snapshotReason: "daily-cloud-backup" }
+      );
+    };
+
+    runDailyBackupCheck();
+    const timer = setInterval(runDailyBackupCheck, DAILY_BACKUP_INTERVAL_MS);
+
+    return () => clearInterval(timer);
+  }, [models, schedule, liveJobs, scheduleWeeks, currentUser, cloudDataLoaded]);
+
+  useEffect(() => {
+    localStorage.setItem("fishbowlConnectionSettings", JSON.stringify(fishbowlSettings));
+  }, [fishbowlSettings]);
 
   useEffect(() => {
     if (!currentUser || !cloudDataLoaded || schedule.length === 0) return;
@@ -1902,6 +1988,13 @@ function App() {
       stageCompleteQty: 0,
       partsReady: false,
       startedAt: new Date().toISOString(),
+      timeline: [
+        makeTimelineEvent(
+          "Fabrication",
+          "Released to production",
+          `Qty ${remaining} released from ${getScheduleDateLabel(scheduleWeeks, scheduleJob)}.`
+        ),
+      ],
     };
 
     setLiveJobs([liveJob, ...liveJobs]);
@@ -1941,6 +2034,17 @@ function App() {
           ? {
               ...job,
               partsReady: !job.partsReady,
+              partsReadyAt: !job.partsReady ? new Date().toISOString() : null,
+              timeline: [
+                ...getJobTimeline(job),
+                makeTimelineEvent(
+                  "Fabrication",
+                  !job.partsReady ? "Parts marked ready" : "Parts marked not ready",
+                  !job.partsReady
+                    ? "Fabrication completed the cut list for this job."
+                    : "Job was moved back to fabrication-in-progress status."
+                ),
+              ],
             }
           : job
       )
@@ -1962,6 +2066,14 @@ function App() {
               ...item,
               stage: nextStage,
               stageCompleteQty: 0,
+              timeline: [
+                ...getJobTimeline(item),
+                makeTimelineEvent(
+                  STAGES[nextStage],
+                  `Moved to ${STAGES[nextStage]}`,
+                  `Advanced from ${STAGES[job.stage]} to ${STAGES[nextStage]}.`
+                ),
+              ],
             }
           : item
       )
@@ -2323,6 +2435,117 @@ function App() {
     }
   };
 
+  const formatTimelineTime = (value) => {
+    if (!value) return "Not recorded";
+
+    try {
+      return new Date(value).toLocaleString([], {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      return "Not recorded";
+    }
+  };
+
+  const makeTimelineEvent = (stage, title, note = "") => ({
+    id: makeId(),
+    stage,
+    title,
+    note,
+    at: new Date().toISOString(),
+    by: currentUser?.displayName || currentUser?.username || currentRole || "System",
+  });
+
+  const getJobTimeline = (job) => {
+    const savedTimeline = Array.isArray(job.timeline) ? job.timeline : [];
+
+    if (savedTimeline.length > 0) {
+      return savedTimeline;
+    }
+
+    const inferred = [];
+
+    if (job.startedAt) {
+      inferred.push({
+        id: `started-${job.id}`,
+        stage: "Fabrication",
+        title: "Released to production",
+        note: `Qty ${job.qty || 0} moved from schedule into live production.`,
+        at: job.startedAt,
+        by: "System",
+      });
+    }
+
+    if (job.partsReady) {
+      inferred.push({
+        id: `parts-${job.id}`,
+        stage: "Fabrication",
+        title: "Parts marked ready",
+        note: "Fabrication is ready to send this job forward.",
+        at: job.partsReadyAt || job.startedAt || "",
+        by: "System",
+      });
+    }
+
+    STAGES.slice(1, Math.min(job.stage + 1, STAGES.length)).forEach((stage, index) => {
+      inferred.push({
+        id: `stage-${job.id}-${stage}`,
+        stage,
+        title: `Reached ${stage}`,
+        note: index === job.stage - 1 ? "Current recorded stage." : "Previous production stage.",
+        at: job.startedAt || "",
+        by: "System",
+      });
+    });
+
+    return inferred;
+  };
+
+  const getScheduleTimeline = (job) => {
+    const events = [];
+
+    if (job.createdAt) {
+      events.push({
+        id: `schedule-created-${job.id}`,
+        stage: "Scheduled",
+        title: "Scheduled",
+        note: `Qty ${job.qtyNeeded || 0} added to ${getScheduleDateLabel(scheduleWeeks, job)}.`,
+        at: job.createdAt,
+        by: "System",
+      });
+    }
+
+    if (job.status === "In Production") {
+      const matchingLiveJob = liveJobs.find((liveJob) => liveJob.scheduleId === job.id);
+      events.push({
+        id: `schedule-production-${job.id}`,
+        stage: matchingLiveJob ? STAGES[matchingLiveJob.stage] : "In Production",
+        title: "Released to live production",
+        note: matchingLiveJob
+          ? `Currently in ${STAGES[matchingLiveJob.stage]} with qty ${matchingLiveJob.qty || 0}.`
+          : "This job has been released from the schedule.",
+        at: matchingLiveJob?.startedAt || job.createdAt || "",
+        by: "System",
+      });
+    }
+
+    if (job.status === "Complete") {
+      events.push({
+        id: `schedule-complete-${job.id}`,
+        stage: "Complete",
+        title: "Completed",
+        note: `Completed ${job.qtyComplete || job.qtyNeeded || 0} of ${job.qtyNeeded || 0}.`,
+        at: job.completedAt || job.createdAt || "",
+        by: "System",
+      });
+    }
+
+    return events;
+  };
+
   const openShopMessageAttachment = (message) => {
     if (!message?.attachment_url) return;
 
@@ -2510,6 +2733,23 @@ function App() {
           </div>
 
           {job.notes && <p className="note compact-note">{job.notes}</p>}
+
+          <details className="job-timeline">
+            <summary>Job Timeline</summary>
+            <div className="job-timeline-list">
+              {getJobTimeline(job).map((event) => (
+                <div key={event.id || `${event.stage}-${event.at}`} className="job-timeline-item">
+                  <span className={`timeline-dot stage-${stageSlug(event.stage)}`} />
+                  <div>
+                    <b>{event.title}</b>
+                    <small>{event.stage} • {formatTimelineTime(event.at)}</small>
+                    {event.note && <p>{event.note}</p>}
+                    {event.by && <em>By {event.by}</em>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </details>
         </div>
 
         <div className="job-card-right">
@@ -2622,18 +2862,293 @@ function App() {
     );
   };
 
+  const updateFishbowlSetting = (field, value) => {
+    setFishbowlSettings((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  };
+
+  const testFishbowlConnection = () => {
+    const missingFields = [
+      ["Server / Host", fishbowlSettings.serverUrl],
+      ["API Port", fishbowlSettings.apiPort],
+      ["Database", fishbowlSettings.databaseName],
+      ["Username", fishbowlSettings.username],
+    ].filter(([, value]) => !String(value || "").trim());
+
+    if (missingFields.length > 0) {
+      setFishbowlConnectionNote(
+        `Connection profile saved as a draft. Still waiting on: ${missingFields
+          .map(([label]) => label)
+          .join(", ")}.`
+      );
+      return;
+    }
+
+    setFishbowlSettings((current) => ({
+      ...current,
+      lastTestedAt: new Date().toISOString(),
+    }));
+
+    setFishbowlConnectionNote(
+      "Connection profile is ready. Once IT gives us the real endpoint/auth method, this page can be wired to live Fishbowl sync."
+    );
+  };
+
+  const FishbowlConnectionPage = () => {
+    const readyFields = [
+      fishbowlSettings.serverUrl,
+      fishbowlSettings.apiPort,
+      fishbowlSettings.databaseName,
+      fishbowlSettings.username,
+    ].filter((value) => String(value || "").trim()).length;
+
+    return (
+      <section className="enterprise-page fishbowl-page">
+        <div className="enterprise-hero-card">
+          <div>
+            <span className="eyebrow">Integration Center</span>
+            <h1>Fishbowl Connection</h1>
+            
+          </div>
+          <div className="enterprise-status-orb">
+            <b>{readyFields}/4</b>
+            <span>Fields Ready</span>
+          </div>
+        </div>
+
+        <div className="enterprise-grid">
+          <div className="enterprise-card">
+            <h2>Connection Profile</h2>
+            <p className="muted">Save non-password setup details here so the real connector can be added cleanly later.</p>
+
+            <div className="form-grid">
+              <label>
+                Server / Host
+                <input
+                  value={fishbowlSettings.serverUrl || ""}
+                  onChange={(e) => updateFishbowlSetting("serverUrl", e.target.value)}
+                  placeholder="Example: fishbowl.company.local"
+                />
+              </label>
+
+              <label>
+                API Port
+                <input
+                  value={fishbowlSettings.apiPort || ""}
+                  onChange={(e) => updateFishbowlSetting("apiPort", e.target.value)}
+                  placeholder="Ask IT for the port"
+                />
+              </label>
+
+              <label>
+                Database / Company File
+                <input
+                  value={fishbowlSettings.databaseName || ""}
+                  onChange={(e) => updateFishbowlSetting("databaseName", e.target.value)}
+                  placeholder="Fishbowl database name"
+                />
+              </label>
+
+              <label>
+                Integration Username
+                <input
+                  value={fishbowlSettings.username || ""}
+                  onChange={(e) => updateFishbowlSetting("username", e.target.value)}
+                  placeholder="Dedicated API/import user"
+                />
+              </label>
+
+              <label>
+                Sync Mode
+                <select
+                  value={fishbowlSettings.syncMode || "Manual CSV Import"}
+                  onChange={(e) => updateFishbowlSetting("syncMode", e.target.value)}
+                >
+                  <option>Manual CSV Import</option>
+                  <option>One-Way Fishbowl to ForgeFlow</option>
+                  <option>Two-Way Sync Review Required</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="button-row">
+              <button onClick={testFishbowlConnection}>Save / Check Profile</button>
+              <button className="secondary" onClick={() => fishbowlCsvInputRef.current?.click()}>Import CSV Now</button>
+            </div>
+
+            {fishbowlConnectionNote && <div className="status warning">{fishbowlConnectionNote}</div>}
+            {fishbowlImportSummary && <div className="status good">{fishbowlImportSummary}</div>}
+          </div>
+
+          <div className="enterprise-card">
+            <h2>Implementation Plan</h2>
+            <div className="integration-steps">
+              <div><b>1</b><span>Manual CSV import stays active as the safe fallback.</span></div>
+              <div><b>2</b><span>IT provides approved Fishbowl server/API details.</span></div>
+              <div><b>3</b><span>ForgeFlow pulls schedule rows into a review queue.</span></div>
+              <div><b>4</b><span>Supervisor approves imports before they hit the live schedule.</span></div>
+              <div><b>5</b><span>Automatic scheduled sync can be enabled after testing.</span></div>
+            </div>
+          </div>
+
+          <div className="enterprise-card enterprise-card-wide">
+            <h2>Data Mapping</h2>
+            <div className="mapping-grid">
+              <span>Fishbowl Item / Description</span><b>ForgeFlow Furniture Name</b>
+              <span>Item Number / SKU</span><b>SKU</b>
+              <span>Quantity / Qty Needed</span><b>Scheduled Qty</b>
+              <span>Due Date / Ship Date / Promise Date</span><b>Schedule Week</b>
+              <span>SO / WO / Customer / Priority</span><b>Job Notes</b>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  };
+
+  const DeveloperAnalyticsPage = () => {
+    const totalFurniture = models.reduce((sum, model) => sum + (model.types?.length || 0), 0);
+    const totalParts = models.reduce(
+      (sum, model) =>
+        sum +
+        (model.types || []).reduce(
+          (typeSum, type) => typeSum + (type.parts?.length || 0),
+          0
+        ),
+      0
+    );
+
+    const scheduledQty = schedule.reduce((sum, job) => sum + Number(job.qtyNeeded || 0), 0);
+    const completedQty = schedule.reduce((sum, job) => sum + Number(job.qtyComplete || 0), 0);
+    const inProductionQty = liveJobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
+    const scheduledOnlyJobs = schedule.filter((job) => job.status === "Scheduled");
+    const inProductionJobs = schedule.filter((job) => job.status === "In Production");
+    const completedJobs = schedule.filter((job) => job.status === "Complete");
+    const completionRate = scheduledQty > 0 ? Math.round((completedQty / scheduledQty) * 100) : 0;
+
+    const stageRows = STAGES.map((stage, index) => {
+      const jobs = liveForStage(index);
+      const qty = jobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
+      return { stage, jobs: jobs.length, qty };
+    });
+
+    const bottleneck = stageRows.reduce(
+      (largest, row) => (row.qty > largest.qty ? row : largest),
+      { stage: "None", jobs: 0, qty: 0 }
+    );
+
+    const collectionRows = Object.values(
+      schedule.reduce((acc, job) => {
+        const key = job.collection || "Unassigned";
+        if (!acc[key]) acc[key] = { collection: key, jobs: 0, qty: 0, complete: 0 };
+        acc[key].jobs += 1;
+        acc[key].qty += Number(job.qtyNeeded || 0);
+        acc[key].complete += Number(job.qtyComplete || 0);
+        return acc;
+      }, {})
+    )
+      .sort((a, b) => b.qty - a.qty)
+      .slice(0, 8);
+
+    const maxCollectionQty = Math.max(1, ...collectionRows.map((row) => row.qty));
+    const maxStageQty = Math.max(1, ...stageRows.map((row) => row.qty));
+
+    const recentCompleted = completedJobs
+      .filter((job) => job.completedAt)
+      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime())
+      .slice(0, 6);
+
+    return (
+      <section className="enterprise-page analytics-page">
+        <div className="enterprise-hero-card analytics-hero-card">
+          <div>
+            <span className="eyebrow">Developer Analytics</span>
+            <h1>ForgeFlow Production Intelligence</h1>
+            <p>
+              Private Dev-mode analytics for throughput, backlog, live WIP, collection load,
+              and current production flow.
+            </p>
+          </div>
+          <div className="enterprise-status-orb analytics-orb">
+            <b>{completionRate}%</b>
+            <span>Completion</span>
+          </div>
+        </div>
+
+        <div className="analytics-kpi-grid">
+          <div className="analytics-kpi-card"><span>Scheduled Qty</span><b>{scheduledQty}</b><small>{schedule.length} jobs</small></div>
+          <div className="analytics-kpi-card"><span>Completed Qty</span><b>{completedQty}</b><small>{completedJobs.length} complete jobs</small></div>
+          <div className="analytics-kpi-card"><span>Live WIP Qty</span><b>{inProductionQty}</b><small>{liveJobs.length} live jobs</small></div>
+          <div className="analytics-kpi-card"><span>Model Library</span><b>{totalFurniture}</b><small>{models.length} collections / {totalParts} parts</small></div>
+          <div className="analytics-kpi-card"><span>Backlog Split</span><b>{scheduledOnlyJobs.length}</b><small>{inProductionJobs.length} in production</small></div>
+        </div>
+
+        <div className="enterprise-grid analytics-grid">
+          <div className="enterprise-card analytics-card">
+            <h2>Live Work by Department</h2>
+            <p className="muted">Shows where active production quantity is sitting right now.</p>
+            <div className="analytics-bar-list">
+              {stageRows.map((row) => (
+                <div key={row.stage} className="analytics-bar-row">
+                  <div className="analytics-bar-label"><b>{row.stage}</b><span>{row.jobs} jobs • {row.qty} qty</span></div>
+                  <div className="analytics-bar-track"><span style={{ width: `${Math.max(4, (row.qty / maxStageQty) * 100)}%` }} /></div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="enterprise-card analytics-card">
+            <h2>Scheduled Load by Collection</h2>
+            <p className="muted">Top collections by scheduled quantity.</p>
+            {collectionRows.length === 0 ? (
+              <div className="empty small">No schedule data yet.</div>
+            ) : (
+              <div className="analytics-bar-list">
+                {collectionRows.map((row) => (
+                  <div key={row.collection} className="analytics-bar-row">
+                    <div className="analytics-bar-label"><b>{row.collection}</b><span>{row.jobs} jobs • {row.complete}/{row.qty} complete</span></div>
+                    <div className="analytics-bar-track"><span style={{ width: `${Math.max(4, (row.qty / maxCollectionQty) * 100)}%` }} /></div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="enterprise-card analytics-card">
+            <h2>Schedule Health</h2>
+            <div className="analytics-health-grid">
+              <div><span>Scheduled</span><b>{scheduledOnlyJobs.length}</b></div>
+              <div><span>In Production</span><b>{inProductionJobs.length}</b></div>
+              <div><span>Complete</span><b>{completedJobs.length}</b></div>
+              <div><span>Remaining Qty</span><b>{Math.max(0, scheduledQty - completedQty)}</b></div>
+            </div>
+          </div>
+
+          <div className="enterprise-card analytics-card">
+            <h2>Recent Completions</h2>
+            {recentCompleted.length === 0 ? (
+              <div className="empty small">No completed jobs with timestamps yet.</div>
+            ) : (
+              <div className="analytics-completion-list">
+                {recentCompleted.map((job) => (
+                  <div key={job.id}>
+                    <b>{job.furniture}</b>
+                    <span>{job.collection} • Qty {job.qtyComplete || job.qtyNeeded || 0}</span>
+                    <small>{formatTimelineTime(job.completedAt)}</small>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  };
 
   const ProductionDashboard = () => {
-    const now = new Date();
-    const todayLabel = now.toLocaleDateString([], {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    const timeLabel = now.toLocaleTimeString([], {
-      hour: "numeric",
-      minute: "2-digit",
-    });
+    const dashboardDate = new Date();
 
     const stageCards = STAGES.slice(0, 5).map((stage, index) => {
       const jobs = liveForStage(index);
@@ -2655,7 +3170,7 @@ function App() {
     const activeJobs = liveJobs.filter((job) => job.stage < STAGES.length - 1);
     const completedToday = schedule.filter((job) => {
       if (job.status !== "Complete" || !job.completedAt) return false;
-      return new Date(job.completedAt).toDateString() === now.toDateString();
+      return new Date(job.completedAt).toDateString() === dashboardDate.toDateString();
     });
     const delayedJobs = schedule.filter((job) => {
       const text = `${job.status || ""} ${job.notes || ""}`.toLowerCase();
@@ -2706,10 +3221,7 @@ function App() {
             <span>{currentRole} Dashboard</span>
           </div>
 
-          <div className="tv-dashboard-clock">
-            <b>{timeLabel}</b>
-            <span>{todayLabel}</span>
-          </div>
+          <LiveDashboardClock />
         </header>
 
         <div className="tv-dashboard-grid">
@@ -3043,6 +3555,24 @@ function App() {
               {navItem}
             </button>
           ))}
+
+          {["Developer", "Admin"].includes(currentRole) && (
+            <button
+              className={`main-nav-button nav-fishbowl ${view === "Fishbowl" ? "active-nav" : ""}`}
+              onClick={() => setView("Fishbowl")}
+            >
+              Fishbowl
+            </button>
+          )}
+
+          {currentRole === "Developer" && (
+            <button
+              className={`main-nav-button nav-analytics ${view === "Analytics" ? "active-nav" : ""}`}
+              onClick={() => setView("Analytics")}
+            >
+              Analytics
+            </button>
+          )}
         </div>
 
         <div className="session-pill">
@@ -3066,10 +3596,6 @@ function App() {
 
         {["Developer", "Admin"].includes(currentRole) && (
           <div className="nav-button-group backup-actions">
-            <button className="dev-tool-button" onClick={() => fishbowlCsvInputRef.current?.click()}>
-              Import Fishbowl Schedule
-            </button>
-
             {currentRole === "Developer" && (
               <>
                 <button className="dev-tool-button" onClick={exportBackup}>Export Full Backup</button>
@@ -3133,6 +3659,10 @@ function App() {
         }
       >
         {view === "Dashboard" && <ProductionDashboard />}
+
+        {view === "Fishbowl" && <FishbowlConnectionPage />}
+
+        {view === "Analytics" && currentRole === "Developer" && <DeveloperAnalyticsPage />}
 
         {view === "Models" && (
           <aside className="sidebar">
@@ -3964,6 +4494,22 @@ function App() {
                                   <span><b>Remaining:</b> {remaining}</span>
                                   <span>{job.status}</span>
                                 </div>
+
+                                <details className="schedule-timeline">
+                                  <summary>Timeline</summary>
+                                  <div className="schedule-timeline-list">
+                                    {getScheduleTimeline(job).map((event) => (
+                                      <div key={event.id} className="schedule-timeline-item">
+                                        <span className={`timeline-dot stage-${stageSlug(event.stage)}`} />
+                                        <div>
+                                          <b>{event.title}</b>
+                                          <small>{event.stage} • {formatTimelineTime(event.at)}</small>
+                                          {event.note && <p>{event.note}</p>}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </details>
 
                                 <div className="schedule-board-actions">
                                   {!isEmployeeMode && (

@@ -5215,3 +5215,654 @@ button,
     inset 0 0 0 2px rgba(255, 255, 255, 0.22),
     0 0 18px rgba(159, 140, 255, 0.25);
 }
+
+/* Enterprise polish pass: cooler schedule states, job timeline, Fishbowl integration page */
+.schedule-board-card {
+  background: linear-gradient(135deg, rgba(42, 46, 52, 0.98), rgba(27, 30, 35, 0.98)) !important;
+  border-color: rgba(120, 132, 148, 0.48) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+}
+
+.schedule-board-card .schedule-board-status {
+  border-color: rgba(148, 163, 184, 0.35) !important;
+  background: rgba(10, 14, 20, 0.72) !important;
+}
+
+.schedule-board-card-production {
+  background: linear-gradient(135deg, rgba(24, 76, 138, 0.98), rgba(15, 44, 82, 0.98)) !important;
+  border-color: rgba(96, 165, 250, 0.9) !important;
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.16), 0 18px 38px rgba(11, 52, 108, 0.28) !important;
+}
+
+.schedule-board-card-production .schedule-board-status {
+  border-color: rgba(147, 197, 253, 0.48) !important;
+  background: rgba(6, 23, 52, 0.82) !important;
+}
+
+.nav-fishbowl {
+  background: linear-gradient(135deg, #184e77, #0f344f) !important;
+  border: 1px solid rgba(125, 211, 252, 0.45) !important;
+}
+
+.job-timeline {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(10, 14, 20, 0.62);
+  border: 1px solid rgba(120, 132, 148, 0.28);
+  border-radius: 12px;
+}
+
+.job-timeline summary {
+  cursor: pointer;
+  color: #e5edf7;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.job-timeline-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.job-timeline-item {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: #f5f7fb;
+}
+
+.timeline-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  margin-top: 4px;
+  background: #7c8a9a;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  box-shadow: 0 0 0 4px rgba(124, 138, 154, 0.14);
+}
+
+.job-timeline-item b,
+.job-timeline-item small,
+.job-timeline-item p,
+.job-timeline-item em {
+  display: block;
+}
+
+.job-timeline-item small {
+  color: #b9c4d1;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.job-timeline-item p {
+  color: #d9e2ec;
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+.job-timeline-item em {
+  color: #8ea2b8;
+  font-size: 11px;
+  margin-top: 4px;
+  font-style: normal;
+}
+
+.enterprise-page {
+  width: 100%;
+  padding: 22px;
+}
+
+.enterprise-hero-card,
+.enterprise-card {
+  background: linear-gradient(135deg, rgba(25, 29, 36, 0.98), rgba(12, 17, 24, 0.98));
+  border: 1px solid rgba(125, 146, 170, 0.26);
+  border-radius: 22px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.enterprise-hero-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding: 26px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+.enterprise-hero-card::after {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -100px;
+  width: 260px;
+  height: 260px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22), transparent 66%);
+  pointer-events: none;
+}
+
+.eyebrow {
+  display: inline-block;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.enterprise-hero-card h1 {
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 0.95;
+  margin-bottom: 12px;
+}
+
+.enterprise-hero-card p {
+  max-width: 850px;
+  color: #cdd7e3;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.enterprise-status-orb {
+  width: 132px;
+  height: 132px;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.34), rgba(15, 23, 42, 0.96));
+  border: 1px solid rgba(147, 197, 253, 0.48);
+  flex-shrink: 0;
+}
+
+.enterprise-status-orb b {
+  font-size: 34px;
+}
+
+.enterprise-status-orb span {
+  color: #bcd1e8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.enterprise-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 1.1fr) minmax(300px, 0.9fr);
+  gap: 16px;
+}
+
+.enterprise-card {
+  padding: 20px;
+}
+
+.enterprise-card h2 {
+  margin-bottom: 8px;
+}
+
+.enterprise-card label {
+  color: #d8e2ee;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.enterprise-card-wide {
+  grid-column: 1 / -1;
+}
+
+.integration-steps {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.integration-steps div {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(125, 146, 170, 0.2);
+  border-radius: 14px;
+}
+
+.integration-steps b {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: grid;
+  place-content: center;
+  background: rgba(59, 130, 246, 0.22);
+  color: #bfdbfe;
+}
+
+.integration-steps span {
+  color: #d8e2ee;
+}
+
+.mapping-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.8fr) minmax(220px, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(125, 146, 170, 0.24);
+  border-radius: 14px;
+  background: rgba(125, 146, 170, 0.18);
+}
+
+.mapping-grid span,
+.mapping-grid b {
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.84);
+}
+
+.mapping-grid span {
+  color: #b6c2d0;
+}
+
+.mapping-grid b {
+  color: #f8fafc;
+}
+
+@media (max-width: 900px) {
+  .enterprise-hero-card,
+  .enterprise-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .enterprise-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mapping-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ForgeFlow Enterprise Polish Pass: cleaner, sharper, more premium without changing the workflow */
+:root {
+  --ff-bg: #070b12;
+  --ff-panel: rgba(15, 23, 42, 0.92);
+  --ff-panel-soft: rgba(30, 41, 59, 0.72);
+  --ff-card: rgba(15, 23, 42, 0.82);
+  --ff-border: rgba(148, 163, 184, 0.18);
+  --ff-border-strong: rgba(148, 163, 184, 0.32);
+  --ff-text: #f8fafc;
+  --ff-muted: #a8b3c3;
+  --ff-blue: #3b82f6;
+  --ff-blue-soft: rgba(59, 130, 246, 0.16);
+  --ff-green: #22c55e;
+  --ff-red: #ef4444;
+  --ff-radius: 18px;
+  --ff-shadow: 0 18px 55px rgba(0, 0, 0, 0.36);
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 34rem),
+    radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.08), transparent 32rem),
+    var(--ff-bg);
+  color: var(--ff-text);
+  letter-spacing: -0.01em;
+}
+
+.top-nav {
+  background: rgba(7, 11, 18, 0.86);
+  border-bottom: 1px solid var(--ff-border);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+}
+
+button,
+.main-nav-button,
+.schedule-week-tab,
+.department-view-tab {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(51, 65, 85, 0.95), rgba(30, 41, 59, 0.95));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  font-weight: 800;
+}
+
+button:hover,
+.main-nav-button:hover,
+.schedule-week-tab:hover,
+.department-view-tab:hover {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.96), rgba(51, 65, 85, 0.96));
+  border-color: rgba(147, 197, 253, 0.34);
+}
+
+.active-nav,
+.active-schedule-week,
+.active-department-view-tab {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  border-color: rgba(191, 219, 254, 0.52) !important;
+  color: #fff !important;
+}
+
+.nav-analytics {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.96), rgba(37, 99, 235, 0.96));
+}
+
+.nav-fishbowl {
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.96), rgba(21, 94, 117, 0.96));
+}
+
+input,
+select,
+textarea {
+  background: rgba(2, 6, 23, 0.72) !important;
+  border: 1px solid var(--ff-border-strong) !important;
+  color: var(--ff-text) !important;
+  border-radius: 12px !important;
+}
+
+.card,
+.side-card,
+.job-card,
+.schedule-card,
+.part-card,
+.week-column,
+.kanban-column,
+.department-stage-panel,
+.schedule-full-panel,
+.enterprise-card,
+.analytics-kpi-card,
+.schedule-board-card {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.74)) !important;
+  border: 1px solid var(--ff-border) !important;
+  box-shadow: var(--ff-shadow);
+}
+
+.main {
+  background: transparent;
+}
+
+.sidebar {
+  background: rgba(7, 11, 18, 0.62);
+  border-color: var(--ff-border);
+}
+
+.muted,
+.note,
+.sku-line,
+.schedule-specs,
+.progress-line,
+.job-card p,
+.week-job-main p {
+  color: var(--ff-muted) !important;
+}
+
+h1,
+h2,
+h3,
+.furniture-title,
+.week-job-main h3,
+.job-title-block h3 {
+  color: var(--ff-text) !important;
+}
+
+.schedule-board-card {
+  border-left: 5px solid #64748b !important;
+}
+
+.schedule-board-card-production {
+  border-left-color: var(--ff-blue) !important;
+  background: linear-gradient(180deg, rgba(30, 64, 175, 0.32), rgba(15, 23, 42, 0.86)) !important;
+}
+
+.schedule-board-status span:last-child {
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: rgba(100, 116, 139, 0.22);
+  color: #dbeafe;
+  font-weight: 900;
+}
+
+.schedule-board-card-production .schedule-board-status span:last-child {
+  background: rgba(59, 130, 246, 0.22);
+  color: #bfdbfe;
+}
+
+/* Schedule timeline */
+.schedule-timeline {
+  background: rgba(2, 6, 23, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 13px;
+  padding: 8px 10px;
+}
+
+.schedule-timeline summary {
+  cursor: pointer;
+  color: #dbeafe;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.schedule-timeline-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.schedule-timeline-item {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 9px;
+  align-items: start;
+}
+
+.schedule-timeline-item b,
+.schedule-timeline-item small,
+.schedule-timeline-item p {
+  display: block;
+  margin: 0;
+}
+
+.schedule-timeline-item b {
+  color: #f8fafc;
+  font-size: 12px;
+}
+
+.schedule-timeline-item small,
+.schedule-timeline-item p {
+  color: #9fb0c4;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* Developer analytics */
+.analytics-page {
+  display: grid;
+  gap: 18px;
+}
+
+.analytics-hero-card {
+  border-color: rgba(96, 165, 250, 0.28) !important;
+}
+
+.analytics-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.analytics-kpi-card {
+  border-radius: var(--ff-radius);
+  padding: 16px;
+  min-height: 126px;
+  display: grid;
+  align-content: space-between;
+}
+
+.analytics-kpi-card span,
+.analytics-kpi-card small {
+  color: var(--ff-muted);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.analytics-kpi-card b {
+  color: #fff;
+  font-size: clamp(24px, 3vw, 38px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.analytics-grid {
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
+}
+
+.analytics-card {
+  min-height: 280px;
+}
+
+.analytics-bar-list {
+  display: grid;
+  gap: 13px;
+  margin-top: 16px;
+}
+
+.analytics-bar-row {
+  display: grid;
+  gap: 7px;
+}
+
+.analytics-bar-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--ff-text);
+}
+
+.analytics-bar-label span {
+  color: var(--ff-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.analytics-bar-track {
+  height: 10px;
+  background: rgba(2, 6, 23, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.analytics-bar-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #60a5fa);
+}
+
+.analytics-health-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.analytics-health-grid div {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(2, 6, 23, 0.48);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.analytics-health-grid span,
+.analytics-health-grid b {
+  display: block;
+}
+
+.analytics-health-grid span {
+  color: var(--ff-muted);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.analytics-health-grid b {
+  color: var(--ff-text);
+  font-size: 30px;
+  margin-top: 6px;
+}
+
+.analytics-completion-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.analytics-completion-list div {
+  display: grid;
+  gap: 3px;
+  padding: 12px;
+  background: rgba(2, 6, 23, 0.44);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 14px;
+}
+
+.analytics-completion-list b {
+  color: var(--ff-text);
+}
+
+.analytics-completion-list span,
+.analytics-completion-list small {
+  color: var(--ff-muted);
+}
+
+.analytics-orb {
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.44), rgba(15, 23, 42, 0.96));
+}
+
+@media (max-width: 1180px) {
+  .analytics-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 800px) {
+  .analytics-kpi-grid,
+  .analytics-grid,
+  .analytics-health-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Final nav/order + schedule-state contrast pass */
+.schedule-board-card:not(.schedule-board-card-production):not(.done) {
+  background: linear-gradient(135deg, rgba(55, 61, 70, 0.98), rgba(35, 40, 48, 0.98)) !important;
+  border-color: rgba(156, 163, 175, 0.68) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22), inset 4px 0 0 rgba(148, 163, 184, 0.72) !important;
+}
+
+.schedule-board-card:not(.schedule-board-card-production):not(.done) .schedule-board-status {
+  background: rgba(17, 24, 39, 0.78) !important;
+  border-color: rgba(203, 213, 225, 0.34) !important;
+}
+
+.schedule-board-card:not(.schedule-board-card-production):not(.done) .schedule-board-status span:last-child {
+  background: rgba(100, 116, 139, 0.38) !important;
+  border: 1px solid rgba(203, 213, 225, 0.28) !important;
+  color: #eef2f7 !important;
+}
+
+.schedule-board-card-production {
+  background: linear-gradient(135deg, rgba(20, 55, 130, 0.99), rgba(15, 35, 92, 0.99)) !important;
+  border-color: rgba(59, 130, 246, 0.98) !important;
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.2), 0 18px 38px rgba(11, 52, 108, 0.34), inset 4px 0 0 rgba(59, 130, 246, 0.95) !important;
+}
+
+.schedule-board-card-production .schedule-board-status span:last-child {
+  background: rgba(37, 99, 235, 0.72) !important;
+  border: 1px solid rgba(147, 197, 253, 0.36) !important;
+  color: #ffffff !important;
+}
