@@ -345,6 +345,7 @@ function App() {
   const [selectedScheduleWeek, setSelectedScheduleWeek] = useState(0);
   const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
   const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
+  const [dashboardDepartment, setDashboardDepartment] = useState("Fabrication");
 
   const writeLocalAppData = (nextData) => {
     localStorage.setItem("models", JSON.stringify(nextData.models || []));
@@ -2519,7 +2520,13 @@ function App() {
 
     const dashboardMessages = shopMessages.slice(0, 4);
     const topJobs = activeJobs.slice(0, 5);
-    const delayedJobRows = delayedJobs.slice(0, 4);
+    const selectedDashboardStageIndex = STAGES.indexOf(dashboardDepartment);
+    const selectedDashboardJobs =
+      selectedDashboardStageIndex === -1 ? [] : liveForStage(selectedDashboardStageIndex);
+    const selectedDashboardQty = selectedDashboardJobs.reduce(
+      (sum, job) => sum + Number(job.qty || 0),
+      0
+    );
     const recentActivity = [
       ...liveJobs.slice(0, 4).map((job) => ({
         id: `live-${job.id}`,
@@ -2594,13 +2601,21 @@ function App() {
 
             <div className="tv-flow-row">
               {stageCards.map((item, index) => (
-                <div key={item.stage} className={`tv-stage-card tv-stage-${stageSlug(item.stage)}`}>
+                <button
+                  key={item.stage}
+                  type="button"
+                  className={`tv-stage-card tv-stage-${stageSlug(item.stage)} ${
+                    dashboardDepartment === item.stage ? "selected" : ""
+                  }`}
+                  onClick={() => setDashboardDepartment(item.stage)}
+                  title={`Show ${item.stage} jobs`}
+                >
                   <span>{item.stage}</span>
                   <b>{item.count}</b>
                   <small>{item.qty} Qty</small>
                   <em>{item.delayedCount} Delayed</em>
                   {index < stageCards.length - 1 && <i aria-hidden="true">→</i>}
-                </div>
+                </button>
               ))}
             </div>
 
@@ -2669,21 +2684,56 @@ function App() {
             )}
           </section>
 
-          <section className="tv-panel tv-table-panel">
-            <h3>Delayed Jobs</h3>
+          <section className="tv-panel tv-table-panel tv-dept-jobs-panel">
+            <div className="tv-panel-title-row">
+              <div>
+                <h3>{dashboardDepartment} Jobs</h3>
+                <p>{selectedDashboardJobs.length} active job{selectedDashboardJobs.length === 1 ? "" : "s"} • {selectedDashboardQty} qty</p>
+              </div>
+              <span className={`stage-badge stage-${stageSlug(dashboardDepartment)}`}>
+                {dashboardDepartment}
+              </span>
+            </div>
 
-            {delayedJobRows.length === 0 ? (
-              <div className="tv-empty">No delayed jobs flagged.</div>
+            {selectedDashboardJobs.length === 0 ? (
+              <div className="tv-empty">No active jobs in {dashboardDepartment} right now.</div>
             ) : (
-              <div className="tv-table-list delayed-tv-list">
-                {delayedJobRows.map((job) => (
-                  <article key={job.id}>
-                    <span>{job.collection}</span>
-                    <b>{job.furniture}</b>
-                    <small>{job.status}</small>
-                    <em>{job.dueDate || getScheduleDateLabel(scheduleWeeks, job)}</em>
-                  </article>
-                ))}
+              <div className="tv-selected-job-list">
+                {selectedDashboardJobs.map((job) => {
+                  const percent =
+                    job.stage === 0
+                      ? job.partsReady
+                        ? 100
+                        : 0
+                      : Math.round(
+                          (Number(job.stageCompleteQty || 0) /
+                            Math.max(1, Number(job.qty || 1))) *
+                            100
+                        );
+
+                  return (
+                    <article key={job.id}>
+                      <div className="tv-selected-job-main">
+                        <span>{job.collection}</span>
+                        <b>{job.furniture}</b>
+                        <small>
+                          Qty {job.qty || 0}
+                          {job.dueDate ? ` • Due ${job.dueDate}` : ""}
+                        </small>
+                      </div>
+
+                      <div className="tv-selected-job-progress">
+                        <div>
+                          <span>Progress</span>
+                          <b>{Math.min(100, percent)}%</b>
+                        </div>
+                        <div className="tv-mini-progress">
+                          <i style={{ width: `${Math.min(100, percent)}%` }} />
+                        </div>
+                      </div>
+                    </article>
+                  );
+                })}
               </div>
             )}
           </section>

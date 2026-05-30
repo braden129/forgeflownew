@@ -4565,3 +4565,357 @@ body,
 .login-page {
   zoom: 1 !important;
 }
+
+/* Dashboard + Live desktop polish: keeps phone layouts untouched */
+@media (min-width: 901px) {
+  .compact-job-card {
+    grid-template-columns: minmax(320px, 0.45fr) minmax(460px, 0.55fr);
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .compact-job-card .job-head {
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .compact-job-card .job-img {
+    width: 100px;
+    height: 82px;
+  }
+
+  .compact-job-card h3,
+  .job-title-block h3,
+  .week-job-main h3 {
+    font-size: 23px !important;
+    line-height: 1.15;
+  }
+
+  .compact-job-card .sku-line,
+  .sku-line {
+    font-size: 15px;
+  }
+
+  .compact-job-card .stage-badge {
+    font-size: 14px;
+    padding: 6px 12px;
+  }
+
+  .compact-job-meta,
+  .job-spec-grid,
+  .schedule-status {
+    font-size: 15px;
+  }
+
+  .progress-line {
+    font-size: 15px;
+  }
+
+  .bar {
+    height: 13px;
+  }
+
+  .compact-action-row button,
+  .job-card-right .wide {
+    font-size: 17px;
+    padding: 11px 16px;
+  }
+
+  .department-stage-panel .job-card {
+    margin-bottom: 14px;
+  }
+
+  .tv-stage-card {
+    appearance: none;
+    border: 1px solid rgba(90, 185, 255, 0.35);
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  }
+
+  .tv-stage-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(117, 217, 255, 0.8);
+    box-shadow: 0 0 28px rgba(65, 185, 255, 0.16);
+  }
+
+  .tv-stage-card.selected {
+    border-color: rgba(119, 255, 190, 0.9) !important;
+    box-shadow: inset 0 0 0 1px rgba(119, 255, 190, 0.35), 0 0 30px rgba(66, 255, 169, 0.16);
+    background: linear-gradient(180deg, rgba(43, 73, 84, 0.9), rgba(13, 31, 41, 0.96)) !important;
+  }
+
+  .tv-panel-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .tv-panel-title-row h3 {
+    margin-bottom: 5px;
+  }
+
+  .tv-panel-title-row p {
+    margin: 0;
+    color: #9fd7ff;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+  }
+
+  .tv-dept-jobs-panel {
+    min-height: 310px;
+  }
+
+  .tv-selected-job-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tv-selected-job-list article {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.7fr) minmax(260px, 1fr);
+    gap: 18px;
+    align-items: center;
+    padding: 14px;
+    border: 1px solid rgba(98, 163, 210, 0.2);
+    border-radius: 16px;
+    background: rgba(14, 31, 43, 0.78);
+  }
+
+  .tv-selected-job-main {
+    display: grid;
+    gap: 4px;
+  }
+
+  .tv-selected-job-main span {
+    color: #8ecfff;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tv-selected-job-main b {
+    color: #ffffff;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .tv-selected-job-main small {
+    color: #d6ecff;
+    font-size: 13px;
+  }
+
+  .tv-selected-job-progress {
+    display: grid;
+    gap: 8px;
+  }
+
+  .tv-selected-job-progress > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    color: #d7edff;
+    font-size: 13px;
+    font-weight: 800;
+  }
+}
+
+
+/* Dashboard production flow polish: glow is the selected cue, no text badge */
+.tv-stage-card.selected::after,
+.dashboard-selected-label,
+.selected-label,
+.flow-selected-label {
+  display: none !important;
+  content: none !important;
+}
+
+/* Premium selected-card glow */
+.tv-stage-card.selected,
+.dashboard-stage-card.selected,
+.production-flow-card.selected,
+.dashboard-flow-card.selected,
+.dashboard-flow-step.selected {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 20px rgba(108, 255, 201, 0.25),
+    0 0 40px rgba(108, 255, 201, 0.12);
+}
+
+/* Subtle moving production-flow arrows on desktop only */
+@media (min-width: 900px) {
+  .tv-stage-card i {
+    overflow: visible;
+    color: #58d7ff;
+    text-shadow:
+      0 0 8px rgba(88, 215, 255, 0.75),
+      0 0 18px rgba(88, 215, 255, 0.35);
+    animation: tvFlowArrowPulse 1.9s ease-in-out infinite;
+  }
+
+  .tv-stage-card:hover i,
+  .tv-stage-card.selected i {
+    color: #8ee9ff;
+    text-shadow:
+      0 0 10px rgba(142, 233, 255, 0.95),
+      0 0 24px rgba(142, 233, 255, 0.55);
+  }
+}
+
+@keyframes tvFlowArrowPulse {
+  0% {
+    transform: translateX(0);
+    opacity: 0.45;
+  }
+  45% {
+    transform: translateX(4px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+}
+/* Live mode desktop density fix */
+@media (min-width: 900px) {
+  .single-department-panel .department-job-grid {
+    grid-template-columns: repeat(auto-fit, minmax(620px, 1fr)) !important;
+  }
+
+  .single-department-panel .compact-job-card {
+    grid-template-columns: minmax(260px, 0.85fr) minmax(320px, 1.15fr) !important;
+    min-height: 210px;
+  }
+
+  .single-department-panel .job-card-right {
+    min-width: 320px;
+  }
+
+  .single-department-panel .job-card-right button,
+  .single-department-panel .job-card-right .wide {
+    width: 100%;
+  }
+}
+
+/* Live focused department desktop layout fix - prevents job cards from smashing together */
+.live-focused-view {
+  display: block !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+.live-focused-view .department-stage-panel {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+}
+
+.live-focused-view .department-job-grid {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+@media (min-width: 900px) {
+  .live-focused-view .department-job-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(680px, 1fr)) !important;
+    gap: 14px !important;
+    align-items: stretch !important;
+  }
+
+  .live-focused-view .compact-job-card {
+    display: grid !important;
+    grid-template-columns: minmax(260px, 0.85fr) minmax(340px, 1.15fr) !important;
+    gap: 14px !important;
+    min-height: 205px !important;
+    overflow: hidden !important;
+  }
+
+  .live-focused-view .job-card-left,
+  .live-focused-view .job-card-right,
+  .live-focused-view .job-title-block {
+    min-width: 0 !important;
+  }
+
+  .live-focused-view .job-card-right {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-content: start !important;
+    gap: 8px !important;
+  }
+
+  .live-focused-view .job-card-right button,
+  .live-focused-view .job-card-right .wide,
+  .live-focused-view .job-card-right .status {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .live-focused-view .compact-action-row {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(54px, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .live-focused-view .compact-action-row button {
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .live-focused-view .job-title-block h3 {
+    font-size: 22px !important;
+    line-height: 1.15 !important;
+  }
+
+  .live-focused-view .compact-job-card .sku-line {
+    font-size: 14px !important;
+  }
+
+  .live-focused-view .job-img {
+    width: 96px !important;
+    height: 78px !important;
+  }
+}
+
+/* Medium desktop/laptop: one clean card per row instead of squeezed columns */
+@media (min-width: 900px) and (max-width: 1450px) {
+  .live-focused-view .department-job-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Phone/tablet stays close to the existing mobile layout */
+@media (max-width: 899px) {
+  .live-focused-view .department-job-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .live-focused-view .compact-job-card {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* Live card button spacing fix */
+@media (min-width: 900px) {
+  .live-focused-view .compact-action-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .live-focused-view .compact-action-row button {
+    width: auto !important;
+    min-width: 150px !important;
+    white-space: nowrap !important;
+    font-size: 16px !important;
+    padding: 11px 14px !important;
+  }
+
+  .live-focused-view .job-card-right {
+    overflow: visible !important;
+  }
+}
