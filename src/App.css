@@ -4919,3 +4919,299 @@ body,
     overflow: visible !important;
   }
 }
+
+/* Dashboard max polish upgrade - SKU cards, count animations, movement pulse */
+.tv-summary-list b,
+.tv-stage-card b,
+.tv-panel-title-row p,
+.tv-load-row b {
+  transition: color 0.25s ease, text-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.tv-summary-list b,
+.tv-stage-card b {
+  text-shadow: 0 0 12px rgba(88, 215, 255, 0.12);
+}
+
+.tv-stage-card:hover b,
+.tv-stage-card.selected b {
+  text-shadow:
+    0 0 12px rgba(108, 255, 201, 0.45),
+    0 0 26px rgba(108, 255, 201, 0.18);
+}
+
+.tv-selected-job-main .tv-selected-job-sku {
+  display: block;
+  width: 100%;
+  color: #71c9ff !important;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 8px;
+}
+
+.tv-selected-job-list article {
+  position: relative;
+  overflow: hidden;
+  transition:
+    border-color 0.24s ease,
+    box-shadow 0.24s ease,
+    transform 0.24s ease,
+    background 0.24s ease;
+}
+
+.tv-selected-job-list article:hover {
+  transform: translateY(-1px);
+  border-color: rgba(113, 201, 255, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(113, 201, 255, 0.10),
+    0 12px 28px rgba(0, 0, 0, 0.24);
+}
+
+.tv-job-moved-pulse {
+  animation: tvJobMovedPulse 2.2s ease-out;
+}
+
+.tv-job-moved-pulse::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 18%, rgba(108, 255, 201, 0.30), transparent 28%),
+    linear-gradient(90deg, transparent, rgba(108, 255, 201, 0.14), transparent);
+  opacity: 0;
+  animation: tvJobMovedSweep 2.2s ease-out;
+}
+
+.tv-activity-pulse {
+  animation: tvActivityPulse 2.2s ease-out;
+}
+
+@keyframes tvJobMovedPulse {
+  0% {
+    transform: scale(1);
+    border-color: rgba(108, 255, 201, 0.95);
+    box-shadow:
+      0 0 0 1px rgba(108, 255, 201, 0.40),
+      0 0 32px rgba(108, 255, 201, 0.32);
+  }
+  45% {
+    transform: scale(1.012);
+    border-color: rgba(108, 255, 201, 0.72);
+    box-shadow:
+      0 0 0 1px rgba(108, 255, 201, 0.25),
+      0 0 24px rgba(108, 255, 201, 0.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes tvJobMovedSweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-18%);
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(18%);
+  }
+}
+
+@keyframes tvActivityPulse {
+  0% {
+    box-shadow: 0 0 0 1px rgba(108, 255, 201, 0.36);
+    background: rgba(108, 255, 201, 0.08);
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .tv-selected-job-main .tv-selected-job-sku {
+    white-space: normal;
+  }
+}
+
+/* Production stability polish: logout-safe dashboard + monitor-responsive layout */
+.tv-selected-job-main .tv-selected-job-sku {
+  color: #ffffff !important;
+  font-size: clamp(13px, 0.85vw, 16px) !important;
+  font-weight: 950 !important;
+  letter-spacing: 0.08em !important;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.18),
+    0 0 18px rgba(113, 201, 255, 0.14);
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* Make dashboard scale across laptop screens, office monitors, TVs, and browser zoom levels */
+.tv-dashboard,
+.tv-dashboard * {
+  min-width: 0;
+}
+
+.tv-dashboard h2,
+.tv-dashboard h3,
+.tv-stage-card span,
+.tv-selected-job-main b,
+.tv-activity-list b,
+.tv-message-list b {
+  overflow-wrap: anywhere;
+}
+
+.tv-dashboard-grid {
+  grid-template-columns:
+    minmax(250px, 0.9fr)
+    minmax(480px, 1.9fr)
+    minmax(300px, 1.2fr) !important;
+}
+
+.tv-stage-card {
+  min-width: 0 !important;
+}
+
+.tv-stage-card span {
+  font-size: clamp(10px, 0.72vw, 13px) !important;
+}
+
+.tv-stage-card b {
+  font-size: clamp(28px, 2.4vw, 44px) !important;
+}
+
+.tv-stage-card small,
+.tv-stage-card em {
+  font-size: clamp(10px, 0.68vw, 13px) !important;
+}
+
+.tv-selected-job-list article {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.85fr) minmax(260px, 1.15fr);
+  gap: clamp(12px, 1.2vw, 22px);
+  align-items: center;
+}
+
+.tv-selected-job-main b {
+  font-size: clamp(15px, 1.05vw, 20px) !important;
+  line-height: 1.2 !important;
+}
+
+.tv-selected-job-main small {
+  font-size: clamp(11px, 0.78vw, 14px) !important;
+}
+
+.tv-progress-side {
+  min-width: 0;
+}
+
+.tv-progress-side .bar {
+  width: 100%;
+}
+
+/* Extra visible pulse for job moves */
+.tv-job-moved-pulse {
+  animation: tvJobMovedPulse 2.4s ease-out !important;
+  border-color: rgba(108, 255, 201, 0.95) !important;
+}
+
+.tv-job-moved-pulse::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(108, 255, 201, 0.34), transparent 28%),
+    linear-gradient(90deg, transparent, rgba(108, 255, 201, 0.16), transparent);
+  opacity: 0;
+  animation: tvJobMovedSweep 2.4s ease-out !important;
+}
+
+/* Laptops / narrower monitors: stack dashboard panels cleanly instead of crushing text */
+@media (max-width: 1500px) {
+  .tv-dashboard-grid {
+    grid-template-columns: minmax(260px, 0.75fr) minmax(520px, 1.5fr) !important;
+  }
+
+  .tv-live-panel,
+  .tv-message-panel {
+    grid-column: auto !important;
+  }
+
+  .tv-selected-job-list article {
+    grid-template-columns: minmax(200px, 0.8fr) minmax(240px, 1.2fr);
+  }
+}
+
+@media (max-width: 1180px) {
+  .tv-dashboard-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tv-flow-row {
+    grid-template-columns: repeat(2, minmax(180px, 1fr)) !important;
+  }
+
+  .tv-selected-job-list article {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .tv-flow-row,
+  .tv-load-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .tv-selected-job-main .tv-selected-job-sku {
+    white-space: normal !important;
+  }
+}
+
+/* General text/box safety for different monitors and Windows display scaling */
+.card,
+.job-card,
+.schedule-board-card,
+.compact-job-card,
+.tv-panel,
+.tv-stage-card,
+.tv-selected-job-list article {
+  max-width: 100%;
+}
+
+button,
+.main-nav-button,
+.dev-tool-button,
+.schedule-board-actions button,
+.compact-action-row button {
+  overflow-wrap: normal;
+}
+
+/* Dashboard nav access polish for all roles */
+.main-nav-button.nav-dashboard {
+  background: linear-gradient(135deg, #4b3a8f, #2f2764) !important;
+  border: 1px solid #9f8cff !important;
+  color: #ffffff !important;
+  font-weight: 900;
+}
+
+.main-nav-button.nav-dashboard:hover {
+  background: linear-gradient(135deg, #5c49ad, #3c3178) !important;
+}
+
+.main-nav-button.nav-dashboard.active-nav {
+  filter: brightness(1.2);
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 0 18px rgba(159, 140, 255, 0.25);
+}

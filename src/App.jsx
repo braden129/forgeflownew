@@ -21,8 +21,8 @@ const DEFAULT_SCHEDULE_WEEKS = [
   "Week of",
 ];
 
-const VIEWS = ["Models", "Schedule", "Live", "Messages", ...STAGES];
-const PRIMARY_VIEWS = ["Models", "Schedule", "Live", "Messages"];
+const VIEWS = ["Models", "Schedule", "Dashboard", "Live", "Messages", ...STAGES];
+const PRIMARY_VIEWS = ["Models", "Schedule", "Dashboard", "Live", "Messages"];
 const MESSAGE_RECIPIENTS = [
   "Everyone",
   "Fabrication",
@@ -260,7 +260,56 @@ function stageSlug(stage) {
     .replace(/[^a-z0-9-]/g, "");
 }
 
+
+function AnimatedNumber({ value, duration = 650 }) {
+  const safeValue = Number(value || 0);
+  const [displayValue, setDisplayValue] = useState(safeValue);
+  const previousValueRef = useRef(safeValue);
+
+  useEffect(() => {
+    const startValue = previousValueRef.current;
+    const endValue = safeValue;
+
+    if (startValue === endValue) {
+      setDisplayValue(endValue);
+      return;
+    }
+
+    let frameId;
+    const startedAt = performance.now();
+
+    const tick = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const nextValue = Math.round(startValue + (endValue - startValue) * eased);
+
+      setDisplayValue(nextValue);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(tick);
+      } else {
+        previousValueRef.current = endValue;
+        setDisplayValue(endValue);
+      }
+    };
+
+    frameId = requestAnimationFrame(tick);
+
+    return () => {
+      if (frameId) cancelAnimationFrame(frameId);
+    };
+  }, [safeValue, duration]);
+
+  return <>{displayValue}</>;
+}
+
 function App() {
+  useEffect(() => {
+    if (window.location.search.includes("logout=")) {
+      window.history.replaceState({}, "", window.location.pathname || "/");
+    }
+  }, []);
+
   const [view, setView] = useState("Models");
   const [search, setSearch] = useState("");
 
@@ -313,7 +362,7 @@ function App() {
   const lastSnapshotHashRef = useRef("");
   const realtimeClientIdRef = useRef(makeId());
   const skipNextCloudSaveRef = useRef(false);
-  const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [cloudDataLoaded, setCloudDataLoaded] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: "", password: "" });
@@ -346,6 +395,9 @@ function App() {
   const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
   const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
   const [dashboardDepartment, setDashboardDepartment] = useState("Fabrication");
+  const [recentlyMovedJobIds, setRecentlyMovedJobIds] = useState([]);
+  const previousLiveJobStagesRef = useRef({});
+  const hasTrackedLiveStagesRef = useRef(false);
 
   const writeLocalAppData = (nextData) => {
     localStorage.setItem("models", JSON.stringify(nextData.models || []));
@@ -545,6 +597,7 @@ function App() {
       const nextDepartment = normalizeDepartment(profile?.department || employeeDepartment);
       setEmployeeDepartment(nextDepartment);
       setEmployeePanelTab(nextDepartment);
+      setDashboardDepartment(nextDepartment);
       localStorage.setItem("employeeDepartment", nextDepartment);
       setView(nextDepartment);
     } else {
@@ -588,6 +641,29 @@ function App() {
     return () => {
       isMounted = false;
       subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleStorageLogout = (event) => {
+      if (event.key !== "forgeflowLogoutAt") return;
+
+      cloudReadyRef.current = false;
+      setCloudDataLoaded(false);
+      setCurrentUser(null);
+      setLoginForm({ username: "", password: "" });
+      setLoginError("");
+      setView("Models");
+
+      if (window.location.search) {
+        window.history.replaceState({}, "", window.location.pathname || "/");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageLogout);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageLogout);
     };
   }, []);
 
@@ -817,6 +893,46 @@ function App() {
       setEmployeePanelTab(employeeDepartment);
     }
   }, [employeeDepartment, currentRole]);
+
+  useEffect(() => {
+    const nextStageMap = {};
+
+    liveJobs.forEach((job) => {
+      if (job?.id) {
+        nextStageMap[job.id] = job.stage;
+      }
+    });
+
+    if (!hasTrackedLiveStagesRef.current) {
+      previousLiveJobStagesRef.current = nextStageMap;
+      hasTrackedLiveStagesRef.current = true;
+      return;
+    }
+
+    const movedIds = liveJobs
+      .filter((job) => {
+        if (!job?.id) return false;
+        const previousStage = previousLiveJobStagesRef.current[job.id];
+        return previousStage !== undefined && previousStage !== job.stage;
+      })
+      .map((job) => job.id);
+
+    previousLiveJobStagesRef.current = nextStageMap;
+
+    if (movedIds.length === 0) return;
+
+    setRecentlyMovedJobIds((currentIds) =>
+      Array.from(new Set([...currentIds, ...movedIds]))
+    );
+
+    const timer = setTimeout(() => {
+      setRecentlyMovedJobIds((currentIds) =>
+        currentIds.filter((id) => !movedIds.includes(id))
+      );
+    }, 2200);
+
+    return () => clearTimeout(timer);
+  }, [liveJobs]);
 
   const selectedModel = models.find((m) => m.id === selectedModelId);
   const elevatedModes = ["Developer", "Admin", "Supervisor"];
@@ -2261,16 +2377,7 @@ function App() {
     setAuthLoading(false);
   };
 
-  const handleLogout = async () => {
-    if (!window.confirm("Log out of this device?")) return;
-
-    try {
-      await supabase.auth.signOut({ scope: "global" });
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-
-    // Clear only login/session-related storage. Keep production data backups intact.
+  const clearAuthStorage = () => {
     const storageKeysToRemove = [];
 
     for (let index = 0; index < localStorage.length; index += 1) {
@@ -2289,7 +2396,19 @@ function App() {
     }
 
     storageKeysToRemove.forEach((key) => localStorage.removeItem(key));
+    localStorage.setItem("forgeflowLogoutAt", String(Date.now()));
     sessionStorage.clear();
+  };
+
+  const clearBrowserShellCache = async () => {
+    if ("serviceWorker" in navigator) {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      } catch (error) {
+        console.warn("Could not unregister service workers during logout:", error);
+      }
+    }
 
     if (window.caches) {
       try {
@@ -2299,7 +2418,12 @@ function App() {
         console.warn("Could not clear browser cache storage during logout:", error);
       }
     }
+  };
 
+  const handleLogout = async () => {
+    if (!window.confirm("Log out of this device?")) return;
+
+    // Flip the UI to logged-out immediately so the button cannot get stuck behind a slow network/auth call.
     cloudReadyRef.current = false;
     setCloudDataLoaded(false);
     setCurrentUser(null);
@@ -2307,8 +2431,27 @@ function App() {
     setLoginError("");
     setView("Models");
 
-    // Force the browser/PWA shell to re-read the logged-out state.
-    window.history.replaceState({}, "", "/");
+    clearAuthStorage();
+
+    try {
+      await Promise.race([
+        supabase.auth.signOut({ scope: "global" }),
+        new Promise((resolve) => setTimeout(resolve, 1800)),
+      ]);
+    } catch (error) {
+      console.warn("Supabase logout did not finish cleanly, local session was still cleared:", error);
+    }
+
+    clearAuthStorage();
+    await clearBrowserShellCache();
+
+    const cleanPath = window.location.pathname || "/";
+    window.history.replaceState({}, "", cleanPath);
+
+    // Full reload after the auth/session keys are cleared prevents stale PWA/cache state
+    // from rehydrating the old logged-in screen. The logout query makes the new page
+    // boot into a clean session even if the browser tries to restore old state.
+    window.location.replace(`${cleanPath}?logout=${Date.now()}`);
   };
 
   const handleEmployeeDepartmentChange = (department) => {
@@ -2316,6 +2459,7 @@ function App() {
 
     setEmployeeDepartment(department);
     setEmployeePanelTab(department);
+    setDashboardDepartment(department);
 
     if (currentRole === "Employee") {
       localStorage.setItem("employeeDepartment", department);
@@ -2479,7 +2623,7 @@ function App() {
   };
 
 
-  const DevProductionDashboard = () => {
+  const ProductionDashboard = () => {
     const now = new Date();
     const todayLabel = now.toLocaleDateString([], {
       month: "short",
@@ -2559,7 +2703,7 @@ function App() {
 
           <div className="tv-dashboard-title">
             <h2>PRODUCTION DASHBOARD</h2>
-            <span>Developer Preview</span>
+            <span>{currentRole} Dashboard</span>
           </div>
 
           <div className="tv-dashboard-clock">
@@ -2575,23 +2719,23 @@ function App() {
             <div className="tv-summary-list">
               <div>
                 <span>Active Jobs</span>
-                <b>{activeJobs.length}</b>
+                <b><AnimatedNumber value={activeJobs.length} /></b>
               </div>
               <div>
                 <span>Completed Today</span>
-                <b>{completedToday.length}</b>
+                <b><AnimatedNumber value={completedToday.length} /></b>
               </div>
               <div>
                 <span>Scheduled Qty</span>
-                <b>{dashboard.scheduledQty}</b>
+                <b><AnimatedNumber value={dashboard.scheduledQty} /></b>
               </div>
               <div>
                 <span>Delayed / Hold</span>
-                <b>{delayedJobs.length}</b>
+                <b><AnimatedNumber value={delayedJobs.length} /></b>
               </div>
               <div>
                 <span>Messages</span>
-                <b>{shopMessages.length}</b>
+                <b><AnimatedNumber value={shopMessages.length} /></b>
               </div>
             </div>
           </section>
@@ -2611,8 +2755,8 @@ function App() {
                   title={`Show ${item.stage} jobs`}
                 >
                   <span>{item.stage}</span>
-                  <b>{item.count}</b>
-                  <small>{item.qty} Qty</small>
+                  <b><AnimatedNumber value={item.count} /></b>
+                  <small><AnimatedNumber value={item.qty} /> Qty</small>
                   <em>{item.delayedCount} Delayed</em>
                   {index < stageCards.length - 1 && <i aria-hidden="true">→</i>}
                 </button>
@@ -2648,7 +2792,10 @@ function App() {
             ) : (
               <div className="tv-activity-list">
                 {recentActivity.map((activity) => (
-                  <article key={activity.id}>
+                  <article
+                    key={activity.id}
+                    className={String(activity.id || "").startsWith("job-") && recentlyMovedJobIds.includes(String(activity.id).replace("job-", "")) ? "tv-activity-pulse" : ""}
+                  >
                     <span>{activity.badge}</span>
                     <div>
                       <b>{activity.title}</b>
@@ -2688,7 +2835,7 @@ function App() {
             <div className="tv-panel-title-row">
               <div>
                 <h3>{dashboardDepartment} Jobs</h3>
-                <p>{selectedDashboardJobs.length} active job{selectedDashboardJobs.length === 1 ? "" : "s"} • {selectedDashboardQty} qty</p>
+                <p>{selectedDashboardJobs.length} active job{selectedDashboardJobs.length === 1 ? "" : "s"} • <AnimatedNumber value={selectedDashboardQty} /> qty</p>
               </div>
               <span className={`stage-badge stage-${stageSlug(dashboardDepartment)}`}>
                 {dashboardDepartment}
@@ -2712,9 +2859,12 @@ function App() {
                         );
 
                   return (
-                    <article key={job.id}>
+                    <article
+                      key={job.id}
+                      className={recentlyMovedJobIds.includes(job.id) ? "tv-job-moved-pulse" : ""}
+                    >
                       <div className="tv-selected-job-main">
-                        <span>{job.collection}</span>
+                        <span className="tv-selected-job-sku">{job.sku || job.specs?.sku || "NO SKU"}</span>
                         <b>{job.furniture}</b>
                         <small>
                           Qty {job.qty || 0}
@@ -2893,15 +3043,6 @@ function App() {
               {navItem}
             </button>
           ))}
-
-          {currentRole === "Developer" && (
-            <button
-              className={`main-nav-button nav-dashboard ${view === "Dashboard" ? "active-nav" : ""}`}
-              onClick={() => setView("Dashboard")}
-            >
-              Dashboard
-            </button>
-          )}
         </div>
 
         <div className="session-pill">
@@ -2967,7 +3108,7 @@ function App() {
 
           <div className="stat-card">
             <span>Scheduled Qty</span>
-            <b>{dashboard.scheduledQty}</b>
+            <b><AnimatedNumber value={dashboard.scheduledQty} /></b>
           </div>
 
           <div className="stat-card">
@@ -2991,7 +3132,7 @@ function App() {
             : "layout layout-full"
         }
       >
-        {view === "Dashboard" && currentRole === "Developer" && <DevProductionDashboard />}
+        {view === "Dashboard" && <ProductionDashboard />}
 
         {view === "Models" && (
           <aside className="sidebar">
@@ -3757,7 +3898,7 @@ function App() {
                         <div className="schedule-head-stats">
                           <div>
                             <span>Active Jobs</span>
-                            <b>{activeJobs.length}</b>
+                            <b><AnimatedNumber value={activeJobs.length} /></b>
                           </div>
                           <div>
                             <span>Scheduled Qty</span>
