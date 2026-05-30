@@ -325,6 +325,7 @@ function App() {
   const [shopMessagePhoto, setShopMessagePhoto] = useState(null);
   const [shopMessagePhotoName, setShopMessagePhotoName] = useState("");
   const [shopMessageSending, setShopMessageSending] = useState(false);
+  const [selectedShopMessageAttachment, setSelectedShopMessageAttachment] = useState(null);
   const currentRole = currentUser?.role || "Employee";
 
   const [employeeDepartment, setEmployeeDepartment] = useState(() => {
@@ -2205,6 +2206,19 @@ function App() {
     }
   };
 
+  const openShopMessageAttachment = (message) => {
+    if (!message?.attachment_url) return;
+
+    setSelectedShopMessageAttachment({
+      url: message.attachment_url,
+      name: message.attachment_name || "Shop note attachment",
+      message: message.message || "",
+      from: message.sender_role || "Team",
+      to: message.department || "Everyone",
+      at: message.created_at || "",
+    });
+  };
+
   const handleLogin = async (event) => {
     event.preventDefault();
 
@@ -2293,7 +2307,7 @@ function App() {
     setView("Models");
 
     // Force the browser/PWA shell to re-read the logged-out state.
-    window.location.replace(`${window.location.origin}${window.location.pathname}?logout=${Date.now()}`);
+    window.history.replaceState({}, "", "/");
   };
 
   const handleEmployeeDepartmentChange = (department) => {
@@ -3552,14 +3566,14 @@ function App() {
                           <p>{message.message}</p>
 
                           {message.attachment_url && (
-                            <a
-                              className="message-photo-link"
-                              href={message.attachment_url}
-                              target="_blank"
-                              rel="noreferrer"
+                            <button
+                              type="button"
+                              className="message-photo-link message-photo-open-button"
+                              onClick={() => openShopMessageAttachment(message)}
+                              title="Open attachment"
                             >
                               <img src={message.attachment_url} alt={message.attachment_name || "Shop note attachment"} />
-                            </a>
+                            </button>
                           )}
 
                           <div className="message-ack-row">
@@ -4060,6 +4074,54 @@ function App() {
           Log Out
         </button>
       </div>
+
+      {selectedShopMessageAttachment && (
+        <div
+          className="cut-sheet-modal-backdrop"
+          onClick={() => setSelectedShopMessageAttachment(null)}
+        >
+          <div
+            className="cut-sheet-modal"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="cut-sheet-modal-actions">
+              <button
+                type="button"
+                onClick={() => setSelectedShopMessageAttachment(null)}
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="card" style={{ textAlign: "center" }}>
+              <h2>{selectedShopMessageAttachment.name}</h2>
+              <p className="muted">
+                {selectedShopMessageAttachment.from} → {selectedShopMessageAttachment.to}
+                {selectedShopMessageAttachment.at
+                  ? ` • ${formatMessageTime(selectedShopMessageAttachment.at)}`
+                  : ""}
+              </p>
+
+              {selectedShopMessageAttachment.message && (
+                <p>{selectedShopMessageAttachment.message}</p>
+              )}
+
+              <img
+                src={selectedShopMessageAttachment.url}
+                alt={selectedShopMessageAttachment.name}
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "75vh",
+                  objectFit: "contain",
+                  borderRadius: "12px",
+                  border: "1px solid #333",
+                  background: "#111",
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {cutSheetView && (
         <div className="cut-sheet-modal-backdrop" onClick={() => setCutSheetView(null)}>
