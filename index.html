@@ -10,6 +10,36 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ForgeFlow Technologies</title>
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        if (!params.has("logout")) return;
+
+        try {
+          var keysToRemove = [];
+          for (var index = 0; index < localStorage.length; index += 1) {
+            var key = localStorage.key(index);
+            var normalizedKey = String(key || "").toLowerCase();
+            if (
+              key === "loggedInUser" ||
+              key === "currentRole" ||
+              key === "employeeDepartment" ||
+              String(key || "").indexOf("sb-") === 0 ||
+              normalizedKey.indexOf("supabase") !== -1 ||
+              normalizedKey.indexOf("auth-token") !== -1
+            ) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(function (key) {
+            localStorage.removeItem(key);
+          });
+          sessionStorage.clear();
+        } catch (error) {
+          console.warn("Could not clear logout storage before app boot:", error);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
