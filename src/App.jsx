@@ -363,8 +363,11 @@ function LiveDashboardClock() {
 
 function App() {
   useEffect(() => {
-    if (window.location.search.includes("logout=")) {
-      window.history.replaceState({}, "", window.location.pathname || "/");
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("logout")) {
+      url.searchParams.delete("logout");
+      const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+      window.history.replaceState({}, "", nextUrl || "/");
     }
   }, []);
 
@@ -509,6 +512,19 @@ function App() {
       "scheduleWeeks",
       JSON.stringify(nextData.scheduleWeeks || DEFAULT_SCHEDULE_WEEKS)
     );
+  };
+
+  const resetLocalSessionState = () => {
+    cloudReadyRef.current = false;
+    setCloudDataLoaded(false);
+    setCurrentUser(null);
+    setLoginForm({ username: "", password: "" });
+    setLoginError("");
+    setEmployeeDepartment("Fabrication");
+    setEmployeePanelTab("Fabrication");
+    setDashboardDepartment("Fabrication");
+    setShopMessageTo("Everyone");
+    setView("Models");
   };
 
   const applyAppData = (nextData) => {
@@ -673,9 +689,7 @@ function App() {
 
   const loadSupabaseUser = async (user) => {
     if (!user) {
-      cloudReadyRef.current = false;
-      setCloudDataLoaded(false);
-      setCurrentUser(null);
+      resetLocalSessionState();
       localStorage.removeItem("loggedInUser");
       localStorage.removeItem("currentRole");
       localStorage.removeItem("employeeDepartment");
@@ -764,12 +778,7 @@ function App() {
     const handleStorageLogout = (event) => {
       if (event.key !== "forgeflowLogoutAt") return;
 
-      cloudReadyRef.current = false;
-      setCloudDataLoaded(false);
-      setCurrentUser(null);
-      setLoginForm({ username: "", password: "" });
-      setLoginError("");
-      setView("Models");
+      resetLocalSessionState();
 
       if (window.location.search) {
         window.history.replaceState({}, "", window.location.pathname || "/");
@@ -785,6 +794,8 @@ function App() {
 
   useEffect(() => {
     const clearStaleBrowserShell = async () => {
+      if (!localStorage.getItem("forgeflowLogoutAt")) return;
+
       if ("serviceWorker" in navigator) {
         try {
           const registrations = await navigator.serviceWorker.getRegistrations();
@@ -802,6 +813,8 @@ function App() {
           console.warn("Could not clear app cache storage:", error);
         }
       }
+
+      localStorage.removeItem("forgeflowLogoutAt");
     };
 
     clearStaleBrowserShell();
@@ -3067,14 +3080,7 @@ function App() {
     if (!window.confirm("Log out of this device?")) return;
 
     // Flip the UI to logged-out immediately so the button cannot get stuck behind a slow network/auth call.
-    cloudReadyRef.current = false;
-    setCloudDataLoaded(false);
-    setCurrentUser(null);
-    setLoginForm({ username: "", password: "" });
-    setLoginError("");
-    setView("Models");
-
-    clearAuthStorage();
+    resetLocalSessionState();
 
     try {
       await Promise.race([
@@ -3085,16 +3091,18 @@ function App() {
       console.warn("Supabase logout did not finish cleanly, local session was still cleared:", error);
     }
 
+    try {
+      await supabase.auth.signOut({ scope: "local" });
+    } catch (error) {
+      console.warn("Could not clear local Supabase session through auth client:", error);
+    }
+
     clearAuthStorage();
     await clearBrowserShellCache();
 
     const cleanPath = window.location.pathname || "/";
     window.history.replaceState({}, "", cleanPath);
-
-    // Full reload after the auth/session keys are cleared prevents stale PWA/cache state
-    // from rehydrating the old logged-in screen. The logout query makes the new page
-    // boot into a clean session even if the browser tries to restore old state.
-    window.location.replace(`${cleanPath}?logout=${Date.now()}`);
+    window.location.replace(cleanPath);
   };
 
   const handleEmployeeDepartmentChange = (department) => {
@@ -4787,7 +4795,7 @@ function App() {
         />
       </div>
 
-      {!isEmployeeMode && view !== "Schedule" && (
+      {!isEmployeeMode && ["Live", "Dashboard"].includes(view) && (
         <div className="stats-row">
           <div className="stat-card">
             <span>Scheduled Jobs</span>
