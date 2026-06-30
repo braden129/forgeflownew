@@ -3,6 +3,14 @@ import "./App.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { supabase } from "./supabaseClient";
+import {
+  FABRICATION_PLANNING_STEPS,
+  MATERIAL_OPTIMIZER_DEFAULT_KERF,
+  MATERIAL_OPTIMIZER_MODES,
+  MATERIAL_OPTIMIZER_REUSABLE_DROP,
+  buildMaterialOptimizerPlan,
+  formatOptimizerInches,
+} from "./utils/materialOptimizer";
 
 const STAGES = [
   "Fabrication",
@@ -226,6 +234,24 @@ const emptyPartForm = {
   notes: "",
 };
 
+const emptyRawStockForm = {
+  materialType: "",
+  stockLength: "240",
+  quantityOnHand: "",
+  notes: "",
+};
+
+const emptyReusableDropForm = {
+  materialType: "",
+  length: "",
+  createdDate: "",
+  status: "Available",
+  sourcePlanId: "",
+  notes: "",
+};
+
+const REUSABLE_DROP_STATUSES = ["Available", "Reserved", "Used", "Scrapped"];
+
 function makeId() {
   return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -357,6 +383,14 @@ function App() {
     return JSON.parse(localStorage.getItem("liveJobs")) || [];
   });
 
+  const [rawStockInventory, setRawStockInventory] = useState(() => {
+    return JSON.parse(localStorage.getItem("rawStockInventory")) || [];
+  });
+
+  const [reusableDropInventory, setReusableDropInventory] = useState(() => {
+    return JSON.parse(localStorage.getItem("reusableDropInventory")) || [];
+  });
+
   const [scheduleWeeks, setScheduleWeeks] = useState(() => {
     return (
       JSON.parse(localStorage.getItem("scheduleWeeks")) ||
@@ -377,6 +411,10 @@ function App() {
 
   const [partForm, setPartForm] = useState(emptyPartForm);
   const [editingPartId, setEditingPartId] = useState(null);
+  const [rawStockForm, setRawStockForm] = useState(emptyRawStockForm);
+  const [editingRawStockId, setEditingRawStockId] = useState(null);
+  const [reusableDropForm, setReusableDropForm] = useState(emptyReusableDropForm);
+  const [editingReusableDropId, setEditingReusableDropId] = useState(null);
 
   const [scheduleForm, setScheduleForm] = useState({
     qty: 1,
@@ -446,6 +484,14 @@ function App() {
 
   const [cutSheetView, setCutSheetView] = useState(null);
   const [selectedScheduleWeek, setSelectedScheduleWeek] = useState(0);
+  const [materialOptimizerMode, setMaterialOptimizerMode] = useState("balanced");
+  const [materialOptimizerSource, setMaterialOptimizerSource] = useState("currentWeek");
+  const [reusableDropThreshold, setReusableDropThreshold] = useState(MATERIAL_OPTIMIZER_REUSABLE_DROP);
+  const [optimizerKerf, setOptimizerKerf] = useState(MATERIAL_OPTIMIZER_DEFAULT_KERF);
+  const [materialCutPlan, setMaterialCutPlan] = useState(null);
+  const [expandedOptimizerPieces, setExpandedOptimizerPieces] = useState({});
+  const [materialPlanningStep, setMaterialPlanningStep] = useState("cutLayouts");
+  const [scheduleCutPlanOpen, setScheduleCutPlanOpen] = useState(false);
   const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
   const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
   const [dashboardDepartment, setDashboardDepartment] = useState("Fabrication");
@@ -457,6 +503,8 @@ function App() {
     localStorage.setItem("models", JSON.stringify(nextData.models || []));
     localStorage.setItem("schedule", JSON.stringify(nextData.schedule || []));
     localStorage.setItem("liveJobs", JSON.stringify(nextData.liveJobs || []));
+    localStorage.setItem("rawStockInventory", JSON.stringify(nextData.rawStockInventory || []));
+    localStorage.setItem("reusableDropInventory", JSON.stringify(nextData.reusableDropInventory || []));
     localStorage.setItem(
       "scheduleWeeks",
       JSON.stringify(nextData.scheduleWeeks || DEFAULT_SCHEDULE_WEEKS)
@@ -467,6 +515,8 @@ function App() {
     const nextModels = Array.isArray(nextData?.models) ? nextData.models : [];
     const nextSchedule = Array.isArray(nextData?.schedule) ? nextData.schedule : [];
     const nextLiveJobs = Array.isArray(nextData?.liveJobs) ? nextData.liveJobs : [];
+    const nextRawStockInventory = Array.isArray(nextData?.rawStockInventory) ? nextData.rawStockInventory : [];
+    const nextReusableDropInventory = Array.isArray(nextData?.reusableDropInventory) ? nextData.reusableDropInventory : [];
     const nextScheduleWeeks = Array.isArray(nextData?.scheduleWeeks)
       ? nextData.scheduleWeeks
       : DEFAULT_SCHEDULE_WEEKS;
@@ -474,11 +524,15 @@ function App() {
     setModels(nextModels);
     setSchedule(nextSchedule);
     setLiveJobs(nextLiveJobs);
+    setRawStockInventory(nextRawStockInventory);
+    setReusableDropInventory(nextReusableDropInventory);
     setScheduleWeeks(nextScheduleWeeks);
     writeLocalAppData({
       models: nextModels,
       schedule: nextSchedule,
       liveJobs: nextLiveJobs,
+      rawStockInventory: nextRawStockInventory,
+      reusableDropInventory: nextReusableDropInventory,
       scheduleWeeks: nextScheduleWeeks,
     });
   };
@@ -510,6 +564,8 @@ function App() {
         models: payload.models.length,
         schedule: payload.schedule.length,
         liveJobs: payload.liveJobs.length,
+        rawStockInventory: payload.rawStockInventory?.length || 0,
+        reusableDropInventory: payload.reusableDropInventory?.length || 0,
         scheduleWeeks: payload.scheduleWeeks.length,
       },
       data: payload,
@@ -535,6 +591,8 @@ function App() {
       models: Array.isArray(nextData.models) ? nextData.models : [],
       schedule: Array.isArray(nextData.schedule) ? nextData.schedule : [],
       liveJobs: Array.isArray(nextData.liveJobs) ? nextData.liveJobs : [],
+      rawStockInventory: Array.isArray(nextData.rawStockInventory) ? nextData.rawStockInventory : [],
+      reusableDropInventory: Array.isArray(nextData.reusableDropInventory) ? nextData.reusableDropInventory : [],
       scheduleWeeks: Array.isArray(nextData.scheduleWeeks)
         ? nextData.scheduleWeeks
         : DEFAULT_SCHEDULE_WEEKS,
@@ -593,13 +651,17 @@ function App() {
         models: getSavedArray("models"),
         schedule: getSavedArray("schedule"),
         liveJobs: getSavedArray("liveJobs"),
+        rawStockInventory: getSavedArray("rawStockInventory"),
+        reusableDropInventory: getSavedArray("reusableDropInventory"),
         scheduleWeeks: getSavedArray("scheduleWeeks", DEFAULT_SCHEDULE_WEEKS),
       };
 
       if (
         localPayload.models.length > 0 ||
         localPayload.schedule.length > 0 ||
-        localPayload.liveJobs.length > 0
+        localPayload.liveJobs.length > 0 ||
+        localPayload.rawStockInventory.length > 0 ||
+        localPayload.reusableDropInventory.length > 0
       ) {
         await saveSharedAppData(localPayload);
       }
@@ -869,6 +931,8 @@ function App() {
         models,
         schedule,
         liveJobs,
+        rawStockInventory,
+        reusableDropInventory,
         scheduleWeeks,
       });
     }, 900);
@@ -878,7 +942,7 @@ function App() {
         clearTimeout(cloudSaveTimerRef.current);
       }
     };
-  }, [models, schedule, liveJobs, scheduleWeeks, currentUser, cloudDataLoaded]);
+  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded]);
 
 
   useEffect(() => {
@@ -896,6 +960,8 @@ function App() {
           models,
           schedule,
           liveJobs,
+          rawStockInventory,
+          reusableDropInventory,
           scheduleWeeks,
         },
         { snapshotReason: "daily-cloud-backup" }
@@ -906,7 +972,7 @@ function App() {
     const timer = setInterval(runDailyBackupCheck, DAILY_BACKUP_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [models, schedule, liveJobs, scheduleWeeks, currentUser, cloudDataLoaded]);
+  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
     localStorage.setItem("fishbowlConnectionSettings", JSON.stringify(fishbowlSettings));
@@ -951,6 +1017,14 @@ function App() {
   useEffect(() => {
     localStorage.setItem("schedule", JSON.stringify(schedule));
   }, [schedule]);
+
+  useEffect(() => {
+    localStorage.setItem("rawStockInventory", JSON.stringify(rawStockInventory));
+  }, [rawStockInventory]);
+
+  useEffect(() => {
+    localStorage.setItem("reusableDropInventory", JSON.stringify(reusableDropInventory));
+  }, [reusableDropInventory]);
 
   useEffect(() => {
     localStorage.setItem("liveJobs", JSON.stringify(liveJobs));
@@ -1070,6 +1144,20 @@ function App() {
     return getLegacyWeekSlot(job.week);
   };
 
+  const getMaterialOptimizerJobs = () => {
+    const activeScheduledJobs = schedule.filter((job) => job.status !== "Complete");
+
+    if (materialOptimizerSource === "allScheduled") return activeScheduledJobs;
+
+    if (materialOptimizerSource === "selectedJobs") {
+      return filteredSchedule.filter((job) => job.status !== "Complete");
+    }
+
+    return activeScheduledJobs.filter(
+      (job) => getJobWeekSlot(job) === Number(selectedScheduleWeek || 0)
+    );
+  };
+
   const filteredModels = models.filter((model) => {
     if (!hasSearch) return true;
 
@@ -1101,6 +1189,256 @@ function App() {
       matches(job.week)
     );
   });
+
+  const generateMaterialCutPlan = () => {
+    const optimizerJobs = getMaterialOptimizerJobs();
+    const nextPlan = buildMaterialOptimizerPlan(
+      optimizerJobs,
+      materialOptimizerMode,
+      materialOptimizerSource,
+      {
+        reusableDropThreshold,
+        kerf: optimizerKerf,
+        rawStockInventory,
+        reusableDropInventory,
+      }
+    );
+
+    setMaterialCutPlan(nextPlan);
+    setExpandedOptimizerPieces({});
+  };
+
+  const getMaterialOptimizerSourceLabel = (source = materialOptimizerSource) => {
+    if (source === "currentWeek") {
+      return `Current Week (${scheduleWeeks[selectedScheduleWeek] || `Week ${selectedScheduleWeek + 1}`})`;
+    }
+
+    if (source === "selectedJobs") return "Selected Jobs";
+    if (source === "allScheduled") return "All Scheduled";
+
+    return source || "Schedule";
+  };
+
+  const getOptimizerPieceKey = (materialType, rawNumber) => `${materialType || "material"}-${rawNumber}`;
+
+  const toggleOptimizerPiece = (pieceKey) => {
+    setExpandedOptimizerPieces((current) => ({
+      ...current,
+      [pieceKey]: !current[pieceKey],
+    }));
+  };
+
+  const formatMaterialSizeLabel = (value) => {
+    return String(value || "")
+      .replace(/\s*[xX×]\s*/g, " x ")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  const normalizeInventoryMaterialKey = (value) => {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/\s*[xX×Ã—]\s*/g, "x")
+      .replace(/\s+/g, "")
+      .trim();
+  };
+
+  const commitMaterialPlan = () => {
+    if (!materialCutPlan?.projectedInventoryImpact) return;
+
+    const impact = materialCutPlan.projectedInventoryImpact;
+    const currentRawStockByMaterial = rawStockInventory.reduce((acc, item) => {
+      const key = normalizeInventoryMaterialKey(item.materialType);
+      acc[key] = (acc[key] || 0) + Number(item.quantityOnHand || 0);
+      return acc;
+    }, {});
+    const shortages = impact.rawStockUsed
+      .map((row) => {
+        const availablePieces = currentRawStockByMaterial[normalizeInventoryMaterialKey(row.materialType)] || 0;
+        return {
+          materialType: row.materialType,
+          shortagePieces: Math.max(0, Number(row.projectedPiecesUsed || 0) - availablePieces),
+        };
+      })
+      .filter((row) => row.shortagePieces > 0);
+
+    if (shortages.length > 0) {
+      const shortageList = shortages
+        .map((row) => `${formatMaterialSizeLabel(row.materialType)}: short ${row.shortagePieces} piece${row.shortagePieces === 1 ? "" : "s"}`)
+        .join("\n");
+      const confirmed = window.confirm(
+        `Inventory is short for this material plan.\n\n${shortageList}\n\nCommit anyway and allow projected raw stock inventory to go negative?`
+      );
+
+      if (!confirmed) return;
+    }
+
+    const committedAt = new Date().toISOString();
+    const createdDate = committedAt.slice(0, 10);
+    const sourcePlanId = `material-plan-${materialCutPlan.generatedAt || committedAt}`;
+    const usedDropIds = new Set((impact.reusableDropsUsed || []).map((drop) => drop.id).filter(Boolean));
+    const usedDropDetails = (impact.reusableDropsUsed || []).reduce((acc, drop) => {
+      if (drop.id) acc[drop.id] = drop;
+      return acc;
+    }, {});
+
+    const newReusableDrops = (impact.newReusableDrops || [])
+      .filter((drop) => Number(drop.length || 0) >= Number(materialCutPlan.settings?.reusableDropThreshold ?? reusableDropThreshold))
+      .map((drop) => ({
+        id: makeId(),
+        materialType: drop.materialType || "",
+        length: Number(drop.length || 0),
+        createdDate,
+        status: "Available",
+        sourcePlanId,
+        assignedJob: "",
+        notes: "",
+      }));
+
+    setRawStockInventory((current) => {
+      const next = current.map((item) => ({ ...item }));
+
+      (impact.rawStockUsed || []).forEach((usage) => {
+        let remainingToSubtract = Math.max(0, Number(usage.projectedPiecesUsed || 0));
+        if (remainingToSubtract === 0) return;
+
+        const usageKey = normalizeInventoryMaterialKey(usage.materialType);
+        const matchingIndexes = next
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => normalizeInventoryMaterialKey(item.materialType) === usageKey)
+          .map(({ index }) => index);
+
+        matchingIndexes.forEach((index) => {
+          if (remainingToSubtract <= 0) return;
+
+          const available = Number(next[index].quantityOnHand || 0);
+          const subtract = Math.min(available, remainingToSubtract);
+          next[index].quantityOnHand = available - subtract;
+          remainingToSubtract -= subtract;
+        });
+
+        if (remainingToSubtract > 0 && matchingIndexes.length > 0) {
+          const index = matchingIndexes[0];
+          next[index].quantityOnHand = Number(next[index].quantityOnHand || 0) - remainingToSubtract;
+          remainingToSubtract = 0;
+        }
+
+        if (remainingToSubtract > 0) {
+          next.unshift({
+            id: makeId(),
+            materialType: usage.materialType || "Unspecified Material",
+            stockLength: 240,
+            quantityOnHand: -remainingToSubtract,
+            notes: "",
+          });
+        }
+      });
+
+      return next;
+    });
+
+    setReusableDropInventory((current) => {
+      const updatedDrops = current.map((drop) => {
+        if (!usedDropIds.has(drop.id)) return drop;
+
+        const detail = usedDropDetails[drop.id] || {};
+
+        return {
+          ...drop,
+          status: "Used",
+          assignedJob: drop.assignedJob || detail.furniture || "",
+          sourcePlanId: drop.sourcePlanId || sourcePlanId,
+          notes: drop.notes || "",
+        };
+      });
+
+      return [...newReusableDrops, ...updatedDrops];
+    });
+
+    setMaterialCutPlan((current) => current ? { ...current, inventoryCommittedAt: committedAt } : current);
+    alert(`Material plan committed. Added ${newReusableDrops.length} reusable drop${newReusableDrops.length === 1 ? "" : "s"} and updated raw stock inventory.`);
+  };
+
+  const printScheduleCutPlan = () => {
+    window.print();
+  };
+
+  const saveRawStockItem = () => {
+    if (!rawStockForm.materialType.trim()) return;
+
+    const item = {
+      id: editingRawStockId || makeId(),
+      materialType: rawStockForm.materialType.trim(),
+      stockLength: Number(rawStockForm.stockLength || 240),
+      quantityOnHand: Number(rawStockForm.quantityOnHand || 0),
+      notes: rawStockForm.notes || "",
+    };
+
+    setRawStockInventory((current) =>
+      editingRawStockId
+        ? current.map((stock) => (stock.id === editingRawStockId ? item : stock))
+        : [item, ...current]
+    );
+    setRawStockForm(emptyRawStockForm);
+    setEditingRawStockId(null);
+  };
+
+  const editRawStockItem = (item) => {
+    setEditingRawStockId(item.id);
+    setRawStockForm({
+      materialType: item.materialType || "",
+      stockLength: String(item.stockLength || 240),
+      quantityOnHand: String(item.quantityOnHand || ""),
+      notes: item.notes || "",
+    });
+  };
+
+  const deleteRawStockItem = (itemId) => {
+    if (!confirmPermanentDelete("this raw stock material")) return;
+    setRawStockInventory((current) => current.filter((item) => item.id !== itemId));
+  };
+
+  const saveReusableDropItem = () => {
+    if (!reusableDropForm.materialType.trim() || !reusableDropForm.length) return;
+    const existingDrop = reusableDropInventory.find((drop) => drop.id === editingReusableDropId);
+
+    const item = {
+      id: editingReusableDropId || makeId(),
+      materialType: reusableDropForm.materialType.trim(),
+      length: Number(reusableDropForm.length || 0),
+      createdDate: reusableDropForm.createdDate || new Date().toISOString().slice(0, 10),
+      status: reusableDropForm.status || "Available",
+      sourcePlanId: reusableDropForm.sourcePlanId || existingDrop?.sourcePlanId || "",
+      assignedJob: existingDrop?.assignedJob || "",
+      notes: reusableDropForm.notes || "",
+    };
+
+    setReusableDropInventory((current) =>
+      editingReusableDropId
+        ? current.map((drop) => (drop.id === editingReusableDropId ? item : drop))
+        : [item, ...current]
+    );
+    setReusableDropForm(emptyReusableDropForm);
+    setEditingReusableDropId(null);
+  };
+
+  const editReusableDropItem = (item) => {
+    setEditingReusableDropId(item.id);
+    setReusableDropForm({
+      materialType: item.materialType || "",
+      length: String(item.length || ""),
+      createdDate: item.createdDate || "",
+      status: item.status || "Available",
+      sourcePlanId: item.sourcePlanId || "",
+      notes: item.notes || "",
+    });
+  };
+
+  const updateReusableDropStatus = (itemId, status) => {
+    setReusableDropInventory((current) =>
+      current.map((drop) => (drop.id === itemId ? { ...drop, status } : drop))
+    );
+  };
 
   const filteredLiveJobs = liveJobs.filter(
     (job) =>
@@ -1608,6 +1946,8 @@ function App() {
       models,
       schedule,
       liveJobs,
+      rawStockInventory,
+      reusableDropInventory,
       scheduleWeeks,
     };
 
@@ -1660,6 +2000,8 @@ function App() {
           models: backup.models,
           schedule: backup.schedule,
           liveJobs: backup.liveJobs,
+          rawStockInventory: Array.isArray(backup.rawStockInventory) ? backup.rawStockInventory : [],
+          reusableDropInventory: Array.isArray(backup.reusableDropInventory) ? backup.reusableDropInventory : [],
           scheduleWeeks: backup.scheduleWeeks,
         };
 
@@ -2176,9 +2518,87 @@ function App() {
     return [index - 1, index];
   };
 
+  const normalizeTableRoutingText = (value) => {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\b(inch|inches|in)\b/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  };
+
+  const TABLE_COLLECTIONS = ["destin", "saratoga"];
+
+  const TABLE_FURNITURE_PHRASES = [
+    "luxe sling double chaise lounge",
+    "luxe sling double chaise lounge with cabana",
+    "luxe sling three seat bench",
+    "luxe two seat bench",
+    "luxe arm chair",
+    "luxe sectional sofa",
+    "luxe sectional sofa left",
+    "luxe sectional sofa right",
+    "luxe sectional sofa center",
+    "luxe left sectional unit",
+    "luxe right sectional unit",
+    "luxe center sectional unit",
+    "luxe ottoman",
+    "luxe curved sectional unit",
+    "luxe sectional corner unit",
+    "luxe curved ottoman",
+    "luxe daybed",
+    "aria arm chair",
+    "aria sofa",
+    "aria loveseat",
+    "aria loveseats",
+    "aria sectional",
+    "aria sectional left",
+    "aria sectional right",
+    "aria sectional center",
+    "aria left sectional unit",
+    "aria right sectional unit",
+    "aria center sectional unit",
+    "aria ottoman",
+    "curve arm chair",
+    "curve sofa",
+    "curve loveseat",
+    "curve farm bench",
+    "curve loveseat sectional",
+    "surv loveseat sectional",
+    "curv loveseat sectional",
+    "curve loveseat sectional left",
+    "curve loveseat sectional right",
+    "curve loveseat sectional center",
+    "curve left sectional unit",
+    "curve right sectional unit",
+    "curve center sectional unit",
+    "curve armless",
+    "curve ottoman",
+    "curve 84 42 dining table",
+    "curve 42 square table",
+    "39 square table",
+  ].map(normalizeTableRoutingText);
+
+  const tableFurniturePatterns = [
+    /\bluxe\b.*\bsectional\b.*\b(left|right|center|corner)\b/,
+    /\baria\b.*\bsectional\b.*\b(left|right|center)\b/,
+    /\bcurve\b.*\bsectional\b.*\b(left|right|center)\b/,
+    /\bcurve\b.*\bloveseat\b.*\bsectional\b.*\b(left|right|center)\b/,
+  ];
+
   const isTableJob = (job) => {
-    const text = `${job.collection || ""} ${job.furniture || ""}`;
-    return /table/i.test(job.furniture || "") || /destin/i.test(text);
+    const collection = normalizeTableRoutingText(job.collection);
+    const furniture = normalizeTableRoutingText(job.furniture);
+
+    if (TABLE_COLLECTIONS.some((tableCollection) => collection.includes(tableCollection))) {
+      return true;
+    }
+
+    return (
+      TABLE_FURNITURE_PHRASES.some((phrase) => furniture.includes(phrase)) ||
+      tableFurniturePatterns.some((pattern) => pattern.test(furniture))
+    );
   };
 
   const departmentPanelsForView = (department) => {
@@ -3147,6 +3567,732 @@ function App() {
     );
   };
 
+  const formatCutNumberLabel = (cutNumbers) => {
+    const sortedNumbers = Array.from(
+      new Set(
+        cutNumbers
+          .map((number) => Number(number))
+          .filter((number) => Number.isFinite(number))
+      )
+    ).sort((a, b) => a - b);
+
+    if (sortedNumbers.length === 0) return "-";
+
+    const isContinuous = sortedNumbers.every(
+      (number, index) => index === 0 || number === sortedNumbers[index - 1] + 1
+    );
+
+    if (isContinuous && sortedNumbers.length > 1) {
+      return `${sortedNumbers[0]}-${sortedNumbers[sortedNumbers.length - 1]}`;
+    }
+
+    return sortedNumbers.join(", ");
+  };
+
+  const groupCutsForDisplay = (cuts) => {
+    const groups = new Map();
+
+    (Array.isArray(cuts) ? cuts : []).forEach((cut) => {
+      const bin = cut.binId || cut.binGroup || "";
+      const key = [
+        cut.workOrder || "",
+        cut.furniture || "",
+        cut.sku || "",
+        cut.partName || "",
+        cut.cutLength || 0,
+        bin,
+      ].join("||");
+
+      if (!groups.has(key)) {
+        groups.set(key, {
+          key,
+          cutNumbers: [],
+          workOrder: cut.workOrder || "",
+          furniture: cut.furniture || "",
+          sku: cut.sku || "",
+          partName: cut.partName || "",
+          cutLength: cut.cutLength || 0,
+          quantity: 0,
+          bin,
+        });
+      }
+
+      const group = groups.get(key);
+      group.cutNumbers.push(cut.cutNumber);
+      group.quantity += Number(cut.quantity || 1);
+    });
+
+    return Array.from(groups.values()).map((group) => ({
+      ...group,
+      cutNumberLabel: formatCutNumberLabel(group.cutNumbers),
+    }));
+  };
+
+  const optimizerFurnitureColorFamilies = [
+    { hue: 213 },
+    { hue: 154 },
+    { hue: 32 },
+    { hue: 266 },
+    { hue: 342 },
+    { hue: 185 },
+    { hue: 48 },
+    { hue: 228 },
+  ];
+
+  const optimizerPartToneSteps = [
+    { saturation: 92, lightness: 42 },
+    { saturation: 78, lightness: 25 },
+    { saturation: 96, lightness: 58 },
+    { saturation: 58, lightness: 36 },
+    { saturation: 88, lightness: 68 },
+    { saturation: 68, lightness: 48 },
+    { saturation: 100, lightness: 34 },
+    { saturation: 72, lightness: 62 },
+  ];
+
+  const hashOptimizerKey = (value, modulo) => {
+    const text = String(value || "");
+    let hash = 0;
+
+    for (let index = 0; index < text.length; index += 1) {
+      hash = (hash * 31 + text.charCodeAt(index)) % modulo;
+    }
+
+    return Math.abs(hash) % modulo;
+  };
+
+  const getFurnitureColorFamily = (cut) => {
+    const furnitureName = cut.furniture || cut.workOrder || "Furniture";
+    const planFurniture = Array.from(
+      new Set(
+        (materialCutPlan?.groups || []).flatMap((group) =>
+          group.pieces.flatMap((piece) =>
+            piece.cuts.map((pieceCut) => pieceCut.furniture || pieceCut.workOrder || "Furniture")
+          )
+        )
+      )
+    );
+    const planIndex = planFurniture.indexOf(furnitureName);
+    const fallbackIndex = hashOptimizerKey(furnitureName, optimizerFurnitureColorFamilies.length);
+
+    return optimizerFurnitureColorFamilies[
+      (planIndex === -1 ? fallbackIndex : planIndex) % optimizerFurnitureColorFamilies.length
+    ];
+  };
+
+  const getCutColor = (cut) => {
+    const family = getFurnitureColorFamily(cut);
+    const tone = optimizerPartToneSteps[
+      hashOptimizerKey(`${cut.furniture || ""}|${cut.partName || ""}|${cut.cutLength || 0}`, optimizerPartToneSteps.length)
+    ];
+
+    return `hsl(${family.hue}, ${tone.saturation}%, ${tone.lightness}%)`;
+  };
+
+  const getCutLegend = (cuts) => {
+    const legend = new Map();
+
+    (Array.isArray(cuts) ? cuts : []).forEach((cut) => {
+      const key = `${cut.partName || ""}|${cut.cutLength || 0}|${cut.materialType || ""}`;
+      if (!legend.has(key)) {
+        legend.set(key, {
+          key,
+          color: getCutColor(cut),
+          furniture: cut.furniture || "Furniture",
+          partName: cut.partName || "Part",
+          cutLength: cut.cutLength || 0,
+        });
+      }
+    });
+
+    return Array.from(legend.values());
+  };
+
+  const getCutSegmentClass = (cut) => {
+    const length = Number(cut.cutLength || 0);
+    if (length > 20) return "large";
+    if (length >= 12) return "medium";
+    return "small";
+  };
+
+  const getCutSegmentLabel = (cut) => {
+    return `${formatOptimizerInches(cut.cutLength)} in`;
+  };
+
+  const getMaterialLossBreakdown = (pieces, totalLoss) => {
+    const sawKerf = (Array.isArray(pieces) ? pieces : []).reduce(
+      (sum, piece) => sum + Number(piece.kerfLoss || 0),
+      0
+    );
+    const total = Number(totalLoss || 0);
+
+    return {
+      physicalScrap: Math.max(0, total - sawKerf),
+      sawKerf,
+      total,
+    };
+  };
+
+  const getReusableDropBreakdown = (pieces, totalDrops) => {
+    const drops = (Array.isArray(pieces) ? pieces : [])
+      .filter((piece) => Number(piece.reusableDrop || 0) > 0)
+      .map((piece, index) => ({
+        id: `raw-piece-${piece.rawNumber}-${piece.reusableDrop}-${index}`,
+        label: `Material: ${piece.materialType || "Unknown"}`,
+        length: Number(piece.reusableDrop || 0),
+      }));
+
+    return {
+      drops,
+      total: Number(totalDrops || 0),
+    };
+  };
+
+  const getPiecesWithMaterial = (group) => {
+    return (group?.pieces || []).map((piece) => ({
+      ...piece,
+      materialType: piece.materialType || group.materialType,
+    }));
+  };
+
+  const MaterialLossTooltip = ({ breakdown }) => (
+    <span className="optimizer-loss-tooltip-wrap">
+      <button className="optimizer-info-button" type="button" aria-label="Material loss details">
+        ⓘ
+      </button>
+      <span className="optimizer-loss-tooltip optimizer-reusable-tooltip" role="tooltip">
+        <b>Material Loss</b>
+        <span><em>Physical Scrap</em><strong>{formatOptimizerInches(breakdown.physicalScrap)} in</strong></span>
+        <span><em>Saw Kerf</em><strong>{formatOptimizerInches(breakdown.sawKerf)} in</strong></span>
+        <i />
+        <span><em>Total Loss</em><strong>{formatOptimizerInches(breakdown.total)} in</strong></span>
+      </span>
+    </span>
+  );
+
+  const ReusableDropsTooltip = ({ breakdown }) => (
+    <span className="optimizer-loss-tooltip-wrap">
+      <button className="optimizer-info-button" type="button" aria-label="Reusable drops details">
+        i
+      </button>
+      <span className="optimizer-loss-tooltip" role="tooltip">
+        <b>Reusable Drops</b>
+        {breakdown.drops.length === 0 ? (
+          <span><em>No reusable drops</em><strong>0 in</strong></span>
+        ) : (
+          breakdown.drops.map((drop) => (
+            <span key={drop.id}><em>{drop.label}</em><strong>{formatOptimizerInches(drop.length)} in</strong></span>
+          ))
+        )}
+        <i />
+        <span><em>Total</em><strong>{formatOptimizerInches(breakdown.total)} in</strong></span>
+      </span>
+    </span>
+  );
+
+  const MaterialInventoryPage = () => {
+    const rawStockTotal = rawStockInventory.reduce((sum, item) => sum + Number(item.quantityOnHand || 0), 0);
+    const availableDrops = reusableDropInventory.filter((drop) => drop.status === "Available");
+    const reservedDrops = reusableDropInventory.filter((drop) => drop.status === "Reserved");
+    const visibleReusableDrops = reusableDropInventory.filter(
+      (drop) => !["Used", "Scrapped"].includes(String(drop.status || "Available"))
+    );
+
+    return (
+      <section className="enterprise-page material-inventory-page">
+        <div className="enterprise-hero-card material-optimizer-hero">
+          <div>
+            <span className="eyebrow">Developer Inventory</span>
+            <h1>Material Inventory</h1>
+            <p>Source of truth for raw stock and reusable drops used by future inventory-aware optimization.</p>
+          </div>
+          <div className="material-optimizer-status">
+            <b>{rawStockInventory.length + reusableDropInventory.length}</b>
+            <span>Inventory records</span>
+          </div>
+        </div>
+
+        <div className="optimizer-summary-grid inventory-summary-grid">
+          <div className="analytics-kpi-card"><span>Raw Materials</span><b>{rawStockInventory.length}</b><small>{rawStockTotal} pieces on hand</small></div>
+          <div className="analytics-kpi-card"><span>Reusable Drops</span><b>{reusableDropInventory.length}</b><small>{availableDrops.length} available</small></div>
+          <div className="analytics-kpi-card"><span>Reserved Drops</span><b>{reservedDrops.length}</b><small>future release workflow</small></div>
+        </div>
+
+        <div className="enterprise-card inventory-card">
+          <div className="inventory-section-head">
+            <div>
+              <h2>Raw Stock Inventory</h2>
+              <p className="muted">Full-length material pieces available before purchasing.</p>
+            </div>
+            <button onClick={saveRawStockItem}>{editingRawStockId ? "Update Material" : "Add Material"}</button>
+          </div>
+
+          <div className="inventory-form-grid">
+            <input placeholder="Material Type (2.5 x 1.25)" value={rawStockForm.materialType} onChange={(e) => setRawStockForm({ ...rawStockForm, materialType: e.target.value })} />
+            <input type="number" placeholder="Stock Length" value={rawStockForm.stockLength} onChange={(e) => setRawStockForm({ ...rawStockForm, stockLength: e.target.value })} />
+            <input type="number" placeholder="Qty On Hand" value={rawStockForm.quantityOnHand} onChange={(e) => setRawStockForm({ ...rawStockForm, quantityOnHand: e.target.value })} />
+            <input placeholder="Notes" value={rawStockForm.notes} onChange={(e) => setRawStockForm({ ...rawStockForm, notes: e.target.value })} />
+          </div>
+
+          <div className="inventory-table">
+            <div className="inventory-row inventory-header">
+              <span>Material</span><span>Length</span><span>On Hand</span><span>Notes</span><span>Actions</span>
+            </div>
+            {rawStockInventory.length === 0 ? (
+              <div className="empty small">No raw stock inventory yet.</div>
+            ) : rawStockInventory.map((item) => (
+              <div key={item.id} className="inventory-row">
+                <span>{item.materialType}</span>
+                <span>{item.stockLength || 240} in</span>
+                <span className={Number(item.quantityOnHand || 0) < 10 ? "inventory-low-quantity" : ""}>{item.quantityOnHand || 0}</span>
+                <span>{item.notes || "-"}</span>
+                <span className="inventory-actions"><button onClick={() => editRawStockItem(item)}>Edit</button><button className="danger" onClick={() => deleteRawStockItem(item.id)}>Delete</button></span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="enterprise-card inventory-card">
+          <div className="inventory-section-head">
+            <div>
+              <h2>Reusable Drops Inventory</h2>
+              <p className="muted">Shorter saved drops that should be consumed before new raw stock in future plans.</p>
+            </div>
+            <button onClick={saveReusableDropItem}>{editingReusableDropId ? "Update Drop" : "Add Drop"}</button>
+          </div>
+
+          <div className="inventory-form-grid">
+            <input placeholder="Material Type" value={reusableDropForm.materialType} onChange={(e) => setReusableDropForm({ ...reusableDropForm, materialType: e.target.value })} />
+            <input type="number" placeholder="Length" value={reusableDropForm.length} onChange={(e) => setReusableDropForm({ ...reusableDropForm, length: e.target.value })} />
+            <input type="date" value={reusableDropForm.createdDate} onChange={(e) => setReusableDropForm({ ...reusableDropForm, createdDate: e.target.value })} />
+            <select value={reusableDropForm.status} onChange={(e) => setReusableDropForm({ ...reusableDropForm, status: e.target.value })}>{REUSABLE_DROP_STATUSES.map((status) => <option key={status} value={status}>{status}</option>)}</select>
+            <input placeholder="Notes" value={reusableDropForm.notes} onChange={(e) => setReusableDropForm({ ...reusableDropForm, notes: e.target.value })} />
+          </div>
+
+          <div className="inventory-table reusable-drop-table">
+            <div className="inventory-row inventory-header">
+              <span>Material</span><span>Length</span><span>Date</span><span>Status</span><span>Notes</span><span>Actions</span>
+            </div>
+            {visibleReusableDrops.length === 0 ? (
+              <div className="empty small">No reusable drops saved yet.</div>
+            ) : visibleReusableDrops.map((item) => (
+              <div key={item.id} className="inventory-row">
+                <span className="inventory-drop-primary">{item.materialType}</span>
+                <span className="inventory-drop-primary">{item.length || 0} in</span>
+                <span>{item.createdDate || "-"}</span>
+                <span>{item.status || "Available"}</span>
+                <span>{item.notes || "-"}</span>
+                <span className="inventory-actions">
+                  <button onClick={() => editReusableDropItem(item)}>Edit</button>
+                  <button onClick={() => updateReusableDropStatus(item.id, "Used")}>Mark Used</button>
+                  <button onClick={() => updateReusableDropStatus(item.id, "Scrapped")}>Mark Scrap</button>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  };
+
+  const MaterialOptimizerPage = () => {
+    const optimizerJobs = getMaterialOptimizerJobs();
+    const modeDetails = MATERIAL_OPTIMIZER_MODES[materialOptimizerMode];
+    const planningSteps = materialCutPlan?.planningSteps || FABRICATION_PLANNING_STEPS;
+    const sourceLabels = {
+      currentWeek: `Current Week (${scheduleWeeks[selectedScheduleWeek] || `Week ${selectedScheduleWeek + 1}`})`,
+      selectedJobs: "Selected Jobs",
+      allScheduled: "All Scheduled",
+    };
+    const projectedImpact = materialCutPlan?.projectedInventoryImpact;
+    const getImpactStockLength = (materialType) =>
+      materialCutPlan?.groups?.find((group) => group.materialType === materialType)?.stockLength || 240;
+    const rawStockUsedPieces = projectedImpact?.rawStockUsed.reduce((sum, row) => sum + Number(row.projectedPiecesUsed || 0), 0) || 0;
+    const rawStockUsedLength = projectedImpact?.rawStockUsed.reduce(
+      (sum, row) => sum + Number(row.projectedPiecesUsed || 0) * getImpactStockLength(row.materialType),
+      0
+    ) || 0;
+    const projectedRawStockRemainingPieces = projectedImpact?.rawStockUsed.reduce((sum, row) => sum + Number(row.projectedRemaining || 0), 0) || 0;
+    const projectedRawStockRemainingLength = projectedImpact?.rawStockUsed.reduce(
+      (sum, row) => sum + Number(row.projectedRemaining || 0) * getImpactStockLength(row.materialType),
+      0
+    ) || 0;
+    const reusableDropsUsedLength = projectedImpact?.reusableDropsUsed.reduce((sum, drop) => sum + Number(drop.cutLength || 0), 0) || 0;
+    const newReusableDropsLength = projectedImpact?.newReusableDrops.reduce((sum, drop) => sum + Number(drop.length || 0), 0) || 0;
+
+    return (
+      <section className="enterprise-page material-optimizer-page">
+        <div className="enterprise-hero-card material-optimizer-hero">
+          <div>
+            <span className="eyebrow">Developer Preview</span>
+            <h1>Material Optimizer</h1>
+            <p>First-step fabrication planning for cut layouts, reusable drops, purchasing forecasts, printable sheets, and bins.</p>
+          </div>
+          <div className="material-optimizer-status">
+            <b>{optimizerJobs.length}</b>
+            <span>Selected jobs</span>
+          </div>
+        </div>
+
+        <div className="enterprise-card material-optimizer-controls">
+          <div>
+            <h2>Optimization Mode</h2>
+            <p className="muted">{modeDetails.description}</p>
+          </div>
+
+          <div className="optimizer-control-grid">
+            <div className="optimizer-mode-selector">
+              {Object.entries(MATERIAL_OPTIMIZER_MODES).map(([modeKey, mode]) => (
+                <button
+                  key={modeKey}
+                  className={materialOptimizerMode === modeKey ? "optimizer-mode active" : "optimizer-mode"}
+                  onClick={() => setMaterialOptimizerMode(modeKey)}
+                >
+                  <b>{mode.label}</b>
+                  <span>{mode.description}</span>
+                </button>
+              ))}
+            </div>
+
+            <label className="optimizer-source-control">
+              <span>Schedule Source</span>
+              <select
+                value={materialOptimizerSource}
+                onChange={(e) => setMaterialOptimizerSource(e.target.value)}
+              >
+                <option value="currentWeek">Current Week</option>
+                <option value="selectedJobs">Selected Jobs</option>
+                <option value="allScheduled">All Scheduled</option>
+              </select>
+            </label>
+
+            <label className="optimizer-source-control">
+              <span>Reusable Drop Threshold</span>
+              <input
+                type="number"
+                min="0"
+                step="0.25"
+                value={reusableDropThreshold}
+                onChange={(e) => setReusableDropThreshold(Math.max(0, Number(e.target.value) || 0))}
+              />
+            </label>
+
+            <label className="optimizer-source-control">
+              <span>Saw Kerf</span>
+              <input
+                type="number"
+                min="0"
+                step="0.001"
+                value={optimizerKerf}
+                onChange={(e) => setOptimizerKerf(Math.max(0, Number(e.target.value) || 0))}
+              />
+            </label>
+
+            <button
+              className="optimizer-generate-button"
+              onClick={generateMaterialCutPlan}
+              disabled={optimizerJobs.length === 0}
+            >
+              Generate Cut Plan
+            </button>
+          </div>
+
+          <div className="note optimizer-note">
+            Preview only &mdash; inventory is not updated until Commit Material Plan.
+          </div>
+        </div>
+
+        {optimizerJobs.length === 0 ? (
+          <div className="empty material-optimizer-empty">
+            Scheduled jobs are needed to generate a cut plan for {sourceLabels[materialOptimizerSource]}.
+          </div>
+        ) : !materialCutPlan ? (
+          <div className="empty material-optimizer-empty">
+            Choose a mode and generate a preview cut plan. No schedule data will be changed.
+          </div>
+        ) : materialCutPlan.totalParts === 0 ? (
+          <div className="empty material-optimizer-empty">
+            The selected jobs do not have saved model parts yet. Add parts to the furniture model, then generate again.
+          </div>
+        ) : (
+          <>
+            <div className="optimizer-summary-grid">
+              <div className="analytics-kpi-card"><span>Selected Jobs</span><b>{materialCutPlan.selectedJobs}</b><small>{sourceLabels[materialCutPlan.source]}</small></div>
+              <div className="analytics-kpi-card"><span>Total Parts</span><b>{materialCutPlan.totalParts}</b><small>individual cuts</small></div>
+              <div className="analytics-kpi-card"><span>Material Types</span><b>{materialCutPlan.materialTypes}</b><small>separate layouts</small></div>
+              <div className="analytics-kpi-card">
+                <span className="optimizer-kpi-label">
+                  Raw Pieces Required
+                  <button
+                    className="optimizer-info-button"
+                    type="button"
+                    aria-label="Open printable schedule cut plan"
+                    onClick={() => setScheduleCutPlanOpen(true)}
+                  >
+                    i
+                  </button>
+                </span>
+                <b>{materialCutPlan.rawPiecesRequired}</b>
+                <small>240 in stock</small>
+              </div>
+              <div className="analytics-kpi-card"><span>Estimated Saved</span><b>{formatOptimizerInches(materialCutPlan.estimatedSaved)}</b><small>inches vs standard</small></div>
+              <div className="analytics-kpi-card">
+                <span className="optimizer-kpi-label">
+                  Reusable Drops
+                  <ReusableDropsTooltip
+                    breakdown={getReusableDropBreakdown(
+                      materialCutPlan.groups.flatMap((group) => getPiecesWithMaterial(group)),
+                      materialCutPlan.reusableDrops
+                    )}
+                  />
+                </span>
+                <b>{formatOptimizerInches(materialCutPlan.reusableDrops)}</b>
+                <small>{formatOptimizerInches(materialCutPlan.settings?.reusableDropThreshold ?? reusableDropThreshold)} in or larger</small>
+              </div>
+              <div className="analytics-kpi-card">
+                <span className="optimizer-kpi-label">
+                  Material Loss
+                  <MaterialLossTooltip
+                    breakdown={getMaterialLossBreakdown(
+                      materialCutPlan.groups.flatMap((group) => group.pieces),
+                      materialCutPlan.scrap
+                    )}
+                  />
+                </span>
+                <b>{formatOptimizerInches(materialCutPlan.scrap)}</b>
+              </div>
+            </div>
+
+            <div className="optimizer-command-center">
+            {projectedImpact && (
+              <div className="enterprise-card inventory-impact-card optimizer-inventory-side-panel">
+                <div className="inventory-section-head">
+                  <div>
+                    <h2>Projected Inventory Impact</h2>
+                  </div>
+                </div>
+
+                <div className="optimizer-impact-list">
+                  <div className="optimizer-impact-row">
+                    <span>Raw Stock Used</span>
+                    <b className="impact-good">{rawStockUsedPieces} piece{rawStockUsedPieces === 1 ? "" : "s"} ({formatOptimizerInches(rawStockUsedLength)} in)</b>
+                  </div>
+                  <div className="optimizer-impact-row">
+                    <span>Reusable Drops Used</span>
+                    <b className="impact-good">{formatOptimizerInches(reusableDropsUsedLength)} in ({projectedImpact.reusableDropsUsed.length} drop{projectedImpact.reusableDropsUsed.length === 1 ? "" : "s"})</b>
+                  </div>
+                  <div className="optimizer-impact-row">
+                    <span>New Reusable Drops Created</span>
+                    <b className="impact-good">{formatOptimizerInches(newReusableDropsLength)} in ({projectedImpact.newReusableDrops.length} drop{projectedImpact.newReusableDrops.length === 1 ? "" : "s"})</b>
+                  </div>
+                  <div className="optimizer-impact-row">
+                    <span>Material Loss</span>
+                    <b className="impact-loss">{formatOptimizerInches(projectedImpact.materialLoss)} in</b>
+                  </div>
+                  <div className="optimizer-impact-row">
+                    <span>Raw Stock Remaining</span>
+                    <b className="impact-good">{projectedRawStockRemainingPieces} piece{projectedRawStockRemainingPieces === 1 ? "" : "s"} ({formatOptimizerInches(projectedRawStockRemainingLength)} in)</b>
+                  </div>
+                </div>
+
+                <div className="inventory-impact-columns optimizer-impact-detail">
+                  <div>
+                    <h3>Projected Raw Stock</h3>
+                    {projectedImpact.rawStockUsed.length === 0 ? (
+                      <div className="empty small">No raw stock projection yet.</div>
+                    ) : projectedImpact.rawStockUsed.map((row) => (
+                      <p key={row.materialType}><b>{row.materialType}</b> — {row.projectedPiecesUsed} used / {row.projectedRemaining} projected remaining</p>
+                    ))}
+                  </div>
+                  {projectedImpact.shortages.length > 0 && (
+                  <div className="optimizer-impact-shortage">
+                    <h3>Shortages</h3>
+                    {projectedImpact.shortages.map((shortage) => (
+                      <p key={shortage.materialType}><b>{shortage.materialType}</b> — short {shortage.shortagePieces} piece{shortage.shortagePieces === 1 ? "" : "s"}</p>
+                    ))}
+                  </div>
+                  )}
+                </div>
+
+                <div className="optimizer-impact-footer">
+                  <p>Preview only &mdash; inventory is not updated until Commit Material Plan.</p>
+                  <div className="optimizer-commit-actions">
+                    <button
+                      type="button"
+                      className="optimizer-commit-button"
+                      onClick={commitMaterialPlan}
+                      disabled={Boolean(materialCutPlan.inventoryCommittedAt)}
+                    >
+                      {materialCutPlan.inventoryCommittedAt ? "Material Plan Committed" : "Commit Material Plan"}
+                    </button>
+                    <span>Deliberate approval step. Preview generation never changes inventory.</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="optimizer-command-main">
+            <div className="enterprise-card optimizer-bins-card">
+              <h2>Cut Part Bins</h2>
+              <p className="muted">
+                Bins tell the saw operator where each cut part should go after cutting. Even when multiple jobs share the same raw material stick, each job/furniture stays in its own labeled bin.
+              </p>
+              {(materialCutPlan.fabricationBins || materialCutPlan.bins).length === 0 ? (
+                <div className="empty small">No bins generated yet.</div>
+              ) : (
+                <div className="optimizer-bin-grid">
+                  {(materialCutPlan.fabricationBins || materialCutPlan.bins).map((bin) => (
+                    <div key={bin.key} className="optimizer-bin-label">
+                      <b>{bin.label}</b>
+                      <span>Work Order: {bin.sku || "-"}</span>
+                      <span>Furniture: {bin.furniture || "-"}</span>
+                      <span>Material: {bin.materialType || "-"}</span>
+                      <small>{bin.cutCount || 0} cuts {bin.binId ? ` / ${bin.binId}` : ""}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="optimizer-material-list">
+              {materialCutPlan.groups.map((group) => {
+                const lossBreakdown = getMaterialLossBreakdown(group.pieces, group.scrap);
+
+                return (
+                <div key={group.materialType} className="enterprise-card optimizer-material-card">
+                  <div className="optimizer-material-head">
+                    <div>
+                      <h2>{group.materialType}</h2>
+                      <p className="muted">Raw stock length: {group.stockLength} in</p>
+                    </div>
+                    <div className="optimizer-material-stats">
+                      <span><b>{group.totalCuts}</b> total cuts</span>
+                      <span><b>{group.pieces.length}</b> raw pieces</span>
+                      <span>
+                        <b>{formatOptimizerInches(group.reusableDrops)}</b>
+                        <span className="optimizer-loss-label">
+                          Reusable Drops
+                          <ReusableDropsTooltip breakdown={getReusableDropBreakdown(getPiecesWithMaterial(group), group.reusableDrops)} />
+                        </span>
+                      </span>
+                      <span>
+                        <b>{formatOptimizerInches(group.scrap)}</b>
+                        <span className="optimizer-loss-label">
+                          Material Loss
+                          <MaterialLossTooltip breakdown={lossBreakdown} />
+                        </span>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="optimizer-piece-list">
+                    {group.pieces.map((piece) => {
+                      const usedLength = piece.stockLength - piece.remaining;
+                      const cutLegend = getCutLegend(piece.cuts);
+                      const pieceKey = getOptimizerPieceKey(group.materialType, piece.rawNumber);
+                      const isPieceExpanded = Boolean(expandedOptimizerPieces[pieceKey]);
+
+                      return (
+                        <div
+                          key={`${group.materialType}-${piece.rawNumber}`}
+                          className={isPieceExpanded ? "optimizer-piece-card expanded" : "optimizer-piece-card"}
+                        >
+                          <button
+                            type="button"
+                            className="optimizer-piece-title"
+                            onClick={() => toggleOptimizerPiece(pieceKey)}
+                            aria-expanded={isPieceExpanded}
+                          >
+                            <b>
+                              <span className="optimizer-piece-caret">{isPieceExpanded ? "▾" : "▸"}</span>
+                              Raw Piece #{piece.rawNumber} - {piece.stockLength} in
+                            </b>
+                            <span>
+                              {formatOptimizerInches(usedLength)} in used / {formatOptimizerInches(piece.remaining)} in remaining
+                            </span>
+                          </button>
+
+                          {cutLegend.length > 0 && (
+                            <div className="optimizer-cut-legend">
+                              {cutLegend.map((item) => (
+                                <span key={item.key}>
+                                  <i style={{ background: item.color }} />
+                                  {item.furniture} / {item.partName} / {formatOptimizerInches(item.cutLength)} in
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="optimizer-cut-bar">
+                            {piece.cuts.map((cut) => (
+                              <span
+                                key={cut.id}
+                                className={`optimizer-cut-segment optimizer-cut-segment-${getCutSegmentClass(cut)}`}
+                                style={{
+                                  width: `${Math.max(2, (cut.cutLength / piece.stockLength) * 100)}%`,
+                                  background: getCutColor(cut),
+                                }}
+                                title={`${cut.partName} - ${formatOptimizerInches(cut.cutLength)} in`}
+                              >
+                                <span className="optimizer-cut-segment-text">
+                                  {getCutSegmentLabel(cut)}
+                                </span>
+                              </span>
+                            ))}
+                            {piece.remaining > 0 && (
+                              <span
+                                className={piece.reusableDrop ? "optimizer-drop-segment reusable" : "optimizer-drop-segment"}
+                                style={{
+                                  width: `${Math.max(2, (piece.remaining / piece.stockLength) * 100)}%`,
+                                }}
+                                title={`${formatOptimizerInches(piece.remaining)} in remaining`}
+                              />
+                            )}
+                          </div>
+
+                          {isPieceExpanded && (
+                            <div className="optimizer-cut-table">
+                              <div className="optimizer-cut-row optimizer-cut-header">
+                                <span>Cut #</span>
+                                <span>Work Order</span>
+                                <span>Furniture</span>
+                                <span>SKU</span>
+                                <span>Part</span>
+                                <span>Length</span>
+                                <span>Qty</span>
+                                <span>Bin</span>
+                              </div>
+
+                              {groupCutsForDisplay(piece.cuts).map((cutGroup) => (
+                                <div key={`${cutGroup.key}-row`} className="optimizer-cut-row">
+                                  <span>{cutGroup.cutNumberLabel}</span>
+                                  <span>{cutGroup.workOrder}</span>
+                                  <span>{cutGroup.furniture}</span>
+                                  <span>{cutGroup.sku || "-"}</span>
+                                  <span>{cutGroup.partName}</span>
+                                  <span>{formatOptimizerInches(cutGroup.cutLength)} in</span>
+                                  <span>{cutGroup.quantity}</span>
+                                  <span>{cutGroup.bin}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+                );
+              })}
+            </div>
+            </div>
+            </div>
+          </>
+        )}
+      </section>
+    );
+  };
+
   const ProductionDashboard = () => {
     const dashboardDate = new Date();
 
@@ -3566,12 +4712,28 @@ function App() {
           )}
 
           {currentRole === "Developer" && (
-            <button
-              className={`main-nav-button nav-analytics ${view === "Analytics" ? "active-nav" : ""}`}
-              onClick={() => setView("Analytics")}
-            >
-              Analytics
-            </button>
+            <>
+              <button
+                className={`main-nav-button nav-analytics ${view === "Analytics" ? "active-nav" : ""}`}
+                onClick={() => setView("Analytics")}
+              >
+                Analytics
+              </button>
+
+              <button
+                className={`main-nav-button nav-material-optimizer ${view === "Material Optimizer" ? "active-nav" : ""}`}
+                onClick={() => setView("Material Optimizer")}
+              >
+                Material Optimizer
+              </button>
+
+              <button
+                className={`main-nav-button nav-material-inventory ${view === "Material Inventory" ? "active-nav" : ""}`}
+                onClick={() => setView("Material Inventory")}
+              >
+                Material Inventory
+              </button>
+            </>
           )}
         </div>
 
@@ -3663,6 +4825,10 @@ function App() {
         {view === "Fishbowl" && <FishbowlConnectionPage />}
 
         {view === "Analytics" && currentRole === "Developer" && <DeveloperAnalyticsPage />}
+
+        {view === "Material Optimizer" && currentRole === "Developer" && <MaterialOptimizerPage />}
+
+        {view === "Material Inventory" && currentRole === "Developer" && MaterialInventoryPage()}
 
         {view === "Models" && (
           <aside className="sidebar">
@@ -4855,6 +6021,105 @@ function App() {
                   background: "#111",
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {scheduleCutPlanOpen && materialCutPlan && (
+        <div className="cut-sheet-modal-backdrop schedule-cut-plan-backdrop" onClick={() => setScheduleCutPlanOpen(false)}>
+          <div className="cut-sheet-modal schedule-cut-plan-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="cut-sheet-modal-actions no-print">
+              <button type="button" onClick={() => setScheduleCutPlanOpen(false)}>Close</button>
+              <button type="button" onClick={printScheduleCutPlan}>Print</button>
+            </div>
+
+            <div className="cut-sheet-preview schedule-cut-plan-print">
+              <div className="cut-sheet-preview-header schedule-cut-plan-header">
+                <div className="schedule-cut-plan-title-block">
+                  <h1>Schedule Cut Plan</h1>
+                  <h2>Material Optimizer Production Packet</h2>
+                </div>
+
+                <div className="schedule-cut-plan-logo-block">
+                  <div className="cut-sheet-logo">ADMIRAL</div>
+                  <div className="cut-sheet-logo-sub">OUTDOOR</div>
+                </div>
+
+                <div className="schedule-cut-plan-meta">
+                  <div><b>Generated:</b> {new Date(materialCutPlan.generatedAt || Date.now()).toLocaleDateString()}</div>
+                  <div><b>Mode:</b> {MATERIAL_OPTIMIZER_MODES[materialCutPlan.mode]?.label || materialCutPlan.mode}</div>
+                  <div><b>Source:</b> {getMaterialOptimizerSourceLabel(materialCutPlan.source)}</div>
+                </div>
+              </div>
+
+              <div className="schedule-cut-plan-summary">
+                <div><span>Total Raw Pieces</span><b>{materialCutPlan.rawPiecesRequired}</b></div>
+                <div><span>Total Cuts</span><b>{materialCutPlan.totalParts}</b></div>
+                <div><span>Reusable Drops</span><b>{formatOptimizerInches(materialCutPlan.reusableDrops)} in</b></div>
+                <div><span>Material Loss</span><b>{formatOptimizerInches(materialCutPlan.scrap)} in</b></div>
+              </div>
+
+              <div className="schedule-cut-plan-sections">
+                {materialCutPlan.groups.map((group) => (
+                  <section key={`print-${group.materialType}`} className="schedule-cut-plan-material">
+                    <div className="schedule-cut-plan-material-head">
+                      <h2>{group.materialType}</h2>
+                      <div>
+                        <span>Raw stock length: {group.stockLength} in</span>
+                        <span>Raw pieces required: {group.pieces.length}</span>
+                      </div>
+                    </div>
+
+                    {group.pieces.map((piece) => {
+                      const usedLength = piece.stockLength - piece.remaining;
+                      const remainderStatus = piece.reusableDrop
+                        ? `Reusable drop - ${formatOptimizerInches(piece.reusableDrop)} in`
+                        : `Scrap - ${formatOptimizerInches(piece.scrap)} in`;
+
+                      return (
+                        <div key={`print-${group.materialType}-${piece.rawNumber}`} className="schedule-cut-plan-piece">
+                          <div className="schedule-cut-plan-piece-head">
+                            <h3>Raw Material #{piece.rawNumber} - {formatMaterialSizeLabel(group.materialType)}</h3>
+                            <div>
+                              <span>Used: {formatOptimizerInches(usedLength)} in</span>
+                              <span>Remaining: {formatOptimizerInches(piece.remaining)} in</span>
+                              <span>{remainderStatus}</span>
+                            </div>
+                          </div>
+
+                          <table className="schedule-cut-plan-table">
+                            <thead>
+                              <tr>
+                                <th>Cut #</th>
+                                <th>SKU / Work Order</th>
+                                <th>Furniture</th>
+                                <th>Part</th>
+                                <th>Length</th>
+                                <th>Qty</th>
+                                <th>Bin</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {groupCutsForDisplay(piece.cuts).map((cutGroup) => (
+                                <tr key={`print-${group.materialType}-${piece.rawNumber}-${cutGroup.key}`}>
+                                  <td>{cutGroup.cutNumberLabel}</td>
+                                  <td>{cutGroup.sku || cutGroup.workOrder || "-"}</td>
+                                  <td>{cutGroup.furniture || "-"}</td>
+                                  <td>{cutGroup.partName || "-"}</td>
+                                  <td>{formatOptimizerInches(cutGroup.cutLength)} in</td>
+                                  <td>{cutGroup.quantity}</td>
+                                  <td>{cutGroup.bin || "-"}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      );
+                    })}
+                  </section>
+                ))}
+              </div>
             </div>
           </div>
         </div>
