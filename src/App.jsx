@@ -4,6 +4,37 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { supabase } from "./supabaseClient";
 import {
+  Activity,
+  ArrowRight,
+  BarChart3,
+  Boxes,
+  CalendarDays,
+  Check,
+  CheckCheck,
+  CheckCircle2,
+  ChevronRight,
+  Database,
+  Eye,
+  LayoutDashboard,
+  MessageSquare,
+  Package,
+  Package2,
+  PackageCheck,
+  PaintBucket,
+  Pencil,
+  Plus,
+  PlusCircle,
+  Recycle,
+  RotateCcw,
+  ScanSearch,
+  Scissors,
+  Trash2,
+  TriangleAlert,
+  Truck,
+  Wrench,
+  Clock3,
+} from "lucide-react";
+import {
   FABRICATION_PLANNING_STEPS,
   MATERIAL_OPTIMIZER_DEFAULT_KERF,
   MATERIAL_OPTIMIZER_MODES,
@@ -1466,6 +1497,11 @@ function App() {
       matches(STAGES[job.stage])
   );
 
+  const activeLiveJobs = useMemo(
+    () => liveJobs.filter((job) => Number(job.stage || 0) < STAGES.length - 1),
+    [liveJobs]
+  );
+
   const dashboard = useMemo(() => {
     const scheduledQty = schedule.reduce(
       (sum, job) => sum + Number(job.qtyNeeded || 0),
@@ -1481,9 +1517,9 @@ function App() {
       scheduledJobs: schedule.length,
       scheduledQty,
       completedQty,
-      activeJobs: liveJobs.length,
+      activeJobs: activeLiveJobs.length,
     };
-  }, [schedule, liveJobs]);
+  }, [schedule, activeLiveJobs]);
 
   const readImage = (file, callback) => {
     if (!file) return;
@@ -3118,10 +3154,68 @@ function App() {
     }
   };
 
+  const WeldingTorchIcon = ({ size = 20 }) => (
+    <svg
+      className="ff-ui-icon"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path d="m4 20 7.5-7.5" />
+      <path d="m8.5 15.5-2-2L12 8l2 2-5.5 5.5Z" />
+      <path d="m14 10 2.3-2.3" />
+      <path d="m16.3 7.7 2 2" />
+      <path d="M19 4.5 20.5 3" />
+      <path d="M20 7l2-.6" />
+      <path d="M16.5 3.5 16 1.8" />
+      <path d="M21 10.5h1.7" />
+    </svg>
+  );
+
+  const SawBladeIcon = ({ size = 20 }) => (
+    <svg
+      className="ff-ui-icon"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path d="M12 2.5 13.1 5l2-2 0.4 2.8 2.5-1.3-0.4 2.8 2.8-0.4-1.3 2.5 2.8 0.4-2 2 2 2-2.8 0.4 1.3 2.5-2.8-0.4 0.4 2.8-2.5-1.3-0.4 2.8-2-2L12 21.5 10.9 19l-2 2-0.4-2.8L6 19.5l0.4-2.8-2.8 0.4 1.3-2.5-2.8-0.4 2-2-2-2 2.8-0.4-1.3-2.5 2.8 0.4L6 4.5l2.5 1.3L8.9 3l2 2L12 2.5Z" />
+      <circle cx="12" cy="12" r="2.2" />
+    </svg>
+  );
+
+  const StageIcon = ({ stageName, size = 20 }) => {
+    if (stageName === "Fabrication") return <SawBladeIcon size={size} />;
+    if (stageName === "Welding") return <WeldingTorchIcon size={size} />;
+    if (stageName === "Assembly") return <Wrench size={size} />;
+    if (stageName === "Paint Line") return <PaintBucket size={size} />;
+    if (stageName === "Shipping") return <Truck size={size} />;
+    return <PackageCheck size={size} />;
+  };
+
+  const NavIcon = ({ name }) => {
+    const icons = {
+      Models: Package2,
+      Schedule: CalendarDays,
+      Live: Activity,
+      Messages: MessageSquare,
+      Dashboard: LayoutDashboard,
+      Fishbowl: Database,
+      Analytics: BarChart3,
+      "Material Optimizer": ScanSearch,
+      "Material Inventory": Boxes,
+    };
+    const Icon = icons[name];
+    return Icon ? <Icon size={18} /> : null;
+  };
+
   const StageBadge = ({ stage }) => {
     const stageName = STAGES[stage];
     return (
       <span className={`stage-badge stage-${stageSlug(stageName)}`}>
+        <StageIcon stageName={stageName} size={16} />
         {stageName}
       </span>
     );
@@ -3163,7 +3257,7 @@ function App() {
           {job.notes && <p className="note compact-note">{job.notes}</p>}
 
           <details className="job-timeline">
-            <summary>Job Timeline</summary>
+            <summary><ChevronRight size={18} /> Job Timeline</summary>
             <div className="job-timeline-list">
               {getJobTimeline(job).map((event) => (
                 <div key={event.id || `${event.stage}-${event.at}`} className="job-timeline-item">
@@ -3196,6 +3290,7 @@ function App() {
                 })
               }
             >
+              <Eye size={18} />
               View Cut Sheet
             </button>
           )}
@@ -3203,14 +3298,18 @@ function App() {
           {isFabrication && !isComplete && (
             <>
               <div className={job.partsReady ? "status good" : "status warning"}>
-                {job.partsReady
-                  ? "Parts are ready for welding"
-                  : "Cutting / fabrication in progress"}
+                {job.partsReady ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}
+                <span>
+                  {job.partsReady
+                    ? "Parts are ready for welding"
+                    : "Cutting / fabrication in progress"}
+                </span>
               </div>
 
               {canOperateJobs && (
                 <div className="button-row compact-action-row">
                   <button onClick={() => togglePartsReady(job.id)}>
+                    {job.partsReady ? <RotateCcw size={18} /> : <CheckCircle2 size={18} />}
                     {job.partsReady ? "Mark Not Ready" : "Mark Parts Ready"}
                   </button>
 
@@ -3218,6 +3317,7 @@ function App() {
                     disabled={!job.partsReady}
                     onClick={() => moveLiveJob(job.id)}
                   >
+                    <ArrowRight size={18} />
                     Send To Welding
                   </button>
                 </div>
@@ -3259,29 +3359,20 @@ function App() {
                     <button onClick={() => updateStageQty(job.id, -1)}>-1</button>
                   </div>
 
-                  {job.stage === STAGES.indexOf("Assembly") && ["Supervisor", "Developer"].includes(currentRole) ? (
-                    <div className="button-row compact-action-row">
-                      <button onClick={() => addLiveJobToStock(job.id)}>
-                        Complete
-                      </button>
-                      <button onClick={() => moveLiveJob(job.id)}>
-                        Move To Paint Line
-                      </button>
-                    </div>
-                  ) : (
-                    <button className="wide" onClick={() => moveLiveJob(job.id)}>
-                      Move To {STAGES[job.stage + 1]}
-                    </button>
-                  )}
+                  <button className="wide" onClick={() => moveLiveJob(job.id)}>
+                    <ArrowRight size={18} />
+                    Move To {STAGES[job.stage + 1]}
+                  </button>
                 </>
               )}
             </>
           )}
 
-          {isComplete && <div className="status good">Order Sent / Complete</div>}
+          {isComplete && <div className="status good"><CheckCircle2 size={18} /><span>Order Sent / Complete</span></div>}
 
           {canRemoveLiveJob && (
             <button className="danger wide" onClick={() => removeLiveJob(job.id)}>
+              <Trash2 size={18} />
               Remove Live Job
             </button>
           )}
@@ -3450,13 +3541,13 @@ function App() {
 
     const scheduledQty = schedule.reduce((sum, job) => sum + Number(job.qtyNeeded || 0), 0);
     const completedQty = schedule.reduce((sum, job) => sum + Number(job.qtyComplete || 0), 0);
-    const inProductionQty = liveJobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
+    const inProductionQty = activeLiveJobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
     const scheduledOnlyJobs = schedule.filter((job) => job.status === "Scheduled");
     const inProductionJobs = schedule.filter((job) => job.status === "In Production");
     const completedJobs = schedule.filter((job) => job.status === "Complete");
     const completionRate = scheduledQty > 0 ? Math.round((completedQty / scheduledQty) * 100) : 0;
 
-    const stageRows = STAGES.map((stage, index) => {
+    const stageRows = STAGES.slice(0, -1).map((stage, index) => {
       const jobs = liveForStage(index);
       const qty = jobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
       return { stage, jobs: jobs.length, qty };
@@ -3508,7 +3599,7 @@ function App() {
         <div className="analytics-kpi-grid">
           <div className="analytics-kpi-card"><span>Scheduled Qty</span><b>{scheduledQty}</b><small>{schedule.length} jobs</small></div>
           <div className="analytics-kpi-card"><span>Completed Qty</span><b>{completedQty}</b><small>{completedJobs.length} complete jobs</small></div>
-          <div className="analytics-kpi-card"><span>Live WIP Qty</span><b>{inProductionQty}</b><small>{liveJobs.length} live jobs</small></div>
+          <div className="analytics-kpi-card"><span>Live WIP Qty</span><b>{inProductionQty}</b><small>{activeLiveJobs.length} active live jobs</small></div>
           <div className="analytics-kpi-card"><span>Model Library</span><b>{totalFurniture}</b><small>{models.length} collections / {totalParts} parts</small></div>
           <div className="analytics-kpi-card"><span>Backlog Split</span><b>{scheduledOnlyJobs.length}</b><small>{inProductionJobs.length} in production</small></div>
         </div>
@@ -3756,6 +3847,9 @@ function App() {
     };
   };
 
+  const getReusableDropCount = (pieces) =>
+    (Array.isArray(pieces) ? pieces : []).filter((piece) => Number(piece.reusableDrop || 0) > 0).length;
+
   const getPiecesWithMaterial = (group) => {
     return (group?.pieces || []).map((piece) => ({
       ...piece,
@@ -3829,10 +3923,10 @@ function App() {
         <div className="enterprise-card inventory-card">
           <div className="inventory-section-head">
             <div>
-              <h2>Raw Stock Inventory</h2>
+              <h2><Package size={20} />Raw Stock Inventory</h2>
               <p className="muted">Full-length material pieces available before purchasing.</p>
             </div>
-            <button onClick={saveRawStockItem}>{editingRawStockId ? "Update Material" : "Add Material"}</button>
+            <button onClick={saveRawStockItem}><Plus size={18} />{editingRawStockId ? "Update Material" : "Add Material"}</button>
           </div>
 
           <div className="inventory-form-grid">
@@ -3854,7 +3948,7 @@ function App() {
                 <span>{item.stockLength || 240} in</span>
                 <span className={Number(item.quantityOnHand || 0) < 10 ? "inventory-low-quantity" : ""}>{item.quantityOnHand || 0}</span>
                 <span>{item.notes || "-"}</span>
-                <span className="inventory-actions"><button onClick={() => editRawStockItem(item)}>Edit</button><button className="danger" onClick={() => deleteRawStockItem(item.id)}>Delete</button></span>
+                <span className="inventory-actions"><button onClick={() => editRawStockItem(item)}><Pencil size={18} />Edit</button><button className="danger" onClick={() => deleteRawStockItem(item.id)}><Trash2 size={18} />Delete</button></span>
               </div>
             ))}
           </div>
@@ -3863,10 +3957,10 @@ function App() {
         <div className="enterprise-card inventory-card">
           <div className="inventory-section-head">
             <div>
-              <h2>Reusable Drops Inventory</h2>
+              <h2><Recycle size={20} />Reusable Drops Inventory</h2>
               <p className="muted">Shorter saved drops that should be consumed before new raw stock in future plans.</p>
             </div>
-            <button onClick={saveReusableDropItem}>{editingReusableDropId ? "Update Drop" : "Add Drop"}</button>
+            <button onClick={saveReusableDropItem}><PlusCircle size={18} />{editingReusableDropId ? "Update Drop" : "Add Drop"}</button>
           </div>
 
           <div className="inventory-form-grid">
@@ -3891,9 +3985,9 @@ function App() {
                 <span>{item.status || "Available"}</span>
                 <span>{item.notes || "-"}</span>
                 <span className="inventory-actions">
-                  <button onClick={() => editReusableDropItem(item)}>Edit</button>
-                  <button onClick={() => updateReusableDropStatus(item.id, "Used")}>Mark Used</button>
-                  <button onClick={() => updateReusableDropStatus(item.id, "Scrapped")}>Mark Scrap</button>
+                  <button onClick={() => editReusableDropItem(item)}><Pencil size={18} />Edit</button>
+                  <button onClick={() => updateReusableDropStatus(item.id, "Used")}><Check size={18} />Mark Used</button>
+                  <button onClick={() => updateReusableDropStatus(item.id, "Scrapped")}><Trash2 size={18} />Mark Scrap</button>
                 </span>
               </div>
             ))}
@@ -3927,6 +4021,8 @@ function App() {
     ) || 0;
     const reusableDropsUsedLength = projectedImpact?.reusableDropsUsed.reduce((sum, drop) => sum + Number(drop.cutLength || 0), 0) || 0;
     const newReusableDropsLength = projectedImpact?.newReusableDrops.reduce((sum, drop) => sum + Number(drop.length || 0), 0) || 0;
+    const materialCutPlanPieces = materialCutPlan?.groups?.flatMap((group) => getPiecesWithMaterial(group)) || [];
+    const reusableDropPieceCount = getReusableDropCount(materialCutPlanPieces);
 
     return (
       <section className="enterprise-page material-optimizer-page">
@@ -4001,6 +4097,7 @@ function App() {
               onClick={generateMaterialCutPlan}
               disabled={optimizerJobs.length === 0}
             >
+              <Scissors size={18} />
               Generate Cut Plan
             </button>
           </div>
@@ -4049,12 +4146,12 @@ function App() {
                   Reusable Drops
                   <ReusableDropsTooltip
                     breakdown={getReusableDropBreakdown(
-                      materialCutPlan.groups.flatMap((group) => getPiecesWithMaterial(group)),
+                      materialCutPlanPieces,
                       materialCutPlan.reusableDrops
                     )}
                   />
                 </span>
-                <b>{formatOptimizerInches(materialCutPlan.reusableDrops)}</b>
+                <b>{reusableDropPieceCount}</b>
                 <small>{formatOptimizerInches(materialCutPlan.settings?.reusableDropThreshold ?? reusableDropThreshold)} in or larger</small>
               </div>
               <div className="analytics-kpi-card">
@@ -4131,6 +4228,7 @@ function App() {
                       onClick={commitMaterialPlan}
                       disabled={Boolean(materialCutPlan.inventoryCommittedAt)}
                     >
+                      <CheckCheck size={18} />
                       {materialCutPlan.inventoryCommittedAt ? "Material Plan Committed" : "Commit Material Plan"}
                     </button>
                     <span>Deliberate approval step. Preview generation never changes inventory.</span>
@@ -4179,6 +4277,7 @@ function App() {
                       <span>
                         <b>{formatOptimizerInches(group.reusableDrops)}</b>
                         <span className="optimizer-loss-label">
+                          <Recycle size={18} />
                           Reusable Drops
                           <ReusableDropsTooltip breakdown={getReusableDropBreakdown(getPiecesWithMaterial(group), group.reusableDrops)} />
                         </span>
@@ -4186,6 +4285,7 @@ function App() {
                       <span>
                         <b>{formatOptimizerInches(group.scrap)}</b>
                         <span className="optimizer-loss-label">
+                          <TriangleAlert size={18} />
                           Material Loss
                           <MaterialLossTooltip breakdown={lossBreakdown} />
                         </span>
@@ -4321,7 +4421,7 @@ function App() {
       };
     });
 
-    const activeJobs = liveJobs.filter((job) => job.stage < STAGES.length - 1);
+    const activeJobs = activeLiveJobs;
     const completedToday = schedule.filter((job) => {
       if (job.status !== "Complete" || !job.completedAt) return false;
       return new Date(job.completedAt).toDateString() === dashboardDate.toDateString();
@@ -4341,7 +4441,7 @@ function App() {
       0
     );
     const recentActivity = [
-      ...liveJobs.slice(0, 4).map((job) => ({
+      ...activeJobs.slice(0, 4).map((job) => ({
         id: `live-${job.id}`,
         title: `${job.collection || "Job"} ${job.furniture || ""}`.trim(),
         detail: `Active in ${STAGES[job.stage] || "Production"}`,
@@ -4706,6 +4806,7 @@ function App() {
                 setView(navItem);
               }}
             >
+              <NavIcon name={navItem} />
               {navItem}
             </button>
           ))}
@@ -4715,6 +4816,7 @@ function App() {
               className={`main-nav-button nav-fishbowl ${view === "Fishbowl" ? "active-nav" : ""}`}
               onClick={() => setView("Fishbowl")}
             >
+              <NavIcon name="Fishbowl" />
               Fishbowl
             </button>
           )}
@@ -4725,6 +4827,7 @@ function App() {
                 className={`main-nav-button nav-analytics ${view === "Analytics" ? "active-nav" : ""}`}
                 onClick={() => setView("Analytics")}
               >
+                <NavIcon name="Analytics" />
                 Analytics
               </button>
 
@@ -4732,6 +4835,7 @@ function App() {
                 className={`main-nav-button nav-material-optimizer ${view === "Material Optimizer" ? "active-nav" : ""}`}
                 onClick={() => setView("Material Optimizer")}
               >
+                <NavIcon name="Material Optimizer" />
                 Material Optimizer
               </button>
 
@@ -4739,6 +4843,7 @@ function App() {
                 className={`main-nav-button nav-material-inventory ${view === "Material Inventory" ? "active-nav" : ""}`}
                 onClick={() => setView("Material Inventory")}
               >
+                <NavIcon name="Material Inventory" />
                 Material Inventory
               </button>
             </>
@@ -4893,7 +4998,7 @@ function App() {
           {view === "Models" && (
             <>
               {!selectedModel ? (
-                <div className="hero">
+                <div className="hero model-library-hero">
                   <h1>Select or create a collection</h1>
                   <p>
                     Collections hold furniture pieces. Each furniture piece can
@@ -4902,7 +5007,7 @@ function App() {
                 </div>
               ) : (
                 <>
-                  <div className="page-head">
+                  <div className="page-head model-library-hero">
                     <div>
                       <h1>{selectedModel.name}</h1>
                       <p className="muted">
@@ -4921,34 +5026,6 @@ function App() {
                   >
                     ← Back To Collections
                   </button>
-
-                  {canManage && (
-                    <div className="card">
-                      <h2>Add Furniture Type</h2>
-
-                      <div className="form-grid">
-                        <input
-                          placeholder="Furniture Name"
-                          value={typeName}
-                          onChange={(e) => setTypeName(e.target.value)}
-                        />
-
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) =>
-                            readImage(e.target.files[0], setTypeImage)
-                          }
-                        />
-                      </div>
-
-                      {typeImage && (
-                        <img src={typeImage} className="preview" alt="" />
-                      )}
-
-                      <button onClick={addType}>Add Furniture</button>
-                    </div>
-                  )}
 
                   {selectedModelTypes.length === 0 && (
                     <div className="empty">
@@ -5055,110 +5132,112 @@ function App() {
                             </div>
                           </div>
 
-                          <div className="quick-schedule">
-                            <span>Add to schedule:</span>
+                          <div className="furniture-action-bar">
+                            <div className="quick-schedule">
+                              <span>Add to schedule:</span>
 
-                            <select
-                              value={scheduleForm.weekSlot}
-                              onChange={(e) =>
-                                setScheduleForm({
-                                  ...scheduleForm,
-                                  weekSlot: Number(e.target.value),
-                                })
-                              }
-                            >
-                              {scheduleWeeks.map((week, index) => (
-                                <option key={index} value={index}>
-                                  {week || `Week ${index + 1}`}
-                                </option>
-                              ))}
-                            </select>
-
-                            <button
-                              onClick={() =>
-                                setScheduleForm({
-                                  ...scheduleForm,
-                                  qty: Math.max(
-                                    1,
-                                    Number(scheduleForm.qty || 1) - 1
-                                  ),
-                                })
-                              }
-                            >
-                              -
-                            </button>
-
-                            <input
-                              type="number"
-                              min="1"
-                              value={scheduleForm.qty}
-                              onChange={(e) =>
-                                setScheduleForm({
-                                  ...scheduleForm,
-                                  qty: e.target.value,
-                                })
-                              }
-                            />
-
-                            <button
-                              onClick={() =>
-                                setScheduleForm({
-                                  ...scheduleForm,
-                                  qty: Number(scheduleForm.qty || 1) + 1,
-                                })
-                              }
-                            >
-                              +
-                            </button>
-                          </div>
-
-                          <div className="button-row">
-                            {canManage && (
-                              <button onClick={() => addToSchedule(type)}>
-                                Add To Schedule
-                              </button>
-                            )}
-
-                            <button
-                              onClick={() => setCutSheetView({ model: selectedModel, type })}
-                            >
-                              View Cut Sheet
-                            </button>
-
-                            {canManage && (
-                              <button
-                                onClick={() =>
-                                  setOpenTypeId(
-                                    openTypeId === type.id ? null : type.id
-                                  )
+                              <select
+                                value={scheduleForm.weekSlot}
+                                onChange={(e) =>
+                                  setScheduleForm({
+                                    ...scheduleForm,
+                                    weekSlot: Number(e.target.value),
+                                  })
                                 }
                               >
-                                {openTypeId === type.id
-                                  ? "Close Parts Editor"
-                                  : "Edit Parts"}
-                              </button>
-                            )}
+                                {scheduleWeeks.map((week, index) => (
+                                  <option key={index} value={index}>
+                                    {week || `Week ${index + 1}`}
+                                  </option>
+                                ))}
+                              </select>
 
-                            {canPrint && (
-                              <button onClick={() => printCutSheet(selectedModel, type)}>
-                                Print Cut Sheet
-                              </button>
-                            )}
-
-                            {canManage && (
-                              <button onClick={() => cloneFurniture(type)}>
-                                Clone Furniture
-                              </button>
-                            )}
-
-                            {canDelete && (
                               <button
-                                className="danger"
-                                onClick={() => deleteType(type.id)}
+                                onClick={() =>
+                                  setScheduleForm({
+                                    ...scheduleForm,
+                                    qty: Math.max(
+                                      1,
+                                      Number(scheduleForm.qty || 1) - 1
+                                    ),
+                                  })
+                                }
                               >
-                                Delete Furniture
+                                -
                               </button>
-                            )}
+
+                              <input
+                                type="number"
+                                min="1"
+                                value={scheduleForm.qty}
+                                onChange={(e) =>
+                                  setScheduleForm({
+                                    ...scheduleForm,
+                                    qty: e.target.value,
+                                  })
+                                }
+                              />
+
+                              <button
+                                onClick={() =>
+                                  setScheduleForm({
+                                    ...scheduleForm,
+                                    qty: Number(scheduleForm.qty || 1) + 1,
+                                  })
+                                }
+                              >
+                                +
+                              </button>
+                            </div>
+
+                            <div className="button-row">
+                              {canManage && (
+                                <button onClick={() => addToSchedule(type)}>
+                                  Add To Schedule
+                                </button>
+                              )}
+
+                              <button
+                                onClick={() => setCutSheetView({ model: selectedModel, type })}
+                              >
+                                View Cut Sheet
+                              </button>
+
+                              {canManage && (
+                                <button
+                                  onClick={() =>
+                                    setOpenTypeId(
+                                      openTypeId === type.id ? null : type.id
+                                    )
+                                  }
+                                >
+                                  {openTypeId === type.id
+                                    ? "Close Parts Editor"
+                                    : "Edit Parts"}
+                                </button>
+                              )}
+
+                              {canPrint && (
+                                <button onClick={() => printCutSheet(selectedModel, type)}>
+                                  Print Cut Sheet
+                                </button>
+                              )}
+
+                              {canManage && (
+                                <button onClick={() => cloneFurniture(type)}>
+                                  Clone Furniture
+                                </button>
+                              )}
+
+                              {canDelete && (
+                                <button
+                                  className="danger"
+                                  onClick={() => deleteType(type.id)}
+                                >
+                                  Delete Furniture
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </>
                       )}
@@ -5349,6 +5428,34 @@ function App() {
                       )}
                     </div>
                   ))}
+
+                  {canManage && (
+                    <div className="card add-furniture-type-card">
+                      <h2>Add Furniture Type</h2>
+
+                      <div className="form-grid">
+                        <input
+                          placeholder="Furniture Name"
+                          value={typeName}
+                          onChange={(e) => setTypeName(e.target.value)}
+                        />
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            readImage(e.target.files[0], setTypeImage)
+                          }
+                        />
+                      </div>
+
+                      {typeImage && (
+                        <img src={typeImage} className="preview" alt="" />
+                      )}
+
+                      <button onClick={addType}>Add Furniture</button>
+                    </div>
+                  )}
                 </>
               )}
             </>
@@ -5360,7 +5467,7 @@ function App() {
                 <div>
                   <h1>Shop Notes</h1>
                   <p className="muted">
-                    Send quick shop-floor messages that update live for everyone signed in.
+                    Live communication between departments, supervisors, and production staff.
                   </p>
                 </div>
               </div>
@@ -5547,7 +5654,7 @@ function App() {
                     <div>
                       <h1>Weekly Production Schedule</h1>
                       <p className="muted">
-                        Select one week at a time for a cleaner monitor-style view.
+                        Review work orders, adjust quantities, and release jobs into production.
                       </p>
                       {fishbowlImportSummary && (
                         <p className="note">{fishbowlImportSummary}</p>
@@ -5803,7 +5910,7 @@ function App() {
 
               return (
                 <>
-                  <div className="page-head">
+                  <div className="page-head live-shop-head">
                     <div>
                       <h1>{isAdminLiveOverview ? "Live Production Overview" : "Live Shop Mode"}</h1>
                       <p className="muted">
@@ -5816,7 +5923,8 @@ function App() {
                     </div>
 
                     {elevatedModes.includes(currentRole) && (
-                      <button onClick={clearCompletedLiveJobs}>
+                      <button className="live-clear-completed-button" onClick={clearCompletedLiveJobs}>
+                        <Trash2 size={18} />
                         Remove Completed Jobs
                       </button>
                     )}
@@ -5838,8 +5946,11 @@ function App() {
                             }
                             onClick={() => setLiveOverviewTab(department)}
                           >
-                            <b>{department}</b>
-                            <span>{count} jobs</span>
+                            <span className="department-tab-icon"><StageIcon stageName={department} size={20} /></span>
+                            <span>
+                              <b>{department}</b>
+                              <small>{count} jobs</small>
+                            </span>
                           </button>
                         );
                       })}
@@ -5921,13 +6032,16 @@ function App() {
                             employeeActivePanel?.title === panel.title
                               ? "department-view-tab active-department-view-tab"
                               : "department-view-tab"
-                          }
-                          onClick={() => setEmployeePanelTab(panel.title)}
-                        >
-                          <b>{panel.title}</b>
-                          <span>{panel.jobs.length} jobs</span>
-                        </button>
-                      ))}
+                            }
+                            onClick={() => setEmployeePanelTab(panel.title)}
+                          >
+                            <span className="department-tab-icon"><StageIcon stageName={panel.stageName || panel.title} size={20} /></span>
+                            <span>
+                              <b>{panel.title}</b>
+                              <small>{panel.jobs.length} jobs</small>
+                            </span>
+                          </button>
+                        ))}
                     </div>
                   )}
 
