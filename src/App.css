@@ -8748,20 +8748,22 @@ button:has(> svg),
 .furniture-action-bar {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(148, 163, 184, 0.18);
-  overflow-x: auto;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 0 !important;
+  overflow-x: visible;
+  overflow-y: visible;
+  flex-wrap: wrap;
 }
 
 .furniture-action-bar .quick-schedule {
-  flex: 0 0 auto;
+  flex: 0 1 auto;
   margin: 0 !important;
-  padding: 8px 10px !important;
+  padding: 7px 9px !important;
   display: inline-flex !important;
   align-items: center;
-  gap: 10px;
-  min-width: max-content;
+  gap: 8px;
+  min-width: 0;
 }
 
 .furniture-action-bar .quick-schedule span {
@@ -8770,20 +8772,20 @@ button:has(> svg),
 }
 
 .furniture-action-bar .quick-schedule select {
-  width: 220px !important;
-  min-width: 220px;
-  padding-inline: 14px !important;
+  width: clamp(175px, 16vw, 220px) !important;
+  min-width: 175px;
+  padding-inline: 12px !important;
 }
 
 .furniture-action-bar .quick-schedule input {
-  width: 58px !important;
-  min-width: 58px;
+  width: 52px !important;
+  min-width: 52px;
   text-align: center;
 }
 
 .furniture-action-bar .quick-schedule button {
-  width: 42px;
-  min-width: 42px;
+  width: 38px;
+  min-width: 38px;
   padding-inline: 0 !important;
 }
 
@@ -8797,18 +8799,21 @@ button:has(> svg),
 
 .furniture-action-bar > .button-row {
   order: 2;
-  flex: 1 0 auto;
+  flex: 1 1 520px;
   display: flex !important;
-  flex-wrap: nowrap !important;
-  gap: 10px !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
   margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
 }
 
 .furniture-action-bar > .button-row button {
-  min-height: 44px;
-  padding: 9px 14px !important;
+  flex: 1 1 128px;
+  min-width: 118px;
+  max-width: 190px;
+  min-height: 42px;
+  padding: 8px 12px !important;
   white-space: nowrap;
 }
 
@@ -8837,8 +8842,130 @@ button:has(> svg),
   }
 }
 
+/* Live Shop cleanup: single page scroll, no Welding/Tables inner scroller */
+.live-focused-view,
+.live-focused-view .department-stage-panel,
+.live-focused-view .department-job-grid,
+.single-department-panel,
+.single-department-panel .department-stage-panel,
+.single-department-panel .department-job-grid {
+  max-height: none !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.live-focused-view .department-stage-panel,
+.single-department-panel .department-stage-panel {
+  overscroll-behavior: auto;
+}
+
+/* Hero simplification: hide small eyebrow labels outside Models/Dashboard */
+.enterprise-hero-card .eyebrow,
+.messages-page-head::before,
+.schedule-page-head::before {
+  display: none !important;
+}
+
+.enterprise-hero-card {
+  padding-top: 34px !important;
+}
+
+.messages-page-head,
+.schedule-page-head {
+  padding-top: 30px !important;
+}
+
 .optimizer-material-stats .optimizer-loss-label {
   color: #a9b8cc !important;
+}
+
+/* Models action bar refinement: stacked scheduling controls, single-row actions */
+.furniture-action-bar {
+  align-items: flex-end;
+  gap: 28px;
+  flex-wrap: nowrap;
+}
+
+.furniture-action-bar .quick-schedule {
+  display: grid !important;
+  grid-template-columns: auto 38px 52px 38px;
+  grid-template-areas:
+    "label label label label"
+    "week minus qty plus";
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 8px;
+  flex: 0 0 auto;
+  padding: 8px 10px !important;
+}
+
+.furniture-action-bar .quick-schedule span {
+  grid-area: label;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #dbeafe;
+}
+
+.furniture-action-bar .quick-schedule select {
+  grid-area: week;
+  width: 168px !important;
+  min-width: 168px;
+  max-width: 168px;
+  padding-left: 12px !important;
+  padding-right: 28px !important;
+}
+
+.furniture-action-bar .quick-schedule button:first-of-type {
+  grid-area: minus;
+}
+
+.furniture-action-bar .quick-schedule input {
+  grid-area: qty;
+}
+
+.furniture-action-bar .quick-schedule button:last-of-type {
+  grid-area: plus;
+}
+
+.furniture-action-bar::after {
+  content: none !important;
+  display: none !important;
+}
+
+.furniture-action-bar > .button-row {
+  flex: 1 1 auto;
+  flex-wrap: nowrap !important;
+  gap: 12px !important;
+  align-items: flex-end;
+  min-width: 0;
+}
+
+.furniture-action-bar > .button-row button {
+  flex: 1 1 0;
+  min-width: 116px;
+  max-width: none;
+  padding: 10px 12px !important;
+  font-size: clamp(13px, 0.95vw, 16px);
+}
+
+@media (max-width: 1280px) {
+  .furniture-action-bar {
+    flex-wrap: wrap;
+  }
+
+  .furniture-action-bar::after {
+    display: none;
+  }
+
+  .furniture-action-bar > .button-row {
+    flex-basis: 100%;
+    flex-wrap: wrap !important;
+  }
+
+  .furniture-action-bar > .button-row button {
+    flex: 1 1 150px;
+  }
 }
 
 /* Schedule state language + Material Optimizer KPI clarity */
@@ -8890,15 +9017,11 @@ button:has(> svg),
 .material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(1) b,
 .material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(2) b,
 .material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(3) b,
+.material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(4) b,
 .material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(5) b,
 .material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(6) b {
   color: #4ade80;
   text-shadow: 0 0 24px rgba(74, 222, 128, 0.25);
-}
-
-.material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(4) b {
-  color: #dbeafe;
-  text-shadow: 0 0 24px rgba(96, 165, 250, 0.24);
 }
 
 .material-optimizer-page .optimizer-summary-grid .analytics-kpi-card:nth-child(7) b {

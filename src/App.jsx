@@ -2652,12 +2652,9 @@ function App() {
 
   const departmentPanelsForView = (department) => {
     if (department === "Welding") {
-      const weldingJobs = liveForStage(1);
-
       return [
         { title: "Fabrication", stageName: "Fabrication", jobs: liveForStage(0) },
-        { title: "Welding", stageName: "Welding", jobs: weldingJobs.filter((job) => !isTableJob(job)) },
-        { title: "Tables", stageName: "Welding", jobs: weldingJobs.filter(isTableJob) },
+        { title: "Welding", stageName: "Welding", jobs: liveForStage(1) },
       ];
     }
 
@@ -2670,11 +2667,8 @@ function App() {
 
   const fullLivePanelsForView = (department) => {
     if (department === "Welding") {
-      const weldingJobs = liveForStage(1);
-
       return [
-        { title: "Welding", stageName: "Welding", jobs: weldingJobs.filter((job) => !isTableJob(job)) },
-        { title: "Tables", stageName: "Welding", jobs: weldingJobs.filter(isTableJob) },
+        { title: "Welding", stageName: "Welding", jobs: liveForStage(1) },
       ];
     }
 
@@ -3211,6 +3205,18 @@ function App() {
     return Icon ? <Icon size={18} /> : null;
   };
 
+  const runLiveActionWithoutJump = (action) => {
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+
+    action();
+
+    requestAnimationFrame(() => {
+      window.scrollTo(scrollX, scrollY);
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    });
+  };
+
   const StageBadge = ({ stage }) => {
     const stageName = STAGES[stage];
     return (
@@ -3308,14 +3314,14 @@ function App() {
 
               {canOperateJobs && (
                 <div className="button-row compact-action-row">
-                  <button onClick={() => togglePartsReady(job.id)}>
+                  <button onClick={() => runLiveActionWithoutJump(() => togglePartsReady(job.id))}>
                     {job.partsReady ? <RotateCcw size={18} /> : <CheckCircle2 size={18} />}
                     {job.partsReady ? "Mark Not Ready" : "Mark Parts Ready"}
                   </button>
 
                   <button
                     disabled={!job.partsReady}
-                    onClick={() => moveLiveJob(job.id)}
+                    onClick={() => runLiveActionWithoutJump(() => moveLiveJob(job.id))}
                   >
                     <ArrowRight size={18} />
                     Send To Welding
@@ -3353,13 +3359,12 @@ function App() {
               {canOperateJobs && (
                 <>
                   <div className="button-row compact-action-row">
-                    <button onClick={() => updateStageQty(job.id, 1)}>+1</button>
-                    <button onClick={() => updateStageQty(job.id, 5)}>+5</button>
-                    <button onClick={() => updateStageQty(job.id, 10)}>+10</button>
-                    <button onClick={() => updateStageQty(job.id, -1)}>-1</button>
+                    <button onClick={() => runLiveActionWithoutJump(() => updateStageQty(job.id, 1))}>+1</button>
+                    <button onClick={() => runLiveActionWithoutJump(() => updateStageQty(job.id, 10))}>+10</button>
+                    <button onClick={() => runLiveActionWithoutJump(() => updateStageQty(job.id, -1))}>-1</button>
                   </div>
 
-                  <button className="wide" onClick={() => moveLiveJob(job.id)}>
+                  <button className="wide" onClick={() => runLiveActionWithoutJump(() => moveLiveJob(job.id))}>
                     <ArrowRight size={18} />
                     Move To {STAGES[job.stage + 1]}
                   </button>
@@ -3371,7 +3376,7 @@ function App() {
           {isComplete && <div className="status good"><CheckCircle2 size={18} /><span>Order Sent / Complete</span></div>}
 
           {canRemoveLiveJob && (
-            <button className="danger wide" onClick={() => removeLiveJob(job.id)}>
+            <button className="danger wide" onClick={() => runLiveActionWithoutJump(() => removeLiveJob(job.id))}>
               <Trash2 size={18} />
               Remove Live Job
             </button>
@@ -5923,7 +5928,7 @@ function App() {
                     </div>
 
                     {elevatedModes.includes(currentRole) && (
-                      <button className="live-clear-completed-button" onClick={clearCompletedLiveJobs}>
+                      <button className="live-clear-completed-button" onClick={() => runLiveActionWithoutJump(clearCompletedLiveJobs)}>
                         <Trash2 size={18} />
                         Remove Completed Jobs
                       </button>
