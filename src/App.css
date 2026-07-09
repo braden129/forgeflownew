@@ -8879,6 +8879,44 @@ button:has(> svg),
   color: #a9b8cc !important;
 }
 
+/* Schedule card cleanup: status pill inside quantity row */
+.schedule-board-qty {
+  justify-content: space-between !important;
+  gap: 14px;
+}
+
+.schedule-card-status-pill {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  color: #bfdbfe;
+  font-size: 13px;
+  font-weight: 950;
+  white-space: nowrap;
+}
+
+.schedule-qty-controls {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.schedule-board-card-production .schedule-card-status-pill {
+  color: #bbf7d0 !important;
+  border-color: rgba(134, 239, 172, 0.62);
+  background: rgba(22, 163, 74, 0.28) !important;
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.12),
+    0 0 26px rgba(34, 197, 94, 0.28);
+}
+
 /* Models action bar refinement: stacked scheduling controls, single-row actions */
 .furniture-action-bar {
   align-items: flex-end;

@@ -5766,19 +5766,17 @@ function App() {
 
                               <div className="schedule-board-side">
                                 <div className="schedule-board-qty">
-                                  <b>Qty:</b>
-                                  <button onClick={() => adjustScheduleQty(job.id, -1)}>
-                                    -
-                                  </button>
-                                  <span>{job.qtyNeeded}</span>
-                                  <button onClick={() => adjustScheduleQty(job.id, 1)}>
-                                    +
-                                  </button>
-                                </div>
-
-                                <div className="schedule-board-status">
-                                  <span><b>Remaining:</b> {remaining}</span>
-                                  <span>{job.status}</span>
+                                  <span className="schedule-card-status-pill">{job.status}</span>
+                                  <div className="schedule-qty-controls">
+                                    <b>Qty:</b>
+                                    <button onClick={() => adjustScheduleQty(job.id, -1)}>
+                                      -
+                                    </button>
+                                    <span>{job.qtyNeeded}</span>
+                                    <button onClick={() => adjustScheduleQty(job.id, 1)}>
+                                      +
+                                    </button>
+                                  </div>
                                 </div>
 
                                 <details className="schedule-timeline">
