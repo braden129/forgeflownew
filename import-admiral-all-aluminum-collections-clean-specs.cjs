@@ -55,6 +55,7 @@ function cleanText(value) {
 function absoluteUrl(url) {
   if (!url) return "";
   if (url.startsWith("//")) return `https:${url}`;
+  if (url.startsWith("http://")) return url.replace(/^http:\/\//, "https://");
   if (url.startsWith("http")) return url;
   if (url.startsWith("/")) return `${BASE_URL}${url}`;
   return `${BASE_URL}/${url}`;

@@ -181,6 +181,33 @@ function parseQuantity(value) {
   return Number.isFinite(qty) && qty > 0 ? Math.round(qty) : 1;
 }
 
+function secureAdmiralImageUrl(value) {
+  if (typeof value !== "string") return value;
+
+  return value.replace(
+    /^http:\/\/admiral-outdoor\.com(?=\/)/i,
+    "https://admiral-outdoor.com"
+  );
+}
+
+function secureImageItems(items) {
+  return (Array.isArray(items) ? items : []).map((item) => {
+    const secureImage = secureAdmiralImageUrl(item?.image);
+    return secureImage === item?.image ? item : { ...item, image: secureImage };
+  });
+}
+
+function secureModelImages(models) {
+  return (Array.isArray(models) ? models : []).map((model) => {
+    const secureTypes = secureImageItems(model?.types);
+    const imagesChanged = secureTypes.some(
+      (type, index) => type !== model?.types?.[index]
+    );
+
+    return imagesChanged ? { ...model, types: secureTypes } : model;
+  });
+}
+
 
 const LOGIN_USERS = [
   {
@@ -512,15 +539,15 @@ function App() {
   const [search, setSearch] = useState("");
 
   const [models, setModels] = useState(() => {
-    return JSON.parse(localStorage.getItem("models")) || [];
+    return secureModelImages(JSON.parse(localStorage.getItem("models")) || []);
   });
 
   const [schedule, setSchedule] = useState(() => {
-    return JSON.parse(localStorage.getItem("schedule")) || [];
+    return secureImageItems(JSON.parse(localStorage.getItem("schedule")) || []);
   });
 
   const [liveJobs, setLiveJobs] = useState(() => {
-    return JSON.parse(localStorage.getItem("liveJobs")) || [];
+    return secureImageItems(JSON.parse(localStorage.getItem("liveJobs")) || []);
   });
 
   const [rawStockInventory, setRawStockInventory] = useState(() => {
@@ -657,9 +684,9 @@ function App() {
   }, []);
 
   const applyAppData = useCallback((nextData) => {
-    const nextModels = Array.isArray(nextData?.models) ? nextData.models : [];
-    const nextSchedule = Array.isArray(nextData?.schedule) ? nextData.schedule : [];
-    const nextLiveJobs = Array.isArray(nextData?.liveJobs) ? nextData.liveJobs : [];
+    const nextModels = secureModelImages(nextData?.models);
+    const nextSchedule = secureImageItems(nextData?.schedule);
+    const nextLiveJobs = secureImageItems(nextData?.liveJobs);
     const nextRawStockInventory = Array.isArray(nextData?.rawStockInventory) ? nextData.rawStockInventory : [];
     const nextReusableDropInventory = Array.isArray(nextData?.reusableDropInventory) ? nextData.reusableDropInventory : [];
     const nextScheduleWeeks = Array.isArray(nextData?.scheduleWeeks)
