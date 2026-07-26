@@ -2880,6 +2880,18 @@ button {
   font-size: 12px;
 }
 
+.message-delete-error {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 10px;
+  background: rgba(127, 29, 29, 0.28);
+  color: #fecaca;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
 @media (max-width: 850px) {
   .messages-layout {
     grid-template-columns: 1fr;
@@ -8457,6 +8469,624 @@ button:has(> svg),
   text-shadow: 0 0 20px rgba(251, 146, 60, 0.24);
 }
 
+/* Owner review: targeted layout, dashboard, and print corrections */
+.cut-sheet-product-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: "details logo image";
+  align-items: center;
+  column-gap: 28px;
+  text-align: left;
+}
+
+.cut-sheet-product-logo {
+  grid-area: logo;
+  justify-self: center;
+  text-align: center;
+}
+
+.cut-sheet-product-details {
+  grid-area: details;
+  justify-self: start;
+  min-width: 0;
+  text-align: left;
+}
+
+.cut-sheet-product-details h1 {
+  margin: 0 0 6px;
+  color: #111 !important;
+}
+
+.cut-sheet-product-details h2 {
+  color: #333 !important;
+}
+
+.cut-sheet-product-header .cut-sheet-meta {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+}
+
+.cut-sheet-preview-image-frame {
+  grid-area: image;
+  display: grid;
+  place-items: center;
+  justify-self: end;
+  padding: 8px;
+  border: 1px solid #d5d5d5;
+  background: #f8f8f8;
+}
+
+.cut-sheet-product-header .cut-sheet-preview-img {
+  width: min(190px, 100%);
+  max-width: 190px;
+  max-height: 145px;
+  padding: 0;
+  border: 0;
+}
+
+@media screen and (max-width: 640px) {
+  .cut-sheet-product-header {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "details"
+      "logo"
+      "image";
+    justify-items: center;
+    row-gap: 18px;
+  }
+
+  .cut-sheet-product-details {
+    justify-self: start;
+  }
+
+  .cut-sheet-preview-image-frame {
+    justify-self: center;
+    max-width: 100%;
+  }
+}
+
+.schedule-cut-plan-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: "title logo meta";
+  align-items: center;
+  column-gap: 24px;
+  padding-bottom: 18px;
+  border-bottom: 2px solid #111;
+  text-align: initial;
+}
+
+.schedule-cut-plan-title-block {
+  grid-area: title;
+  min-width: 0;
+  justify-self: start;
+  text-align: left;
+}
+
+.schedule-cut-plan-logo-block {
+  grid-area: logo;
+  min-width: 180px;
+  justify-self: center;
+  text-align: center;
+}
+
+.schedule-cut-plan-title-block h1 {
+  margin: 0 0 4px;
+}
+
+.schedule-cut-plan-title-block h2 {
+  margin: 0;
+}
+
+.schedule-cut-plan-meta {
+  grid-area: meta;
+  display: grid;
+  justify-self: end;
+  gap: 6px;
+  margin: 0;
+  text-align: right;
+}
+
+@media screen and (max-width: 760px) {
+  .schedule-cut-plan-header {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "title"
+      "logo"
+      "meta";
+    justify-items: center;
+    row-gap: 16px;
+  }
+
+  .schedule-cut-plan-title-block,
+  .schedule-cut-plan-logo-block,
+  .schedule-cut-plan-meta {
+    justify-self: center;
+    max-width: 100%;
+    text-align: center;
+  }
+}
+
+.tv-dashboard-header {
+  height: auto;
+  min-height: 94px;
+  padding-block: 18px;
+}
+
+.tv-dashboard-brand h1 {
+  font-size: 32px;
+}
+
+.tv-dashboard-title h2 {
+  font-size: 24px;
+}
+
+.tv-dashboard-clock b {
+  font-size: 24px;
+}
+
+.tv-selected-job-progress {
+  display: grid;
+  gap: 8px;
+}
+
+.tv-selected-job-progress > div:first-child {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tv-selected-job-progress span small {
+  color: #9fc5df;
+  font-size: inherit;
+  font-weight: 800;
+}
+
+.tv-message-context {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  color: #d8e9f7 !important;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.tv-message-context small {
+  color: #8fb7d5;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .furniture-card,
+  .furniture-card .furniture-head,
+  .furniture-card .furniture-head > div,
+  .furniture-card .model-spec-grid,
+  .furniture-action-bar,
+  .furniture-action-bar .quick-schedule,
+  .furniture-action-bar > .button-row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .furniture-card {
+    padding: 16px !important;
+    overflow: visible;
+  }
+
+  .furniture-card .furniture-head {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-items: center;
+    gap: 16px !important;
+  }
+
+  .furniture-card .furniture-img {
+    width: min(170px, 100%) !important;
+    height: auto !important;
+    max-height: 180px;
+    justify-self: center;
+  }
+
+  .furniture-card .furniture-head > div {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .furniture-card .furniture-title {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 !important;
+    font-size: clamp(23px, 7vw, 32px) !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .furniture-card .model-saved-parts {
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 !important;
+    overflow-wrap: anywhere;
+  }
+
+  .furniture-card .model-spec-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-items: stretch;
+    gap: 10px !important;
+    padding: 14px 12px !important;
+  }
+
+  .furniture-card .model-spec-grid p,
+  .furniture-card .model-spec-grid .model-sku-line,
+  .furniture-card .model-spec-grid .model-dimensions-line {
+    grid-column: 1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    text-align: center !important;
+  }
+
+  .furniture-card .model-spec-grid .model-sku-line {
+    font-size: clamp(20px, 6vw, 25px) !important;
+  }
+
+  .furniture-action-bar {
+    display: grid;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .furniture-action-bar .quick-schedule {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "label label label"
+      "week week week"
+      "minus qty plus";
+    justify-content: center;
+    padding: 12px !important;
+  }
+
+  .furniture-action-bar .quick-schedule select {
+    width: 100% !important;
+    min-width: 0;
+    max-width: none;
+    padding-right: 38px !important;
+  }
+
+  .furniture-action-bar .quick-schedule button:first-of-type {
+    justify-self: end;
+  }
+
+  .furniture-action-bar .quick-schedule input {
+    justify-self: center;
+  }
+
+  .furniture-action-bar .quick-schedule button:last-of-type {
+    justify-self: start;
+  }
+
+  .furniture-action-bar > .button-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px !important;
+  }
+
+  .furniture-action-bar > .button-row button {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+  }
+
+  .furniture-action-bar .model-view-cut-sheet-button {
+    grid-column: 1 / -1;
+  }
+
+  .tv-dashboard-page {
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .tv-dashboard-header {
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-auto-rows: auto;
+    gap: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    transform: none !important;
+  }
+
+  .tv-dashboard-brand,
+  .tv-dashboard-title,
+  .tv-dashboard-clock {
+    position: static !important;
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+    transform: none !important;
+    text-align: center;
+  }
+
+  .tv-dashboard-brand {
+    justify-content: center;
+  }
+
+  .tv-dashboard-brand h1 {
+    font-size: 30px;
+  }
+
+  .tv-dashboard-title h2 {
+    font-size: 22px;
+    line-height: 1.15;
+  }
+
+  .tv-dashboard-clock b {
+    font-size: 22px;
+  }
+
+  .tv-dashboard-grid {
+    position: static !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: none !important;
+    grid-auto-rows: auto;
+    gap: 12px !important;
+    padding: 12px !important;
+    margin: 0;
+    transform: none !important;
+  }
+
+  .tv-summary-panel,
+  .tv-flow-panel,
+  .tv-activity-panel,
+  .tv-table-panel,
+  .tv-dept-jobs-panel,
+  .tv-messages-panel {
+    position: static !important;
+    grid-column: auto !important;
+    grid-row: auto !important;
+    width: 100%;
+    min-width: 0;
+    height: auto !important;
+    min-height: 0;
+    transform: none !important;
+  }
+
+  .tv-flow-row,
+  .tv-load-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .tv-activity-list article,
+  .tv-message-list article,
+  .tv-table-list article,
+  .tv-selected-job-list article {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .tv-dashboard-clock,
+  .tv-activity-list em,
+  .tv-message-list em,
+  .tv-table-list em {
+    text-align: center;
+  }
+}
+
+@media print {
+  @page {
+    size: portrait;
+    margin: 0.35in;
+  }
+
+  body:has(.cut-sheet-modal-backdrop) {
+    background: #fff !important;
+  }
+
+  body:has(.cut-sheet-modal-backdrop) .app > *:not(.cut-sheet-modal-backdrop),
+  body:has(.cut-sheet-modal-backdrop) .cut-sheet-modal-actions {
+    display: none !important;
+  }
+
+  .cut-sheet-modal-backdrop {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    padding: 0 !important;
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  .cut-sheet-modal {
+    width: 100% !important;
+  }
+
+  .cut-sheet-preview {
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .cut-sheet-product-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    grid-template-areas: "details logo image" !important;
+    align-items: center !important;
+    column-gap: 28px !important;
+    row-gap: 0 !important;
+    text-align: left !important;
+    break-inside: avoid;
+    break-after: avoid;
+  }
+
+  .cut-sheet-product-logo {
+    grid-area: logo !important;
+    justify-self: center !important;
+    text-align: center !important;
+  }
+
+  .cut-sheet-product-details {
+    grid-area: details !important;
+    justify-self: start !important;
+    text-align: left !important;
+  }
+
+  .cut-sheet-product-header .cut-sheet-meta {
+    display: grid !important;
+    justify-items: start !important;
+  }
+
+  .cut-sheet-product-header .cut-sheet-preview-image-frame {
+    grid-area: image !important;
+    justify-self: end !important;
+  }
+
+  .schedule-cut-plan-modal,
+  .schedule-cut-plan-print,
+  .schedule-cut-plan-sections,
+  .schedule-cut-plan-material {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .schedule-cut-plan-print {
+    display: block !important;
+    font-size: 10pt;
+  }
+
+  .schedule-cut-plan-header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    grid-template-areas: "title logo meta";
+    align-items: center;
+    column-gap: 16px;
+    row-gap: 0;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    break-inside: avoid;
+    break-after: avoid;
+  }
+
+  .schedule-cut-plan-header .cut-sheet-logo {
+    font-size: 25px;
+  }
+
+  .schedule-cut-plan-header .cut-sheet-logo-sub {
+    font-size: 10px;
+  }
+
+  .schedule-cut-plan-title-block h1 {
+    margin: 5px 0 1px;
+    font-size: 19px;
+  }
+
+  .schedule-cut-plan-title-block h2 {
+    font-size: 12px;
+  }
+
+  .schedule-cut-plan-meta {
+    justify-self: end;
+    gap: 3px;
+    margin: 0;
+    text-align: right;
+    font-size: 9px;
+  }
+
+  .schedule-cut-plan-summary {
+    gap: 7px;
+    margin-bottom: 12px;
+    break-inside: avoid;
+    break-after: avoid;
+  }
+
+  .schedule-cut-plan-summary div {
+    padding: 8px;
+  }
+
+  .schedule-cut-plan-summary span {
+    font-size: 9px;
+  }
+
+  .schedule-cut-plan-summary b {
+    font-size: 16px;
+  }
+
+  .schedule-cut-plan-sections,
+  .schedule-cut-plan-material {
+    display: block !important;
+  }
+
+  .schedule-cut-plan-material {
+    margin-top: 12px;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .schedule-cut-plan-material-head {
+    padding-bottom: 5px;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .schedule-cut-plan-material-head h2 {
+    font-size: 16px;
+  }
+
+  .schedule-cut-plan-piece {
+    display: block !important;
+    margin-top: 10px;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+
+  .schedule-cut-plan-piece-head {
+    margin-bottom: 6px;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .schedule-cut-plan-piece-head h3 {
+    font-size: 12px;
+  }
+
+  .schedule-cut-plan-material-head div,
+  .schedule-cut-plan-piece-head div,
+  .schedule-cut-plan-table {
+    font-size: 8px;
+  }
+
+  .schedule-cut-plan-table thead {
+    display: table-header-group;
+  }
+
+  .schedule-cut-plan-table tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .schedule-cut-plan-table th,
+  .schedule-cut-plan-table td {
+    padding: 4px 5px;
+  }
+}
+
 /* Targeted schedule/live cleanup pass */
 .live-focused-view .job-timeline,
 .single-department-panel .job-timeline,
@@ -9085,4 +9715,146 @@ button:has(> svg),
 .optimizer-material-stats > span:nth-child(4) b {
   color: #fb923c;
   text-shadow: 0 0 20px rgba(251, 146, 60, 0.24);
+}
+
+/* Final cascade guard for owner-review model-card responsiveness */
+.furniture-action-bar .quick-schedule select {
+  width: 210px !important;
+  min-width: 200px;
+  max-width: 210px;
+  box-sizing: border-box;
+  padding-left: 12px !important;
+  padding-right: 36px !important;
+}
+
+@media (max-width: 768px) {
+  .furniture-card,
+  .furniture-card .furniture-head,
+  .furniture-card .furniture-head > div,
+  .furniture-card .model-spec-grid,
+  .furniture-action-bar,
+  .furniture-action-bar .quick-schedule,
+  .furniture-action-bar > .button-row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .furniture-card {
+    padding: 16px !important;
+    overflow: visible;
+  }
+
+  .furniture-card .furniture-head {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-items: center;
+    gap: 16px !important;
+  }
+
+  .furniture-card .furniture-img {
+    width: min(170px, 100%) !important;
+    height: auto !important;
+    max-height: 180px;
+    justify-self: center;
+  }
+
+  .furniture-card .furniture-title {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(23px, 7vw, 32px) !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .furniture-card .model-spec-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-items: stretch;
+    gap: 10px !important;
+    padding: 14px 12px !important;
+  }
+
+  .furniture-card .model-spec-grid p,
+  .furniture-card .model-spec-grid .model-sku-line,
+  .furniture-card .model-spec-grid .model-dimensions-line {
+    grid-column: 1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    overflow-wrap: anywhere !important;
+    word-break: normal !important;
+    text-align: center !important;
+  }
+
+  .furniture-card .model-spec-grid .model-sku-line {
+    font-size: clamp(20px, 6vw, 25px) !important;
+  }
+
+  .furniture-action-bar {
+    display: grid;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .furniture-action-bar .quick-schedule {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas:
+      "label label label"
+      "week week week"
+      "minus qty plus";
+    justify-content: center;
+    padding: 12px !important;
+  }
+
+  .furniture-action-bar .quick-schedule select {
+    width: 100% !important;
+    min-width: 0;
+    max-width: none;
+    padding-right: 38px !important;
+  }
+
+  .furniture-action-bar .quick-schedule button:first-of-type {
+    justify-self: end;
+  }
+
+  .furniture-action-bar .quick-schedule input {
+    justify-self: center;
+  }
+
+  .furniture-action-bar .quick-schedule button:last-of-type {
+    justify-self: start;
+  }
+
+  .furniture-action-bar > .button-row {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px !important;
+  }
+
+  .furniture-action-bar > .button-row button {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    white-space: normal;
+  }
+
+  .furniture-action-bar .model-view-cut-sheet-button {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 479px) {
+  .furniture-action-bar > .button-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .furniture-action-bar .model-view-cut-sheet-button {
+    grid-column: 1;
+  }
 }

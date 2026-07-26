@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./App.css";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -35,7 +35,6 @@ import {
   Clock3,
 } from "lucide-react";
 import {
-  FABRICATION_PLANNING_STEPS,
   MATERIAL_OPTIMIZER_DEFAULT_KERF,
   MATERIAL_OPTIMIZER_MODES,
   MATERIAL_OPTIMIZER_REUSABLE_DROP,
@@ -60,7 +59,6 @@ const DEFAULT_SCHEDULE_WEEKS = [
   "Week of",
 ];
 
-const VIEWS = ["Models", "Schedule", "Dashboard", "Live", "Messages", ...STAGES];
 const PRIMARY_VIEWS = ["Models", "Schedule", "Live", "Messages", "Dashboard"];
 const MESSAGE_RECIPIENTS = [
   "Everyone",
@@ -75,7 +73,6 @@ const MESSAGE_RECIPIENTS = [
 
 const AUTO_ARCHIVE_COMPLETED_AFTER_DAYS = 7;
 
-const ROLES = ["Employee", "Supervisor", "Admin", "Developer"];
 const EMPLOYEE_DEPARTMENTS = [
   "Fabrication",
   "Welding",
@@ -236,24 +233,36 @@ function getSavedArray(key, fallback = []) {
   try {
     const saved = JSON.parse(localStorage.getItem(key));
     return Array.isArray(saved) ? saved : fallback;
-  } catch (error) {
+  } catch {
     return fallback;
   }
 }
 
-function getStoredUser() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("loggedInUser"));
-    if (!saved || !ROLES.includes(saved.role)) return null;
+function writeLocalAppData(nextData) {
+  localStorage.setItem("models", JSON.stringify(nextData.models || []));
+  localStorage.setItem("schedule", JSON.stringify(nextData.schedule || []));
+  localStorage.setItem("liveJobs", JSON.stringify(nextData.liveJobs || []));
+  localStorage.setItem(
+    "rawStockInventory",
+    JSON.stringify(nextData.rawStockInventory || [])
+  );
+  localStorage.setItem(
+    "reusableDropInventory",
+    JSON.stringify(nextData.reusableDropInventory || [])
+  );
+  localStorage.setItem(
+    "scheduleWeeks",
+    JSON.stringify(nextData.scheduleWeeks || DEFAULT_SCHEDULE_WEEKS)
+  );
+}
 
-    return {
-      username: saved.username || "",
-      displayName: saved.displayName || saved.username || saved.role,
-      role: saved.role,
-    };
-  } catch (error) {
-    return null;
-  }
+function formatGeneratedDate(value) {
+  if (!value) return "Not available";
+
+  const date = new Date(value);
+  return Number.isFinite(date.getTime())
+    ? date.toLocaleDateString()
+    : "Not available";
 }
 
 const emptyPartForm = {
@@ -309,6 +318,103 @@ function getScheduleDateLabel(scheduleWeeks, job) {
   if (job?.week) return cleanScheduleDateLabel(job.week);
 
   return "N/A";
+}
+
+function getScheduleJobKey(job) {
+  return String(
+    job?.id ||
+      job?.scheduleId ||
+      job?.workOrder ||
+      job?.workOrderNumber ||
+      job?.orderNumber ||
+      [
+        job?.weekSlot ?? job?.week ?? "",
+        job?.collection || "",
+        job?.furniture || "",
+        job?.sku || job?.specs?.sku || "",
+        job?.createdAt || job?.dueDate || "",
+      ].join("|")
+  );
+}
+
+function getWeekJobMetrics(schedule, activeLiveJobs, selectedWeek) {
+  const weekIndex = Number(selectedWeek || 0);
+  const uniqueJobs = new Map();
+
+  (Array.isArray(schedule) ? schedule : []).forEach((job) => {
+    const jobWeek =
+      typeof job?.weekSlot === "number"
+        ? job.weekSlot
+        : getLegacyWeekSlot(job?.week);
+
+    if (jobWeek !== weekIndex) return;
+
+    const key = getScheduleJobKey(job);
+    if (!uniqueJobs.has(key)) uniqueJobs.set(key, job);
+  });
+
+  const jobs = Array.from(uniqueJobs.values());
+  const liveScheduleIds = new Set(
+    (Array.isArray(activeLiveJobs) ? activeLiveJobs : [])
+      .map((job) => job?.scheduleId)
+      .filter(Boolean)
+      .map(String)
+  );
+  const isComplete = (job) => {
+    const total = Math.max(0, Number(job?.qtyNeeded || 0));
+    const completed = Math.max(0, Number(job?.qtyComplete || 0));
+    return job?.status === "Complete" || (total > 0 && completed >= total);
+  };
+  const completedJobs = jobs.filter(isComplete);
+  const activeJobs = jobs.filter(
+    (job) =>
+      !isComplete(job) &&
+      (job?.status === "In Production" ||
+        liveScheduleIds.has(getScheduleJobKey(job)))
+  );
+  const delayedJobs = jobs.filter((job) => {
+    if (isComplete(job)) return false;
+    const text = `${job?.status || ""} ${job?.notes || ""}`.toLowerCase();
+    return text.includes("delay") || text.includes("late") || text.includes("hold");
+  });
+
+  return {
+    jobs,
+    scheduledJobs: jobs.length,
+    activeJobs: activeJobs.length,
+    completedJobs: completedJobs.length,
+    delayedJobs: delayedJobs.length,
+    remainingJobs: Math.max(0, jobs.length - completedJobs.length),
+  };
+}
+
+function getDashboardJobProgress(job) {
+  const total = Math.max(0, Number(job?.qty || 0));
+  const rawCompleted =
+    Number(job?.stage || 0) === 0
+      ? job?.partsReady
+        ? total
+        : 0
+      : Number(job?.stageCompleteQty || 0);
+  const completed = Math.min(total, Math.max(0, rawCompleted));
+  const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+  return { completed, total, percent };
+}
+
+function getMessageSenderLabel(message) {
+  const senderName = String(message?.sender_name || "").trim();
+  const senderRole = String(message?.sender_role || "").trim();
+  const departmentSender = EMPLOYEE_DEPARTMENTS.find(
+    (department) => department.toLowerCase() === senderRole.toLowerCase()
+  );
+
+  if (departmentSender && senderName) return `${departmentSender} (${senderName})`;
+  return senderName || senderRole || "Unknown";
+}
+
+function getMessageRecipientLabel(message) {
+  return message?.department || "Everyone";
 }
 
 function stageSlug(stage) {
@@ -465,6 +571,8 @@ function App() {
   const lastSnapshotAtRef = useRef(0);
   const lastSnapshotHashRef = useRef("");
   const realtimeClientIdRef = useRef(makeId());
+  const currentUserRef = useRef(null);
+  const shopMessageDeleteInFlightRef = useRef(false);
   const skipNextCloudSaveRef = useRef(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -482,7 +590,7 @@ function App() {
         syncMode: "Manual CSV Import",
         lastTestedAt: "",
       };
-    } catch (error) {
+    } catch {
       return {
         serverUrl: "",
         apiPort: "",
@@ -500,6 +608,8 @@ function App() {
   const [shopMessagePhoto, setShopMessagePhoto] = useState(null);
   const [shopMessagePhotoName, setShopMessagePhotoName] = useState("");
   const [shopMessageSending, setShopMessageSending] = useState(false);
+  const [shopMessageDeletingId, setShopMessageDeletingId] = useState(null);
+  const [shopMessageDeleteError, setShopMessageDeleteError] = useState("");
   const [selectedShopMessageAttachment, setSelectedShopMessageAttachment] = useState(null);
   const currentRole = currentUser?.role || "Employee";
 
@@ -524,7 +634,6 @@ function App() {
   const [optimizerKerf, setOptimizerKerf] = useState(MATERIAL_OPTIMIZER_DEFAULT_KERF);
   const [materialCutPlan, setMaterialCutPlan] = useState(null);
   const [expandedOptimizerPieces, setExpandedOptimizerPieces] = useState({});
-  const [materialPlanningStep, setMaterialPlanningStep] = useState("cutLayouts");
   const [scheduleCutPlanOpen, setScheduleCutPlanOpen] = useState(false);
   const [employeePanelTab, setEmployeePanelTab] = useState(employeeDepartment);
   const [liveOverviewTab, setLiveOverviewTab] = useState("Fabrication");
@@ -533,20 +642,9 @@ function App() {
   const previousLiveJobStagesRef = useRef({});
   const hasTrackedLiveStagesRef = useRef(false);
 
-  const writeLocalAppData = (nextData) => {
-    localStorage.setItem("models", JSON.stringify(nextData.models || []));
-    localStorage.setItem("schedule", JSON.stringify(nextData.schedule || []));
-    localStorage.setItem("liveJobs", JSON.stringify(nextData.liveJobs || []));
-    localStorage.setItem("rawStockInventory", JSON.stringify(nextData.rawStockInventory || []));
-    localStorage.setItem("reusableDropInventory", JSON.stringify(nextData.reusableDropInventory || []));
-    localStorage.setItem(
-      "scheduleWeeks",
-      JSON.stringify(nextData.scheduleWeeks || DEFAULT_SCHEDULE_WEEKS)
-    );
-  };
-
-  const resetLocalSessionState = () => {
+  const resetLocalSessionState = useCallback(() => {
     cloudReadyRef.current = false;
+    currentUserRef.current = null;
     setCloudDataLoaded(false);
     setCurrentUser(null);
     setLoginForm({ username: "", password: "" });
@@ -556,9 +654,9 @@ function App() {
     setDashboardDepartment("Fabrication");
     setShopMessageTo("Everyone");
     setView("Models");
-  };
+  }, []);
 
-  const applyAppData = (nextData) => {
+  const applyAppData = useCallback((nextData) => {
     const nextModels = Array.isArray(nextData?.models) ? nextData.models : [];
     const nextSchedule = Array.isArray(nextData?.schedule) ? nextData.schedule : [];
     const nextLiveJobs = Array.isArray(nextData?.liveJobs) ? nextData.liveJobs : [];
@@ -582,10 +680,11 @@ function App() {
       reusableDropInventory: nextReusableDropInventory,
       scheduleWeeks: nextScheduleWeeks,
     });
-  };
+  }, []);
 
-  const createAppDataSnapshot = async (payload, reason = "auto-save") => {
-    if (!currentUser) return;
+  const createAppDataSnapshot = useCallback(async (payload, reason = "auto-save") => {
+    const activeUser = currentUserRef.current;
+    if (!activeUser) return;
 
     const snapshotHash = JSON.stringify(payload);
     const now = Date.now();
@@ -601,11 +700,11 @@ function App() {
       reason,
       savedAt: payload.savedAt,
       savedBy: {
-        id: currentUser.id || null,
-        email: currentUser.email || null,
-        username: currentUser.username || null,
-        displayName: currentUser.displayName || null,
-        role: currentUser.role || null,
+        id: activeUser.id || null,
+        email: activeUser.email || null,
+        username: activeUser.username || null,
+        displayName: activeUser.displayName || null,
+        role: activeUser.role || null,
       },
       counts: {
         models: payload.models.length,
@@ -629,10 +728,11 @@ function App() {
 
     lastSnapshotAtRef.current = now;
     lastSnapshotHashRef.current = snapshotHash;
-  };
+  }, []);
 
-  const saveSharedAppData = async (nextData, options = {}) => {
-    if (!currentUser) return false;
+  const saveSharedAppData = useCallback(async (nextData, options = {}) => {
+    const activeUser = currentUserRef.current;
+    if (!activeUser) return false;
 
     const payload = {
       models: Array.isArray(nextData.models) ? nextData.models : [],
@@ -645,13 +745,13 @@ function App() {
         : DEFAULT_SCHEDULE_WEEKS,
       savedAt: new Date().toISOString(),
       savedByClientId: realtimeClientIdRef.current,
-      savedByUser: currentUser
+      savedByUser: activeUser
         ? {
-            id: currentUser.id || null,
-            email: currentUser.email || null,
-            username: currentUser.username || null,
-            displayName: currentUser.displayName || null,
-            role: currentUser.role || null,
+            id: activeUser.id || null,
+            email: activeUser.email || null,
+            username: activeUser.username || null,
+            displayName: activeUser.displayName || null,
+            role: activeUser.role || null,
           }
         : null,
     };
@@ -673,9 +773,9 @@ function App() {
     await createAppDataSnapshot(payload, options.snapshotReason || "auto-save");
 
     return true;
-  };
+  }, [createAppDataSnapshot]);
 
-  const loadSharedAppData = async () => {
+  const loadSharedAppData = useCallback(async () => {
     setCloudDataLoaded(false);
 
     const { data, error } = await supabase
@@ -716,9 +816,9 @@ function App() {
 
     cloudReadyRef.current = true;
     setCloudDataLoaded(true);
-  };
+  }, [applyAppData, saveSharedAppData]);
 
-  const loadSupabaseUser = async (user) => {
+  const loadSupabaseUser = useCallback(async (user) => {
     if (!user) {
       resetLocalSessionState();
       localStorage.removeItem("loggedInUser");
@@ -750,12 +850,17 @@ function App() {
       role: appRole,
     };
 
+    currentUserRef.current = safeUser;
     setCurrentUser(safeUser);
     localStorage.setItem("loggedInUser", JSON.stringify(safeUser));
     localStorage.setItem("currentRole", appRole);
 
     if (appRole === "Employee") {
-      const nextDepartment = normalizeDepartment(profile?.department || employeeDepartment);
+      const nextDepartment = normalizeDepartment(
+        profile?.department ||
+          localStorage.getItem("employeeDepartment") ||
+          "Fabrication"
+      );
       setEmployeeDepartment(nextDepartment);
       setEmployeePanelTab(nextDepartment);
       setDashboardDepartment(nextDepartment);
@@ -769,7 +874,27 @@ function App() {
     }
 
     await loadSharedAppData();
-  };
+  }, [loadSharedAppData, resetLocalSessionState]);
+
+  const fetchShopMessages = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("shop_messages")
+      .select("id, created_at, sender_name, sender_role, department, message, attachment_url, attachment_name, acknowledgements")
+      .order("created_at", { ascending: false })
+      .limit(100);
+
+    if (error) {
+      console.error("Could not load shop messages:", error);
+      return null;
+    }
+
+    return Array.isArray(data) ? data : [];
+  }, []);
+
+  const refreshShopMessages = useCallback(async () => {
+    const messages = await fetchShopMessages();
+    if (messages) setShopMessages(messages);
+  }, [fetchShopMessages]);
 
   useEffect(() => {
     let isMounted = true;
@@ -803,7 +928,7 @@ function App() {
       isMounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [loadSupabaseUser]);
 
   useEffect(() => {
     const handleStorageLogout = (event) => {
@@ -821,7 +946,7 @@ function App() {
     return () => {
       window.removeEventListener("storage", handleStorageLogout);
     };
-  }, []);
+  }, [resetLocalSessionState]);
 
   useEffect(() => {
     const clearStaleBrowserShell = async () => {
@@ -884,12 +1009,15 @@ function App() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUser, cloudDataLoaded]);
+  }, [applyAppData, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
     if (!currentUser || !cloudDataLoaded) return;
 
-    loadShopMessages();
+    let isSubscribed = true;
+    fetchShopMessages().then((messages) => {
+      if (isSubscribed && messages) setShopMessages(messages);
+    });
 
     const channel = supabase
       .channel(SHOP_MESSAGES_CHANNEL_NAME)
@@ -954,9 +1082,10 @@ function App() {
       });
 
     return () => {
+      isSubscribed = false;
       supabase.removeChannel(channel);
     };
-  }, [currentUser, cloudDataLoaded]);
+  }, [currentUser, cloudDataLoaded, fetchShopMessages]);
 
   useEffect(() => {
     if (!currentUser || !cloudReadyRef.current || !cloudDataLoaded) return;
@@ -986,7 +1115,7 @@ function App() {
         clearTimeout(cloudSaveTimerRef.current);
       }
     };
-  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded]);
+  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded, saveSharedAppData]);
 
 
   useEffect(() => {
@@ -1016,7 +1145,7 @@ function App() {
     const timer = setInterval(runDailyBackupCheck, DAILY_BACKUP_INTERVAL_MS);
 
     return () => clearInterval(timer);
-  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded]);
+  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded, saveSharedAppData]);
 
   useEffect(() => {
     localStorage.setItem("fishbowlConnectionSettings", JSON.stringify(fishbowlSettings));
@@ -1025,33 +1154,40 @@ function App() {
   useEffect(() => {
     if (!currentUser || !cloudDataLoaded || schedule.length === 0) return;
 
-    const cutoff = Date.now() - AUTO_ARCHIVE_COMPLETED_AFTER_DAYS * 24 * 60 * 60 * 1000;
-    let changed = false;
+    const archiveTimer = window.setTimeout(() => {
+      const cutoff =
+        Date.now() -
+        AUTO_ARCHIVE_COMPLETED_AFTER_DAYS * 24 * 60 * 60 * 1000;
+      const completedAtFallback = new Date().toISOString();
 
-    const nextSchedule = schedule
-      .map((job) => {
-        if (job.status !== "Complete") return job;
-        if (job.completedAt) return job;
+      setSchedule((currentSchedule) => {
+        let changed = false;
 
-        changed = true;
-        return {
-          ...job,
-          completedAt: new Date().toISOString(),
-        };
-      })
-      .filter((job) => {
-        if (job.status !== "Complete" || !job.completedAt) return true;
-        const completedTime = new Date(job.completedAt).getTime();
-        if (!Number.isFinite(completedTime)) return true;
+        const nextSchedule = currentSchedule
+          .map((job) => {
+            if (job.status !== "Complete" || job.completedAt) return job;
 
-        const shouldArchive = completedTime < cutoff;
-        if (shouldArchive) changed = true;
-        return !shouldArchive;
+            changed = true;
+            return {
+              ...job,
+              completedAt: completedAtFallback,
+            };
+          })
+          .filter((job) => {
+            if (job.status !== "Complete" || !job.completedAt) return true;
+            const completedTime = new Date(job.completedAt).getTime();
+            if (!Number.isFinite(completedTime)) return true;
+
+            const shouldArchive = completedTime < cutoff;
+            if (shouldArchive) changed = true;
+            return !shouldArchive;
+          });
+
+        return changed ? nextSchedule : currentSchedule;
       });
+    }, 0);
 
-    if (changed) {
-      setSchedule(nextSchedule);
-    }
+    return () => window.clearTimeout(archiveTimer);
   }, [schedule, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
@@ -1091,12 +1227,6 @@ function App() {
 
     localStorage.removeItem("employeeDepartment");
   }, [employeeDepartment, currentRole, currentUser]);
-
-  useEffect(() => {
-    if (currentRole === "Employee") {
-      setEmployeePanelTab(employeeDepartment);
-    }
-  }, [employeeDepartment, currentRole]);
 
   useEffect(() => {
     const nextStageMap = {};
@@ -1142,6 +1272,7 @@ function App() {
   const elevatedModes = ["Developer", "Admin", "Supervisor"];
   const canManage = elevatedModes.includes(currentRole);
   const canDelete = currentRole === "Developer";
+  const canDeleteShopMessages = canDelete || currentRole === "Admin";
   const canRemoveLiveJob = ["Developer", "Supervisor"].includes(currentRole);
   const canOperateJobs = currentRole !== "Admin";
   const canPrint = ["Developer", "Admin"].includes(currentRole);
@@ -1202,14 +1333,20 @@ function App() {
     );
   };
 
-  const filteredModels = models.filter((model) => {
-    if (!hasSearch) return true;
+  const filteredModels = models
+    .filter((model) => {
+      if (!hasSearch) return true;
 
-    return (
-      matches(model.name) ||
-      model.types?.some((type) => furnitureMatchesSearch(model, type))
+      return (
+        matches(model.name) ||
+        model.types?.some((type) => furnitureMatchesSearch(model, type))
+      );
+    })
+    .sort((a, b) =>
+      String(a.name || "").localeCompare(String(b.name || ""), undefined, {
+        sensitivity: "base",
+      })
     );
-  });
 
   const selectedModelTypes = selectedModel?.types?.filter((type) => {
     if (!hasSearch) return true;
@@ -1404,6 +1541,13 @@ function App() {
   };
 
   const printScheduleCutPlan = () => {
+    const previousTitle = document.title;
+    const restoreTitle = () => {
+      document.title = previousTitle;
+    };
+
+    document.title = "\u00a0";
+    window.addEventListener("afterprint", restoreTitle, { once: true });
     window.print();
   };
 
@@ -1521,6 +1665,11 @@ function App() {
     };
   }, [schedule, activeLiveJobs]);
 
+  const selectedWeekJobMetrics = useMemo(
+    () => getWeekJobMetrics(schedule, activeLiveJobs, selectedScheduleWeek),
+    [schedule, activeLiveJobs, selectedScheduleWeek]
+  );
+
   const readImage = (file, callback) => {
     if (!file) return;
 
@@ -1629,8 +1778,6 @@ function App() {
     const parts = type.parts || [];
     const generatedDate = new Date().toLocaleDateString();
     const fileDate = new Date().toISOString().slice(0, 10);
-    const preparedBy =
-      prompt("Prepared by:", "Admiral Outdoor") || "Admiral Outdoor";
 
     const specs = type.specs || {};
 
@@ -1687,7 +1834,17 @@ function App() {
           `;
 
     const imageHtml = type.image
-      ? `<img class="cut-image" crossorigin="anonymous" src="${type.image}" alt="" />`
+      ? `
+          <div style="
+            grid-column:3;
+            justify-self:end;
+            padding:8px;
+            border:1px solid #d5d5d5;
+            background:#f8f8f8;
+          ">
+            <img class="cut-image" crossorigin="anonymous" src="${type.image}" alt="" />
+          </div>
+        `
       : "";
 
     const cutSheet = document.createElement("div");
@@ -1703,14 +1860,55 @@ function App() {
 
     cutSheet.innerHTML = `
       <div style="
-        display:flex;
-        justify-content:space-between;
-        align-items:flex-start;
+        display:grid;
+        grid-template-columns:minmax(0, 1fr) auto minmax(0, 1fr);
+        align-items:center;
+        column-gap:28px;
         border-bottom:2px solid #111;
-        padding-bottom:16px;
+        padding-bottom:18px;
         margin-bottom:20px;
       ">
-        <div>
+        <div style="
+          grid-column:1;
+          min-width:0;
+          text-align:left;
+          color:#111 !important;
+        ">
+          <h1 style="
+            margin:0 0 6px;
+            font-size:28px;
+            color:#111 !important;
+          ">
+            ${type.name}
+          </h1>
+
+          <h2 style="
+            margin:0;
+            font-size:18px;
+            color:#333 !important;
+          ">
+            ${model.name}
+          </h2>
+
+          <div style="
+            display:grid;
+            gap:6px;
+            margin-top:18px;
+            line-height:1.5;
+            font-size:14px;
+            color:#111 !important;
+          ">
+            <div><b>Total Parts:</b> ${parts.length}</div>
+            <div><b>Generated:</b> ${generatedDate}</div>
+          </div>
+        </div>
+
+        <div style="
+          grid-column:2;
+          justify-self:center;
+          text-align:center;
+          color:#111 !important;
+        ">
           <div style="
             font-size:32px;
             font-weight:bold;
@@ -1721,33 +1919,11 @@ function App() {
 
           <div style="
             font-size:14px;
-            margin-top:-4px;
+            margin-top:-7px;
             letter-spacing:1px;
-            color:#555;
+            color:#555 !important;
           ">
             OUTDOOR
-          </div>
-
-          <h1 style="
-            margin:18px 0 6px;
-            font-size:28px;
-            color:#111;
-          ">
-            ${type.name}
-          </h1>
-
-          <h2 style="
-            margin:0;
-            font-size:18px;
-            color:#111;
-          ">
-            ${model.name}
-          </h2>
-
-          <div style="margin-top:14px; line-height:1.7;">
-            <div><b>Total Parts:</b> ${parts.length}</div>
-            <div><b>Generated:</b> ${generatedDate}</div>
-            <div><b>Prepared By:</b> ${preparedBy}</div>
           </div>
         </div>
 
@@ -1804,11 +1980,11 @@ function App() {
       }
 
       .cut-image {
-        max-width:220px;
-        max-height:150px;
+        display:block;
+        width:190px;
+        max-width:190px;
+        max-height:145px;
         object-fit:contain;
-        border:1px solid #ccc;
-        padding:8px;
       }
     `;
 
@@ -2077,12 +2253,6 @@ function App() {
     reader.readAsText(file);
   };
 
-  const startEditType = (type) => {
-    setEditingTypeId(type.id);
-    setEditingTypeName(type.name);
-    setEditingTypeImage(type.image || null);
-  };
-
   const cancelEditType = () => {
     setEditingTypeId(null);
     setEditingTypeName("");
@@ -2300,26 +2470,6 @@ function App() {
     );
   };
 
-  const moveScheduledJobWeek = (jobId, direction) => {
-    setSchedule(
-      schedule.map((job) => {
-        if (job.id !== jobId) return job;
-
-        const currentIndex = getJobWeekSlot(job);
-
-        const nextIndex = Math.min(
-          scheduleWeeks.length - 1,
-          Math.max(0, currentIndex + direction)
-        );
-
-        return {
-          ...job,
-          weekSlot: nextIndex,
-        };
-      })
-    );
-  };
-
   const duplicateScheduledJob = (job) => {
     setSchedule([
       {
@@ -2494,33 +2644,6 @@ function App() {
     }
   };
 
-  const addLiveJobToStock = (jobId) => {
-    const job = liveJobs.find((item) => item.id === jobId);
-    if (!job) return;
-
-    if (!window.confirm(`Mark "${job.furniture}" complete and remove it from live production?`)) return;
-
-    setSchedule(
-      schedule.map((scheduleJob) => {
-        if (scheduleJob.id !== job.scheduleId) return scheduleJob;
-
-        const newComplete = Math.min(
-          Number(scheduleJob.qtyNeeded || 0),
-          Number(scheduleJob.qtyComplete || 0) + Number(job.qty || 0)
-        );
-
-        return {
-          ...scheduleJob,
-          qtyComplete: newComplete,
-          status: newComplete >= Number(scheduleJob.qtyNeeded || 0) ? "Complete" : "In Production",
-          completedAt: newComplete >= Number(scheduleJob.qtyNeeded || 0) ? scheduleJob.completedAt || new Date().toISOString() : null,
-        };
-      })
-    );
-
-    setLiveJobs(liveJobs.filter((item) => item.id !== jobId));
-  };
-
   const removeLiveJob = (jobId) => {
     const jobToDelete = liveJobs.find((job) => job.id === jobId);
     if (!confirmPermanentDelete(`the live job "${jobToDelete?.furniture || "this job"}"`)) return;
@@ -2567,89 +2690,6 @@ function App() {
     return [index - 1, index];
   };
 
-  const normalizeTableRoutingText = (value) => {
-    return String(value || "")
-      .toLowerCase()
-      .replace(/&/g, " and ")
-      .replace(/[^a-z0-9]+/g, " ")
-      .replace(/\b(inch|inches|in)\b/g, "")
-      .replace(/\s+/g, " ")
-      .trim();
-  };
-
-  const TABLE_COLLECTIONS = ["destin", "saratoga"];
-
-  const TABLE_FURNITURE_PHRASES = [
-    "luxe sling double chaise lounge",
-    "luxe sling double chaise lounge with cabana",
-    "luxe sling three seat bench",
-    "luxe two seat bench",
-    "luxe arm chair",
-    "luxe sectional sofa",
-    "luxe sectional sofa left",
-    "luxe sectional sofa right",
-    "luxe sectional sofa center",
-    "luxe left sectional unit",
-    "luxe right sectional unit",
-    "luxe center sectional unit",
-    "luxe ottoman",
-    "luxe curved sectional unit",
-    "luxe sectional corner unit",
-    "luxe curved ottoman",
-    "luxe daybed",
-    "aria arm chair",
-    "aria sofa",
-    "aria loveseat",
-    "aria loveseats",
-    "aria sectional",
-    "aria sectional left",
-    "aria sectional right",
-    "aria sectional center",
-    "aria left sectional unit",
-    "aria right sectional unit",
-    "aria center sectional unit",
-    "aria ottoman",
-    "curve arm chair",
-    "curve sofa",
-    "curve loveseat",
-    "curve farm bench",
-    "curve loveseat sectional",
-    "surv loveseat sectional",
-    "curv loveseat sectional",
-    "curve loveseat sectional left",
-    "curve loveseat sectional right",
-    "curve loveseat sectional center",
-    "curve left sectional unit",
-    "curve right sectional unit",
-    "curve center sectional unit",
-    "curve armless",
-    "curve ottoman",
-    "curve 84 42 dining table",
-    "curve 42 square table",
-    "39 square table",
-  ].map(normalizeTableRoutingText);
-
-  const tableFurniturePatterns = [
-    /\bluxe\b.*\bsectional\b.*\b(left|right|center|corner)\b/,
-    /\baria\b.*\bsectional\b.*\b(left|right|center)\b/,
-    /\bcurve\b.*\bsectional\b.*\b(left|right|center)\b/,
-    /\bcurve\b.*\bloveseat\b.*\bsectional\b.*\b(left|right|center)\b/,
-  ];
-
-  const isTableJob = (job) => {
-    const collection = normalizeTableRoutingText(job.collection);
-    const furniture = normalizeTableRoutingText(job.furniture);
-
-    if (TABLE_COLLECTIONS.some((tableCollection) => collection.includes(tableCollection))) {
-      return true;
-    }
-
-    return (
-      TABLE_FURNITURE_PHRASES.some((phrase) => furniture.includes(phrase)) ||
-      tableFurniturePatterns.some((pattern) => pattern.test(furniture))
-    );
-  };
-
   const departmentPanelsForView = (department) => {
     if (department === "Welding") {
       return [
@@ -2689,21 +2729,6 @@ function App() {
     if (currentRole === "Employee") return employeeDepartment;
     if (["Supervisor"].includes(currentRole)) return "Supervisor";
     return currentRole || "Team";
-  };
-
-  const loadShopMessages = async () => {
-    const { data, error } = await supabase
-      .from("shop_messages")
-      .select("id, created_at, sender_name, sender_role, department, message, attachment_url, attachment_name, acknowledgements")
-      .order("created_at", { ascending: false })
-      .limit(100);
-
-    if (error) {
-      console.error("Could not load shop messages:", error);
-      return;
-    }
-
-    setShopMessages(Array.isArray(data) ? data : []);
   };
 
   const compressShopMessageImage = (file) => {
@@ -2805,7 +2830,7 @@ function App() {
     if (error) {
       console.error("Could not update thumbs up:", error);
       alert("Could not update thumbs up. Check Supabase policies and try again.");
-      loadShopMessages();
+      refreshShopMessages();
     }
   };
 
@@ -2863,7 +2888,7 @@ function App() {
       });
     } else {
       console.warn("Shop message insert succeeded but Supabase returned no row.");
-      loadShopMessages();
+      refreshShopMessages();
     }
 
     setShopMessageText("");
@@ -2871,17 +2896,81 @@ function App() {
   };
 
   const deleteShopMessage = async (messageId) => {
-    if (!canDelete && currentRole !== "Admin") return;
+    if (!canDeleteShopMessages) return;
+    if (shopMessageDeleteInFlightRef.current) return;
+
+    if (
+      messageId === null ||
+      messageId === undefined ||
+      String(messageId).trim() === ""
+    ) {
+      const missingIdMessage =
+        "Could not delete this shop note because its database ID is missing.";
+      console.error(missingIdMessage);
+      setShopMessageDeleteError(missingIdMessage);
+      window.alert(missingIdMessage);
+      return;
+    }
+
     if (!window.confirm("Delete this shop note?")) return;
 
-    const { error } = await supabase
-      .from("shop_messages")
-      .delete()
-      .eq("id", messageId);
+    shopMessageDeleteInFlightRef.current = true;
+    setShopMessageDeletingId(messageId);
+    setShopMessageDeleteError("");
+    console.info("Deleting shop note:", { messageId });
 
-    if (error) {
-      console.error("Could not delete shop message:", error);
-      alert("Could not delete that message.");
+    try {
+      const { data: deletedMessage, error } = await supabase
+        .from("shop_messages")
+        .delete()
+        .eq("id", messageId)
+        .select("id")
+        .maybeSingle();
+
+      if (error) throw error;
+
+      if (
+        !deletedMessage?.id ||
+        String(deletedMessage.id) !== String(messageId)
+      ) {
+        const unconfirmedDeleteError = new Error(
+          "Supabase did not return the deleted shop note."
+        );
+        unconfirmedDeleteError.code = "SHOP_NOTE_DELETE_NOT_CONFIRMED";
+        throw unconfirmedDeleteError;
+      }
+
+      setShopMessages((currentMessages) =>
+        currentMessages.filter(
+          (message) => String(message.id) !== String(messageId)
+        )
+      );
+      console.info("Shop note deleted:", { messageId });
+    } catch (error) {
+      const errorText = String(error?.message || "").toLowerCase();
+      const permissionBlocked =
+        error?.code === "42501" ||
+        errorText.includes("row-level security") ||
+        errorText.includes("permission");
+      const deleteErrorMessage =
+        error?.code === "SHOP_NOTE_DELETE_NOT_CONFIRMED"
+          ? "Supabase did not confirm this deletion. The note may no longer exist, or the database delete policy did not permit this account."
+          : permissionBlocked
+            ? "Could not delete this shop note because this account is not permitted by the Supabase delete policy."
+            : "Could not delete this shop note from the database. Please try again.";
+
+      console.error("Could not delete shop note:", {
+        messageId,
+        code: error?.code,
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+      });
+      setShopMessageDeleteError(deleteErrorMessage);
+      window.alert(deleteErrorMessage);
+    } finally {
+      shopMessageDeleteInFlightRef.current = false;
+      setShopMessageDeletingId(null);
     }
   };
 
@@ -2893,7 +2982,7 @@ function App() {
         hour: "numeric",
         minute: "2-digit",
       });
-    } catch (error) {
+    } catch {
       return "";
     }
   };
@@ -2908,7 +2997,7 @@ function App() {
         hour: "numeric",
         minute: "2-digit",
       });
-    } catch (error) {
+    } catch {
       return "Not recorded";
     }
   };
@@ -3189,7 +3278,7 @@ function App() {
     return <PackageCheck size={size} />;
   };
 
-  const NavIcon = ({ name }) => {
+  const renderNavIcon = (name) => {
     const icons = {
       Models: Package2,
       Schedule: CalendarDays,
@@ -3420,7 +3509,7 @@ function App() {
     );
   };
 
-  const FishbowlConnectionPage = () => {
+  const renderFishbowlConnectionPage = () => {
     const readyFields = [
       fishbowlSettings.serverUrl,
       fishbowlSettings.apiPort,
@@ -3532,7 +3621,7 @@ function App() {
     );
   };
 
-  const DeveloperAnalyticsPage = () => {
+  const renderDeveloperAnalyticsPage = () => {
     const totalFurniture = models.reduce((sum, model) => sum + (model.types?.length || 0), 0);
     const totalParts = models.reduce(
       (sum, model) =>
@@ -3557,11 +3646,6 @@ function App() {
       const qty = jobs.reduce((sum, job) => sum + Number(job.qty || 0), 0);
       return { stage, jobs: jobs.length, qty };
     });
-
-    const bottleneck = stageRows.reduce(
-      (largest, row) => (row.qty > largest.qty ? row : largest),
-      { stage: "None", jobs: 0, qty: 0 }
-    );
 
     const collectionRows = Object.values(
       schedule.reduce((acc, job) => {
@@ -3643,10 +3727,10 @@ function App() {
           <div className="enterprise-card analytics-card">
             <h2>Schedule Health</h2>
             <div className="analytics-health-grid">
-              <div><span>Scheduled</span><b>{scheduledOnlyJobs.length}</b></div>
-              <div><span>In Production</span><b>{inProductionJobs.length}</b></div>
-              <div><span>Complete</span><b>{completedJobs.length}</b></div>
-              <div><span>Remaining Qty</span><b>{Math.max(0, scheduledQty - completedQty)}</b></div>
+              <div><span>Scheduled Jobs</span><b>{selectedWeekJobMetrics.scheduledJobs}</b></div>
+              <div><span>In Production</span><b>{selectedWeekJobMetrics.activeJobs}</b></div>
+              <div><span>Complete</span><b>{selectedWeekJobMetrics.completedJobs}</b></div>
+              <div><span>Remaining Jobs</span><b>{selectedWeekJobMetrics.remainingJobs}</b></div>
             </div>
           </div>
 
@@ -4002,10 +4086,9 @@ function App() {
     );
   };
 
-  const MaterialOptimizerPage = () => {
+  const renderMaterialOptimizerPage = () => {
     const optimizerJobs = getMaterialOptimizerJobs();
     const modeDetails = MATERIAL_OPTIMIZER_MODES[materialOptimizerMode];
-    const planningSteps = materialCutPlan?.planningSteps || FABRICATION_PLANNING_STEPS;
     const sourceLabels = {
       currentWeek: `Current Week (${scheduleWeeks[selectedScheduleWeek] || `Week ${selectedScheduleWeek + 1}`})`,
       selectedJobs: "Selected Jobs",
@@ -4406,9 +4489,7 @@ function App() {
     );
   };
 
-  const ProductionDashboard = () => {
-    const dashboardDate = new Date();
-
+  const renderProductionDashboard = () => {
     const stageCards = STAGES.slice(0, 5).map((stage, index) => {
       const jobs = liveForStage(index);
       const delayedCount = jobs.filter((job) => {
@@ -4427,15 +4508,6 @@ function App() {
     });
 
     const activeJobs = activeLiveJobs;
-    const completedToday = schedule.filter((job) => {
-      if (job.status !== "Complete" || !job.completedAt) return false;
-      return new Date(job.completedAt).toDateString() === dashboardDate.toDateString();
-    });
-    const delayedJobs = schedule.filter((job) => {
-      const text = `${job.status || ""} ${job.notes || ""}`.toLowerCase();
-      return text.includes("delay") || text.includes("late") || text.includes("hold");
-    });
-
     const dashboardMessages = shopMessages.slice(0, 4);
     const topJobs = activeJobs.slice(0, 5);
     const selectedDashboardStageIndex = STAGES.indexOf(dashboardDepartment);
@@ -4455,9 +4527,9 @@ function App() {
       })),
       ...dashboardMessages.slice(0, 2).map((message) => ({
         id: `msg-${message.id}`,
-        title: message.sender_name || "Team Message",
-        detail: message.message || "New message",
-        badge: (message.sender_name || "M").slice(0, 1).toUpperCase(),
+        title: `From: ${getMessageSenderLabel(message)}`,
+        detail: `To: ${getMessageRecipientLabel(message)} \u00b7 ${message.message || "New message"}`,
+        badge: getMessageSenderLabel(message).slice(0, 1).toUpperCase(),
         time: formatMessageTime(message.created_at),
       })),
     ].slice(0, 6);
@@ -4489,20 +4561,20 @@ function App() {
 
             <div className="tv-summary-list">
               <div>
+                <span>Scheduled Jobs</span>
+                <b><AnimatedNumber value={selectedWeekJobMetrics.scheduledJobs} /></b>
+              </div>
+              <div>
                 <span>Active Jobs</span>
-                <b><AnimatedNumber value={activeJobs.length} /></b>
+                <b><AnimatedNumber value={selectedWeekJobMetrics.activeJobs} /></b>
               </div>
               <div>
-                <span>Completed Today</span>
-                <b><AnimatedNumber value={completedToday.length} /></b>
-              </div>
-              <div>
-                <span>Scheduled Qty</span>
-                <b><AnimatedNumber value={dashboard.scheduledQty} /></b>
+                <span>Completed</span>
+                <b><AnimatedNumber value={selectedWeekJobMetrics.completedJobs} /></b>
               </div>
               <div>
                 <span>Delayed / Hold</span>
-                <b><AnimatedNumber value={delayedJobs.length} /></b>
+                <b><AnimatedNumber value={selectedWeekJobMetrics.delayedJobs} /></b>
               </div>
               <div>
                 <span>Messages</span>
@@ -4587,7 +4659,7 @@ function App() {
             ) : (
               <div className="tv-table-list">
                 {topJobs.map((job) => {
-                  const percent = Math.round((Number(job.stageCompleteQty || 0) / Math.max(1, Number(job.qty || 1))) * 100);
+                  const { percent } = getDashboardJobProgress(job);
                   return (
                     <article key={job.id}>
                       <span>{job.collection}</span>
@@ -4618,16 +4690,7 @@ function App() {
             ) : (
               <div className="tv-selected-job-list">
                 {selectedDashboardJobs.map((job) => {
-                  const percent =
-                    job.stage === 0
-                      ? job.partsReady
-                        ? 100
-                        : 0
-                      : Math.round(
-                          (Number(job.stageCompleteQty || 0) /
-                            Math.max(1, Number(job.qty || 1))) *
-                            100
-                        );
+                  const { completed, total, percent } = getDashboardJobProgress(job);
 
                   return (
                     <article
@@ -4645,7 +4708,7 @@ function App() {
 
                       <div className="tv-selected-job-progress">
                         <div>
-                          <span>Progress</span>
+                          <span>Progress <small>· {completed} of {total}</small></span>
                           <b>{Math.min(100, percent)}%</b>
                         </div>
                         <div className="tv-mini-progress">
@@ -4668,7 +4731,10 @@ function App() {
               <div className="tv-message-list">
                 {dashboardMessages.map((message) => (
                   <article key={message.id}>
-                    <span>{message.department || "Everyone"}</span>
+                    <span className="tv-message-context">
+                      From: {getMessageSenderLabel(message)}
+                      <small>To: {getMessageRecipientLabel(message)}</small>
+                    </span>
                     <b>{message.message}</b>
                     <em>{formatMessageTime(message.created_at)}</em>
                   </article>
@@ -4811,7 +4877,7 @@ function App() {
                 setView(navItem);
               }}
             >
-              <NavIcon name={navItem} />
+              {renderNavIcon(navItem)}
               {navItem}
             </button>
           ))}
@@ -4821,7 +4887,7 @@ function App() {
               className={`main-nav-button nav-fishbowl ${view === "Fishbowl" ? "active-nav" : ""}`}
               onClick={() => setView("Fishbowl")}
             >
-              <NavIcon name="Fishbowl" />
+              {renderNavIcon("Fishbowl")}
               Fishbowl
             </button>
           )}
@@ -4832,7 +4898,7 @@ function App() {
                 className={`main-nav-button nav-analytics ${view === "Analytics" ? "active-nav" : ""}`}
                 onClick={() => setView("Analytics")}
               >
-                <NavIcon name="Analytics" />
+                {renderNavIcon("Analytics")}
                 Analytics
               </button>
 
@@ -4840,7 +4906,7 @@ function App() {
                 className={`main-nav-button nav-material-optimizer ${view === "Material Optimizer" ? "active-nav" : ""}`}
                 onClick={() => setView("Material Optimizer")}
               >
-                <NavIcon name="Material Optimizer" />
+                {renderNavIcon("Material Optimizer")}
                 Material Optimizer
               </button>
 
@@ -4848,7 +4914,7 @@ function App() {
                 className={`main-nav-button nav-material-inventory ${view === "Material Inventory" ? "active-nav" : ""}`}
                 onClick={() => setView("Material Inventory")}
               >
-                <NavIcon name="Material Inventory" />
+                {renderNavIcon("Material Inventory")}
                 Material Inventory
               </button>
             </>
@@ -4905,7 +4971,7 @@ function App() {
         />
       </div>
 
-      {!isEmployeeMode && ["Live", "Dashboard"].includes(view) && (
+      {!isEmployeeMode && view === "Live" && (
         <div className="stats-row">
           <div className="stat-card">
             <span>Scheduled Jobs</span>
@@ -4938,13 +5004,13 @@ function App() {
             : "layout layout-full"
         }
       >
-        {view === "Dashboard" && <ProductionDashboard />}
+        {view === "Dashboard" && renderProductionDashboard()}
 
-        {view === "Fishbowl" && <FishbowlConnectionPage />}
+        {view === "Fishbowl" && renderFishbowlConnectionPage()}
 
-        {view === "Analytics" && currentRole === "Developer" && <DeveloperAnalyticsPage />}
+        {view === "Analytics" && currentRole === "Developer" && renderDeveloperAnalyticsPage()}
 
-        {view === "Material Optimizer" && currentRole === "Developer" && <MaterialOptimizerPage />}
+        {view === "Material Optimizer" && currentRole === "Developer" && renderMaterialOptimizerPage()}
 
         {view === "Material Inventory" && currentRole === "Developer" && MaterialInventoryPage()}
 
@@ -5092,7 +5158,7 @@ function App() {
 
                             <div>
                               <h2 className="furniture-title">{type.name}</h2>
-                              <p className="muted">
+                              <p className="muted model-saved-parts">
                                 {type.parts?.length || 0} saved parts
                               </p>
 
@@ -5203,6 +5269,7 @@ function App() {
                               )}
 
                               <button
+                                className="model-view-cut-sheet-button"
                                 onClick={() => setCutSheetView({ model: selectedModel, type })}
                               >
                                 View Cut Sheet
@@ -5553,6 +5620,12 @@ function App() {
                     <span>{shopMessages.length} shown</span>
                   </div>
 
+                  {shopMessageDeleteError && (
+                    <div className="message-delete-error" role="alert">
+                      {shopMessageDeleteError}
+                    </div>
+                  )}
+
                   {shopMessages.length === 0 ? (
                     <div className="empty">No shop notes yet.</div>
                   ) : (
@@ -5599,12 +5672,17 @@ function App() {
                             )}
                           </div>
 
-                          {(canDelete || currentRole === "Admin") && (
+                          {canDeleteShopMessages && (
                             <button
+                              type="button"
                               className="danger message-delete-button"
                               onClick={() => deleteShopMessage(message.id)}
+                              disabled={Boolean(shopMessageDeletingId)}
+                              aria-busy={shopMessageDeletingId === message.id}
                             >
-                              Delete
+                              {shopMessageDeletingId === message.id
+                                ? "Deleting..."
+                                : "Delete"}
                             </button>
                           )}
                         </article>
@@ -5737,7 +5815,6 @@ function App() {
                     ) : (
                       <div className="schedule-active-grid">
                         {activeJobs.map((job) => {
-                          const remaining = job.qtyNeeded - job.qtyComplete;
                           const jobSku = job.sku || job.specs?.sku;
 
                           return (
@@ -5796,9 +5873,9 @@ function App() {
                                 </details>
 
                                 <div className="schedule-board-actions">
-                                  {!isEmployeeMode && (
-                                    <button onClick={() => toggleScheduleComplete(job.id)}>
-                                      Check Off
+                                  {canManage && (
+                                    <button onClick={() => releaseToProduction(job)}>
+                                      Release To Live
                                     </button>
                                   )}
 
@@ -5818,9 +5895,9 @@ function App() {
                                     View Cut Sheet
                                   </button>
 
-                                  {canManage && (
-                                    <button onClick={() => releaseToProduction(job)}>
-                                      Release To Live
+                                  {!isEmployeeMode && (
+                                    <button onClick={() => toggleScheduleComplete(job.id)}>
+                                      Check Off
                                     </button>
                                   )}
 
@@ -6172,7 +6249,7 @@ function App() {
                 </div>
 
                 <div className="schedule-cut-plan-meta">
-                  <div><b>Generated:</b> {new Date(materialCutPlan.generatedAt || Date.now()).toLocaleDateString()}</div>
+                  <div><b>Generated:</b> {formatGeneratedDate(materialCutPlan.generatedAt)}</div>
                   <div><b>Mode:</b> {MATERIAL_OPTIMIZER_MODES[materialCutPlan.mode]?.label || materialCutPlan.mode}</div>
                   <div><b>Source:</b> {getMaterialOptimizerSourceLabel(materialCutPlan.source)}</div>
                 </div>
@@ -6265,10 +6342,8 @@ function App() {
             </div>
 
             <div className="cut-sheet-preview">
-              <div className="cut-sheet-preview-header">
-                <div>
-                  <div className="cut-sheet-logo">ADMIRAL</div>
-                  <div className="cut-sheet-logo-sub">OUTDOOR</div>
+              <div className="cut-sheet-preview-header cut-sheet-product-header">
+                <div className="cut-sheet-product-details">
                   <h1>{cutSheetView.type.name}</h1>
                   <h2>{cutSheetView.model.name}</h2>
                   <div className="cut-sheet-meta">
@@ -6277,12 +6352,19 @@ function App() {
                   </div>
                 </div>
 
+                <div className="cut-sheet-product-logo">
+                  <div className="cut-sheet-logo">ADMIRAL</div>
+                  <div className="cut-sheet-logo-sub">OUTDOOR</div>
+                </div>
+
                 {cutSheetView.type.image && (
-                  <img
-                    src={cutSheetView.type.image}
-                    className="cut-sheet-preview-img"
-                    alt=""
-                  />
+                  <div className="cut-sheet-preview-image-frame">
+                    <img
+                      src={cutSheetView.type.image}
+                      className="cut-sheet-preview-img"
+                      alt=""
+                    />
+                  </div>
                 )}
               </div>
 
