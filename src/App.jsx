@@ -4611,26 +4611,28 @@ function App() {
           </section>
 
           <section className="tv-panel tv-flow-panel">
-            <h3>Production Flow</h3>
+            <div className="tv-production-flow-section">
+              <h3>Production Flow</h3>
 
-            <div className="tv-flow-row">
-              {stageCards.map((item, index) => (
-                <button
-                  key={item.stage}
-                  type="button"
-                  className={`tv-stage-card tv-stage-${stageSlug(item.stage)} ${
-                    dashboardDepartment === item.stage ? "selected" : ""
-                  }`}
-                  onClick={() => setDashboardDepartment(item.stage)}
-                  title={`Show ${item.stage} jobs`}
-                >
-                  <span>{item.stage}</span>
-                  <b><AnimatedNumber value={item.count} /></b>
-                  <small><AnimatedNumber value={item.qty} /> Qty</small>
-                  <em>{item.delayedCount} Delayed</em>
-                  {index < stageCards.length - 1 && <i aria-hidden="true">→</i>}
-                </button>
-              ))}
+              <div className="tv-flow-row">
+                {stageCards.map((item, index) => (
+                  <button
+                    key={item.stage}
+                    type="button"
+                    className={`tv-stage-card tv-stage-${stageSlug(item.stage)} ${
+                      dashboardDepartment === item.stage ? "selected" : ""
+                    }`}
+                    onClick={() => setDashboardDepartment(item.stage)}
+                    title={`Show ${item.stage} jobs`}
+                  >
+                    <span>{item.stage}</span>
+                    <b><AnimatedNumber value={item.count} /></b>
+                    <small><AnimatedNumber value={item.qty} /> Qty</small>
+                    <em>{item.delayedCount} Delayed</em>
+                    {index < stageCards.length - 1 && <i aria-hidden="true">→</i>}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="tv-department-load">

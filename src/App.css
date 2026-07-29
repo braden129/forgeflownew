@@ -3855,6 +3855,10 @@ body,
   grid-row: span 2;
 }
 
+.tv-production-flow-section {
+  display: contents;
+}
+
 .tv-activity-panel {
   grid-column: 3 / 4;
   grid-row: span 2;
@@ -8867,6 +8871,56 @@ button:has(> svg),
     height: auto !important;
     min-height: 0;
     transform: none !important;
+  }
+
+  .tv-flow-panel {
+    display: contents !important;
+  }
+
+  .tv-production-flow-section {
+    display: block !important;
+    order: 1;
+  }
+
+  .tv-dept-jobs-panel {
+    order: 2;
+  }
+
+  .tv-activity-panel {
+    order: 3;
+  }
+
+  .tv-messages-panel {
+    order: 4;
+  }
+
+  .tv-table-panel:not(.tv-dept-jobs-panel) {
+    order: 5;
+  }
+
+  .tv-department-load {
+    order: 6;
+  }
+
+  .tv-production-flow-section,
+  .tv-department-load {
+    position: static !important;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 14px;
+    background: rgba(5, 14, 22, 0.74);
+    border: 1px solid rgba(141, 204, 255, 0.13);
+    border-radius: 14px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 34px rgba(0, 0, 0, 0.22);
+  }
+
+  .tv-production-flow-section .tv-flow-row {
+    margin-bottom: 0;
+  }
+
+  .tv-department-load {
+    padding-top: 14px;
   }
 
   .tv-flow-row,
