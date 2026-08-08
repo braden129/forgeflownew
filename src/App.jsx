@@ -41,6 +41,13 @@ import {
   buildMaterialOptimizerPlan,
   formatOptimizerInches,
 } from "./utils/materialOptimizer";
+import {
+  getSharedAppDataHash,
+  isValidCloudAppData,
+  normalizeSharedAppData,
+  resolveInitialSharedAppData,
+  shouldPersistSharedAppData,
+} from "./utils/sharedAppDataSync";
 
 const STAGES = [
   "Fabrication",
@@ -71,8 +78,6 @@ const MESSAGE_RECIPIENTS = [
   "Dev-Braden",
 ];
 
-const AUTO_ARCHIVE_COMPLETED_AFTER_DAYS = 7;
-
 const EMPLOYEE_DEPARTMENTS = [
   "Fabrication",
   "Welding",
@@ -83,7 +88,6 @@ const EMPLOYEE_DEPARTMENTS = [
 
 const APP_DATA_ID = "admiral-production-data";
 const SNAPSHOT_INTERVAL_MS = 10 * 60 * 1000;
-const DAILY_BACKUP_INTERVAL_MS = 60 * 1000;
 const REALTIME_CHANNEL_NAME = "app-data-live-updates";
 const SHOP_MESSAGES_CHANNEL_NAME = "shop-messages-live-updates";
 
@@ -256,15 +260,6 @@ function normalizeDepartment(department) {
   return match || "Fabrication";
 }
 
-function getSavedArray(key, fallback = []) {
-  try {
-    const saved = JSON.parse(localStorage.getItem(key));
-    return Array.isArray(saved) ? saved : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
 function writeLocalAppData(nextData) {
   localStorage.setItem("models", JSON.stringify(nextData.models || []));
   localStorage.setItem("schedule", JSON.stringify(nextData.schedule || []));
@@ -281,6 +276,28 @@ function writeLocalAppData(nextData) {
     "scheduleWeeks",
     JSON.stringify(nextData.scheduleWeeks || DEFAULT_SCHEDULE_WEEKS)
   );
+}
+
+function createSharedAppDataPayload(nextData, activeUser, clientId) {
+  const normalizedData = normalizeSharedAppData(
+    nextData,
+    DEFAULT_SCHEDULE_WEEKS
+  );
+
+  return {
+    ...normalizedData,
+    savedAt: new Date().toISOString(),
+    savedByClientId: clientId,
+    savedByUser: activeUser
+      ? {
+          id: activeUser.id || null,
+          email: activeUser.email || null,
+          username: activeUser.username || null,
+          displayName: activeUser.displayName || null,
+          role: activeUser.role || null,
+        }
+      : null,
+  };
 }
 
 function formatGeneratedDate(value) {
@@ -599,8 +616,9 @@ function App() {
   const lastSnapshotHashRef = useRef("");
   const realtimeClientIdRef = useRef(makeId());
   const currentUserRef = useRef(null);
+  const cloudLoadRequestIdRef = useRef(0);
+  const lastCloudDataHashRef = useRef("");
   const shopMessageDeleteInFlightRef = useRef(false);
-  const skipNextCloudSaveRef = useRef(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [cloudDataLoaded, setCloudDataLoaded] = useState(false);
@@ -670,8 +688,14 @@ function App() {
   const hasTrackedLiveStagesRef = useRef(false);
 
   const resetLocalSessionState = useCallback(() => {
+    cloudLoadRequestIdRef.current += 1;
     cloudReadyRef.current = false;
+    lastCloudDataHashRef.current = "";
     currentUserRef.current = null;
+    if (cloudSaveTimerRef.current) {
+      clearTimeout(cloudSaveTimerRef.current);
+      cloudSaveTimerRef.current = null;
+    }
     setCloudDataLoaded(false);
     setCurrentUser(null);
     setLoginForm({ username: "", password: "" });
@@ -684,14 +708,24 @@ function App() {
   }, []);
 
   const applyAppData = useCallback((nextData) => {
-    const nextModels = secureModelImages(nextData?.models);
-    const nextSchedule = secureImageItems(nextData?.schedule);
-    const nextLiveJobs = secureImageItems(nextData?.liveJobs);
-    const nextRawStockInventory = Array.isArray(nextData?.rawStockInventory) ? nextData.rawStockInventory : [];
-    const nextReusableDropInventory = Array.isArray(nextData?.reusableDropInventory) ? nextData.reusableDropInventory : [];
-    const nextScheduleWeeks = Array.isArray(nextData?.scheduleWeeks)
-      ? nextData.scheduleWeeks
-      : DEFAULT_SCHEDULE_WEEKS;
+    const normalizedData = normalizeSharedAppData(
+      nextData,
+      DEFAULT_SCHEDULE_WEEKS
+    );
+    const nextModels = secureModelImages(normalizedData.models);
+    const nextSchedule = secureImageItems(normalizedData.schedule);
+    const nextLiveJobs = secureImageItems(normalizedData.liveJobs);
+    const nextRawStockInventory = normalizedData.rawStockInventory;
+    const nextReusableDropInventory = normalizedData.reusableDropInventory;
+    const nextScheduleWeeks = normalizedData.scheduleWeeks;
+    const appliedData = {
+      models: nextModels,
+      schedule: nextSchedule,
+      liveJobs: nextLiveJobs,
+      rawStockInventory: nextRawStockInventory,
+      reusableDropInventory: nextReusableDropInventory,
+      scheduleWeeks: nextScheduleWeeks,
+    };
 
     setModels(nextModels);
     setSchedule(nextSchedule);
@@ -699,19 +733,14 @@ function App() {
     setRawStockInventory(nextRawStockInventory);
     setReusableDropInventory(nextReusableDropInventory);
     setScheduleWeeks(nextScheduleWeeks);
-    writeLocalAppData({
-      models: nextModels,
-      schedule: nextSchedule,
-      liveJobs: nextLiveJobs,
-      rawStockInventory: nextRawStockInventory,
-      reusableDropInventory: nextReusableDropInventory,
-      scheduleWeeks: nextScheduleWeeks,
-    });
+    writeLocalAppData(appliedData);
+
+    return appliedData;
   }, []);
 
   const createAppDataSnapshot = useCallback(async (payload, reason = "auto-save") => {
     const activeUser = currentUserRef.current;
-    if (!activeUser) return;
+    if (!activeUser) return false;
 
     const snapshotHash = JSON.stringify(payload);
     const now = Date.now();
@@ -720,7 +749,7 @@ function App() {
       (snapshotHash === lastSnapshotHashRef.current ||
         now - lastSnapshotAtRef.current < SNAPSHOT_INTERVAL_MS);
 
-    if (shouldSkipSnapshot) return;
+    if (shouldSkipSnapshot) return true;
 
     const snapshotRecord = {
       appDataId: APP_DATA_ID,
@@ -744,58 +773,66 @@ function App() {
       data: payload,
     };
 
-    const { error } = await supabase
-      .from("app_data_snapshots")
-      .insert({ data: snapshotRecord });
+    try {
+      const { error } = await supabase
+        .from("app_data_snapshots")
+        .insert({ data: snapshotRecord });
 
-    if (error) {
-      console.warn("Snapshot save failed, but main cloud save is still safe:", error);
-      return;
+      if (error) {
+        console.warn("Snapshot save failed, but main cloud save is still safe:", error);
+        return false;
+      }
+    } catch (error) {
+      console.warn(
+        "Snapshot save failed before Supabase returned a response, but main cloud save is still safe:",
+        error
+      );
+      return false;
     }
 
     lastSnapshotAtRef.current = now;
     lastSnapshotHashRef.current = snapshotHash;
+
+    return true;
   }, []);
 
   const saveSharedAppData = useCallback(async (nextData, options = {}) => {
     const activeUser = currentUserRef.current;
     if (!activeUser) return false;
-
-    const payload = {
-      models: Array.isArray(nextData.models) ? nextData.models : [],
-      schedule: Array.isArray(nextData.schedule) ? nextData.schedule : [],
-      liveJobs: Array.isArray(nextData.liveJobs) ? nextData.liveJobs : [],
-      rawStockInventory: Array.isArray(nextData.rawStockInventory) ? nextData.rawStockInventory : [],
-      reusableDropInventory: Array.isArray(nextData.reusableDropInventory) ? nextData.reusableDropInventory : [],
-      scheduleWeeks: Array.isArray(nextData.scheduleWeeks)
-        ? nextData.scheduleWeeks
-        : DEFAULT_SCHEDULE_WEEKS,
-      savedAt: new Date().toISOString(),
-      savedByClientId: realtimeClientIdRef.current,
-      savedByUser: activeUser
-        ? {
-            id: activeUser.id || null,
-            email: activeUser.email || null,
-            username: activeUser.username || null,
-            displayName: activeUser.displayName || null,
-            role: activeUser.role || null,
-          }
-        : null,
-    };
-
-    const { error } = await supabase.from("app_data").upsert(
-      {
-        id: APP_DATA_ID,
-        updated_at: new Date().toISOString(),
-        data: payload,
-      },
-      { onConflict: "id" }
-    );
-
-    if (error) {
-      console.error("Cloud save failed:", error);
+    if (!cloudReadyRef.current) {
+      console.warn("Cloud save blocked until shared data finishes loading.");
       return false;
     }
+
+    const payload = createSharedAppDataPayload(
+      nextData,
+      activeUser,
+      realtimeClientIdRef.current
+    );
+
+    try {
+      const { error } = await supabase.from("app_data").upsert(
+        {
+          id: APP_DATA_ID,
+          updated_at: new Date().toISOString(),
+          data: payload,
+        },
+        { onConflict: "id" }
+      );
+
+      if (error) {
+        console.error("Cloud save failed:", error);
+        return false;
+      }
+    } catch (error) {
+      console.error("Cloud save failed before Supabase returned a response:", error);
+      return false;
+    }
+
+    lastCloudDataHashRef.current = getSharedAppDataHash(
+      payload,
+      DEFAULT_SCHEDULE_WEEKS
+    );
 
     await createAppDataSnapshot(payload, options.snapshotReason || "auto-save");
 
@@ -803,47 +840,70 @@ function App() {
   }, [createAppDataSnapshot]);
 
   const loadSharedAppData = useCallback(async () => {
+    const loadRequestId = cloudLoadRequestIdRef.current + 1;
+    cloudLoadRequestIdRef.current = loadRequestId;
+    cloudReadyRef.current = false;
+    lastCloudDataHashRef.current = "";
+    if (cloudSaveTimerRef.current) {
+      clearTimeout(cloudSaveTimerRef.current);
+      cloudSaveTimerRef.current = null;
+    }
     setCloudDataLoaded(false);
 
-    const { data, error } = await supabase
-      .from("app_data")
-      .select("data")
-      .eq("id", APP_DATA_ID)
-      .maybeSingle();
+    let data;
+    let error;
 
-    if (error) {
+    try {
+      const result = await supabase
+        .from("app_data")
+        .select("data")
+        .eq("id", APP_DATA_ID)
+        .maybeSingle();
+      data = result.data;
+      error = result.error;
+    } catch (loadError) {
+      error = loadError;
+    }
+
+    if (loadRequestId !== cloudLoadRequestIdRef.current) return false;
+
+    const initialData = resolveInitialSharedAppData({
+      cloudRecord: data,
+      cloudError: error,
+      defaultScheduleWeeks: DEFAULT_SCHEDULE_WEEKS,
+    });
+
+    if (initialData.status === "load-error") {
       console.error("Cloud load failed:", error);
-      cloudReadyRef.current = true;
-      setCloudDataLoaded(true);
-      return;
+      return false;
     }
 
-    if (data?.data) {
-      applyAppData(data.data);
-    } else {
-      const localPayload = {
-        models: getSavedArray("models"),
-        schedule: getSavedArray("schedule"),
-        liveJobs: getSavedArray("liveJobs"),
-        rawStockInventory: getSavedArray("rawStockInventory"),
-        reusableDropInventory: getSavedArray("reusableDropInventory"),
-        scheduleWeeks: getSavedArray("scheduleWeeks", DEFAULT_SCHEDULE_WEEKS),
-      };
-
-      if (
-        localPayload.models.length > 0 ||
-        localPayload.schedule.length > 0 ||
-        localPayload.liveJobs.length > 0 ||
-        localPayload.rawStockInventory.length > 0 ||
-        localPayload.reusableDropInventory.length > 0
-      ) {
-        await saveSharedAppData(localPayload);
-      }
+    if (initialData.status === "invalid-cloud-data") {
+      console.error(
+        "Cloud load returned an invalid app_data payload. Writes remain disabled to protect shared production data."
+      );
+      return false;
     }
+
+    if (initialData.status === "missing-cloud-record") {
+      console.error(
+        "Cloud load returned no visible app_data row. Writes remain disabled because the row may be hidden by RLS."
+      );
+      return false;
+    }
+
+    const hydratedData = applyAppData(initialData.data);
+    lastCloudDataHashRef.current = getSharedAppDataHash(
+      hydratedData,
+      DEFAULT_SCHEDULE_WEEKS
+    );
+
+    if (loadRequestId !== cloudLoadRequestIdRef.current) return false;
 
     cloudReadyRef.current = true;
     setCloudDataLoaded(true);
-  }, [applyAppData, saveSharedAppData]);
+    return true;
+  }, [applyAppData]);
 
   const loadSupabaseUser = useCallback(async (user) => {
     if (!user) {
@@ -1021,9 +1081,18 @@ function App() {
 
           if (!remoteData) return;
           if (remoteData.savedByClientId === realtimeClientIdRef.current) return;
+          if (!isValidCloudAppData(remoteData)) {
+            console.error(
+              "Ignored an invalid realtime app_data payload to protect shared production data."
+            );
+            return;
+          }
 
-          skipNextCloudSaveRef.current = true;
-          applyAppData(remoteData);
+          const hydratedData = applyAppData(remoteData);
+          lastCloudDataHashRef.current = getSharedAppDataHash(
+            hydratedData,
+            DEFAULT_SCHEDULE_WEEKS
+          );
           console.info("Live update received from Supabase.");
         }
       )
@@ -1115,26 +1184,31 @@ function App() {
   }, [currentUser, cloudDataLoaded, fetchShopMessages]);
 
   useEffect(() => {
-    if (!currentUser || !cloudReadyRef.current || !cloudDataLoaded) return;
+    const currentAppData = {
+      models,
+      schedule,
+      liveJobs,
+      rawStockInventory,
+      reusableDropInventory,
+      scheduleWeeks,
+    };
+    const shouldSave = shouldPersistSharedAppData({
+      isAuthenticated: Boolean(currentUser),
+      isHydrated: cloudDataLoaded,
+      isCloudReady: cloudReadyRef.current,
+      currentData: currentAppData,
+      lastSyncedHash: lastCloudDataHashRef.current,
+      defaultScheduleWeeks: DEFAULT_SCHEDULE_WEEKS,
+    });
 
-    if (skipNextCloudSaveRef.current) {
-      skipNextCloudSaveRef.current = false;
-      return;
-    }
+    if (!shouldSave) return;
 
     if (cloudSaveTimerRef.current) {
       clearTimeout(cloudSaveTimerRef.current);
     }
 
     cloudSaveTimerRef.current = setTimeout(() => {
-      saveSharedAppData({
-        models,
-        schedule,
-        liveJobs,
-        rawStockInventory,
-        reusableDropInventory,
-        scheduleWeeks,
-      });
+      saveSharedAppData(currentAppData);
     }, 900);
 
     return () => {
@@ -1143,79 +1217,9 @@ function App() {
       }
     };
   }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded, saveSharedAppData]);
-
-
-  useEffect(() => {
-    if (!currentUser || !cloudDataLoaded) return;
-
-    const runDailyBackupCheck = () => {
-      const todayKey = new Date().toISOString().slice(0, 10);
-      const savedKey = localStorage.getItem("forgeflowDailyCloudBackupDate");
-
-      if (savedKey === todayKey) return;
-
-      localStorage.setItem("forgeflowDailyCloudBackupDate", todayKey);
-      saveSharedAppData(
-        {
-          models,
-          schedule,
-          liveJobs,
-          rawStockInventory,
-          reusableDropInventory,
-          scheduleWeeks,
-        },
-        { snapshotReason: "daily-cloud-backup" }
-      );
-    };
-
-    runDailyBackupCheck();
-    const timer = setInterval(runDailyBackupCheck, DAILY_BACKUP_INTERVAL_MS);
-
-    return () => clearInterval(timer);
-  }, [models, schedule, liveJobs, rawStockInventory, reusableDropInventory, scheduleWeeks, currentUser, cloudDataLoaded, saveSharedAppData]);
-
   useEffect(() => {
     localStorage.setItem("fishbowlConnectionSettings", JSON.stringify(fishbowlSettings));
   }, [fishbowlSettings]);
-
-  useEffect(() => {
-    if (!currentUser || !cloudDataLoaded || schedule.length === 0) return;
-
-    const archiveTimer = window.setTimeout(() => {
-      const cutoff =
-        Date.now() -
-        AUTO_ARCHIVE_COMPLETED_AFTER_DAYS * 24 * 60 * 60 * 1000;
-      const completedAtFallback = new Date().toISOString();
-
-      setSchedule((currentSchedule) => {
-        let changed = false;
-
-        const nextSchedule = currentSchedule
-          .map((job) => {
-            if (job.status !== "Complete" || job.completedAt) return job;
-
-            changed = true;
-            return {
-              ...job,
-              completedAt: completedAtFallback,
-            };
-          })
-          .filter((job) => {
-            if (job.status !== "Complete" || !job.completedAt) return true;
-            const completedTime = new Date(job.completedAt).getTime();
-            if (!Number.isFinite(completedTime)) return true;
-
-            const shouldArchive = completedTime < cutoff;
-            if (shouldArchive) changed = true;
-            return !shouldArchive;
-          });
-
-        return changed ? nextSchedule : currentSchedule;
-      });
-    }, 0);
-
-    return () => window.clearTimeout(archiveTimer);
-  }, [schedule, currentUser, cloudDataLoaded]);
 
   useEffect(() => {
     localStorage.setItem("models", JSON.stringify(models));
