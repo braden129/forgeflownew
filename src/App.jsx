@@ -48,6 +48,10 @@ import {
   resolveInitialSharedAppData,
   shouldPersistSharedAppData,
 } from "./utils/sharedAppDataSync";
+import {
+  getRawPiecePresentation,
+  groupCutsForDisplay,
+} from "./utils/materialOptimizerPresentation";
 
 const STAGES = [
   "Fabrication",
@@ -3786,67 +3790,6 @@ function App() {
     );
   };
 
-  const formatCutNumberLabel = (cutNumbers) => {
-    const sortedNumbers = Array.from(
-      new Set(
-        cutNumbers
-          .map((number) => Number(number))
-          .filter((number) => Number.isFinite(number))
-      )
-    ).sort((a, b) => a - b);
-
-    if (sortedNumbers.length === 0) return "-";
-
-    const isContinuous = sortedNumbers.every(
-      (number, index) => index === 0 || number === sortedNumbers[index - 1] + 1
-    );
-
-    if (isContinuous && sortedNumbers.length > 1) {
-      return `${sortedNumbers[0]}-${sortedNumbers[sortedNumbers.length - 1]}`;
-    }
-
-    return sortedNumbers.join(", ");
-  };
-
-  const groupCutsForDisplay = (cuts) => {
-    const groups = new Map();
-
-    (Array.isArray(cuts) ? cuts : []).forEach((cut) => {
-      const bin = cut.binId || cut.binGroup || "";
-      const key = [
-        cut.workOrder || "",
-        cut.furniture || "",
-        cut.sku || "",
-        cut.partName || "",
-        cut.cutLength || 0,
-        bin,
-      ].join("||");
-
-      if (!groups.has(key)) {
-        groups.set(key, {
-          key,
-          cutNumbers: [],
-          workOrder: cut.workOrder || "",
-          furniture: cut.furniture || "",
-          sku: cut.sku || "",
-          partName: cut.partName || "",
-          cutLength: cut.cutLength || 0,
-          quantity: 0,
-          bin,
-        });
-      }
-
-      const group = groups.get(key);
-      group.cutNumbers.push(cut.cutNumber);
-      group.quantity += Number(cut.quantity || 1);
-    });
-
-    return Array.from(groups.values()).map((group) => ({
-      ...group,
-      cutNumberLabel: formatCutNumberLabel(group.cutNumbers),
-    }));
-  };
-
   const optimizerFurnitureColorFamilies = [
     { hue: 213 },
     { hue: 154 },
@@ -4242,7 +4185,7 @@ function App() {
           <>
             <div className="optimizer-summary-grid">
               <div className="analytics-kpi-card"><span>Selected Jobs</span><b>{materialCutPlan.selectedJobs}</b><small>{sourceLabels[materialCutPlan.source]}</small></div>
-              <div className="analytics-kpi-card"><span>Total Parts</span><b>{materialCutPlan.totalParts}</b><small>individual cuts</small></div>
+              <div className="analytics-kpi-card"><span>Total Required Cuts</span><b>{materialCutPlan.totalParts}</b><small>across all materials</small></div>
               <div className="analytics-kpi-card"><span>Material Types</span><b>{materialCutPlan.materialTypes}</b><small>separate layouts</small></div>
               <div className="analytics-kpi-card">
                 <span className="optimizer-kpi-label">
@@ -4391,8 +4334,8 @@ function App() {
                       <p className="muted">Raw stock length: {group.stockLength} in</p>
                     </div>
                     <div className="optimizer-material-stats">
-                      <span><b>{group.totalCuts}</b> total cuts</span>
-                      <span><b>{group.pieces.length}</b> raw pieces</span>
+                      <span><b>{group.totalCuts}</b> Material Cuts ({group.materialType})</span>
+                      <span><b>{group.pieces.length}</b> Raw Pieces Required</span>
                       <span>
                         <b>{formatOptimizerInches(group.reusableDrops)}</b>
                         <span className="optimizer-loss-label">
@@ -4414,7 +4357,7 @@ function App() {
 
                   <div className="optimizer-piece-list">
                     {group.pieces.map((piece) => {
-                      const usedLength = piece.stockLength - piece.remaining;
+                      const piecePresentation = getRawPiecePresentation(piece);
                       const cutLegend = getCutLegend(piece.cuts);
                       const pieceKey = getOptimizerPieceKey(group.materialType, piece.rawNumber);
                       const isPieceExpanded = Boolean(expandedOptimizerPieces[pieceKey]);
@@ -4435,7 +4378,7 @@ function App() {
                               Raw Piece #{piece.rawNumber} - {piece.stockLength} in
                             </b>
                             <span>
-                              {formatOptimizerInches(usedLength)} in used / {formatOptimizerInches(piece.remaining)} in remaining
+                              Used: {formatOptimizerInches(piecePresentation.usedLength)} in / Remaining: {formatOptimizerInches(piecePresentation.remainingLength)} in ({piecePresentation.remainderClassification}) / Kerf Loss: {formatOptimizerInches(piecePresentation.kerfLoss)} in
                             </span>
                           </button>
 
@@ -6289,8 +6232,8 @@ function App() {
               </div>
 
               <div className="schedule-cut-plan-summary">
-                <div><span>Total Raw Pieces</span><b>{materialCutPlan.rawPiecesRequired}</b></div>
-                <div><span>Total Cuts</span><b>{materialCutPlan.totalParts}</b></div>
+                <div><span>Raw Pieces Required</span><b>{materialCutPlan.rawPiecesRequired}</b></div>
+                <div><span>Total Required Cuts</span><b>{materialCutPlan.totalParts}</b></div>
                 <div><span>Reusable Drops</span><b>{formatOptimizerInches(materialCutPlan.reusableDrops)} in</b></div>
                 <div><span>Material Loss</span><b>{formatOptimizerInches(materialCutPlan.scrap)} in</b></div>
               </div>
@@ -6302,24 +6245,22 @@ function App() {
                       <h2>{group.materialType}</h2>
                       <div>
                         <span>Raw stock length: {group.stockLength} in</span>
-                        <span>Raw pieces required: {group.pieces.length}</span>
+                        <span>Material Cuts: {group.totalCuts}</span>
+                        <span>Raw Pieces Required: {group.pieces.length}</span>
                       </div>
                     </div>
 
                     {group.pieces.map((piece) => {
-                      const usedLength = piece.stockLength - piece.remaining;
-                      const remainderStatus = piece.reusableDrop
-                        ? `Reusable drop - ${formatOptimizerInches(piece.reusableDrop)} in`
-                        : `Scrap - ${formatOptimizerInches(piece.scrap)} in`;
+                      const piecePresentation = getRawPiecePresentation(piece);
 
                       return (
                         <div key={`print-${group.materialType}-${piece.rawNumber}`} className="schedule-cut-plan-piece">
                           <div className="schedule-cut-plan-piece-head">
                             <h3>Raw Material #{piece.rawNumber} - {formatMaterialSizeLabel(group.materialType)}</h3>
                             <div>
-                              <span>Used: {formatOptimizerInches(usedLength)} in</span>
-                              <span>Remaining: {formatOptimizerInches(piece.remaining)} in</span>
-                              <span>{remainderStatus}</span>
+                              <span>Used: {formatOptimizerInches(piecePresentation.usedLength)} in</span>
+                              <span>Remaining: {formatOptimizerInches(piecePresentation.remainingLength)} in ({piecePresentation.remainderClassification})</span>
+                              <span>Kerf Loss: {formatOptimizerInches(piecePresentation.kerfLoss)} in</span>
                             </div>
                           </div>
 
@@ -6336,7 +6277,7 @@ function App() {
                               </tr>
                             </thead>
                             <tbody>
-                              {groupCutsForDisplay(piece.cuts).map((cutGroup) => (
+                              {groupCutsForDisplay(piece.cuts, { restartAtOne: true }).map((cutGroup) => (
                                 <tr key={`print-${group.materialType}-${piece.rawNumber}-${cutGroup.key}`}>
                                   <td>{cutGroup.cutNumberLabel}</td>
                                   <td>{cutGroup.sku || cutGroup.workOrder || "-"}</td>
