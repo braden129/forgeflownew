@@ -52,6 +52,7 @@ import {
   getRawPiecePresentation,
   groupCutsForDisplay,
 } from "./utils/materialOptimizerPresentation";
+import { resolvePostLoginView } from "./utils/authNavigation";
 
 const STAGES = [
   "Fabrication",
@@ -956,12 +957,23 @@ function App() {
       setEmployeePanelTab(nextDepartment);
       setDashboardDepartment(nextDepartment);
       localStorage.setItem("employeeDepartment", nextDepartment);
-      setView(nextDepartment);
+      setView(
+        resolvePostLoginView({
+          role: appRole,
+          dashboardAllowed: PRIMARY_VIEWS.includes("Dashboard"),
+          employeeDepartment: nextDepartment,
+        })
+      );
     } else {
       // Prevent stale employee-only state from affecting Developer/Admin/Supervisor tools.
       localStorage.removeItem("employeeDepartment");
       setShopMessageTo("Everyone");
-      setView("Live");
+      setView(
+        resolvePostLoginView({
+          role: appRole,
+          dashboardAllowed: PRIMARY_VIEWS.includes("Dashboard"),
+        })
+      );
     }
 
     await loadSharedAppData();

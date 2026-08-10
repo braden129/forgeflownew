@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "test": "node --test src/utils/sharedAppDataSync.test.js src/utils/materialOptimizer.test.js",
+    "test": "node --test src/utils/sharedAppDataSync.test.js src/utils/materialOptimizer.test.js src/utils/authNavigation.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
